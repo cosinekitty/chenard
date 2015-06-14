@@ -1,0 +1,527 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+#include "../src/winchess.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "windows.h"
+#ifndef IDC_STATIC
+    #define IDC_STATIC (-1)
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_LARGE_EMPTY_B       BITMAP                  "e_b.bmp"
+IDB_LARGE_EMPTY_W       BITMAP                  "e_w.bmp"
+IDB_O_BB_B              BITMAP                  "o_bb_b.bmp"
+IDB_O_BB_W              BITMAP                  "o_bb_w.bmp"
+IDB_O_BK_B              BITMAP                  "o_bk_b.bmp"
+IDB_O_BK_W              BITMAP                  "o_bk_w.bmp"
+IDB_O_BN_B              BITMAP                  "o_bn_b.bmp"
+IDB_O_BN_W              BITMAP                  "o_bn_w.bmp"
+IDB_O_BP_B              BITMAP                  "o_bp_b.bmp"
+IDB_O_BP_W              BITMAP                  "o_bp_w.bmp"
+IDB_O_BQ_B              BITMAP                  "o_bq_b.bmp"
+IDB_O_BQ_W              BITMAP                  "o_bq_w.bmp"
+IDB_O_BR_B              BITMAP                  "o_br_b.bmp"
+IDB_O_BR_W              BITMAP                  "o_br_w.bmp"
+IDB_SMALL_EMPTY_B       BITMAP                  "o_e_b.bmp"
+IDB_SMALL_EMPTY_W       BITMAP                  "o_e_w.bmp"
+IDB_O_WB_B              BITMAP                  "o_wb_b.bmp"
+IDB_O_WB_W              BITMAP                  "o_wb_w.bmp"
+IDB_O_WK_B              BITMAP                  "o_wk_b.bmp"
+IDB_O_WK_W              BITMAP                  "o_wk_w.bmp"
+IDB_O_WN_B              BITMAP                  "o_wn_b.bmp"
+IDB_O_WN_W              BITMAP                  "o_wn_w.bmp"
+IDB_O_WP_B              BITMAP                  "o_wp_b.bmp"
+IDB_O_WP_W              BITMAP                  "o_wp_w.bmp"
+IDB_O_WQ_B              BITMAP                  "o_wq_b.bmp"
+IDB_O_WQ_W              BITMAP                  "o_wq_w.bmp"
+IDB_O_WR_B              BITMAP                  "o_wr_b.bmp"
+IDB_O_WR_W              BITMAP                  "o_wr_w.bmp"
+IDB_O_X_B               BITMAP                  "o_x_b.bmp"
+IDB_O_X_W               BITMAP                  "o_x_w.bmp"
+IDB_S_BB_B              BITMAP                  "s_bb_b.bmp"
+IDB_S_BB_W              BITMAP                  "s_bb_w.bmp"
+IDB_S_BK_B              BITMAP                  "s_bk_b.bmp"
+IDB_S_BK_W              BITMAP                  "s_bk_w.bmp"
+IDB_S_BN_B              BITMAP                  "s_bn_b.bmp"
+IDB_S_BN_W              BITMAP                  "s_bn_w.bmp"
+IDB_S_BP_B              BITMAP                  "s_bp_b.bmp"
+IDB_S_BP_W              BITMAP                  "s_bp_w.bmp"
+IDB_S_BQ_B              BITMAP                  "s_bq_b.bmp"
+IDB_S_BQ_W              BITMAP                  "s_bq_w.bmp"
+IDB_S_BR_B              BITMAP                  "s_br_b.bmp"
+IDB_S_BR_W              BITMAP                  "s_br_w.bmp"
+IDB_S_WB_B              BITMAP                  "s_wb_b.bmp"
+IDB_S_WB_W              BITMAP                  "s_wb_w.bmp"
+IDB_S_WK_B              BITMAP                  "s_wk_b.bmp"
+IDB_S_WK_W              BITMAP                  "s_wk_w.bmp"
+IDB_S_WN_B              BITMAP                  "s_wn_b.bmp"
+IDB_S_WN_W              BITMAP                  "s_wn_w.bmp"
+IDB_S_WP_B              BITMAP                  "s_wp_b.bmp"
+IDB_S_WP_W              BITMAP                  "s_wp_w.bmp"
+IDB_S_WQ_B              BITMAP                  "s_wq_b.bmp"
+IDB_S_WQ_W              BITMAP                  "s_wq_w.bmp"
+IDB_S_WR_B              BITMAP                  "s_wr_b.bmp"
+IDB_S_WR_W              BITMAP                  "s_wr_w.bmp"
+IDB_T_BB_B              BITMAP                  "t_bb_b.bmp"
+IDB_T_BB_W              BITMAP                  "t_bb_w.bmp"
+IDB_T_BK_B              BITMAP                  "t_bk_b.bmp"
+IDB_T_BK_W              BITMAP                  "t_bk_w.bmp"
+IDB_T_BN_B              BITMAP                  "t_bn_b.bmp"
+IDB_T_BN_W              BITMAP                  "t_bn_w.bmp"
+IDB_T_BP_B              BITMAP                  "t_bp_b.bmp"
+IDB_T_BP_W              BITMAP                  "t_bp_w.bmp"
+IDB_T_BQ_B              BITMAP                  "t_bq_b.bmp"
+IDB_T_BQ_W              BITMAP                  "t_bq_w.bmp"
+IDB_T_BR_B              BITMAP                  "t_br_b.bmp"
+IDB_T_BR_W              BITMAP                  "t_br_w.bmp"
+IDB_T_WB_B              BITMAP                  "t_wb_b.bmp"
+IDB_T_WB_W              BITMAP                  "t_wb_w.bmp"
+IDB_T_WK_B              BITMAP                  "t_wk_b.bmp"
+IDB_T_WK_W              BITMAP                  "t_wk_w.bmp"
+IDB_T_WN_B              BITMAP                  "t_wn_b.bmp"
+IDB_T_WN_W              BITMAP                  "t_wn_w.bmp"
+IDB_T_WP_B              BITMAP                  "t_wp_b.bmp"
+IDB_T_WP_W              BITMAP                  "t_wp_w.bmp"
+IDB_T_WQ_B              BITMAP                  "t_wq_b.bmp"
+IDB_T_WQ_W              BITMAP                  "t_wq_w.bmp"
+IDB_T_WR_B              BITMAP                  "t_wr_b.bmp"
+IDB_T_WR_W              BITMAP                  "t_wr_w.bmp"
+IDB_T_X_B               BITMAP                  "t_x_b.bmp"
+IDB_T_X_W               BITMAP                  "t_x_w.bmp"
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""windows.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ENTER_FEN DIALOG  0, 0, 350, 75
+STYLE DS_SETFONT | DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Enter Forsyth-Edwards Notation (FEN)"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,100,55,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,200,55,50,14
+    EDITTEXT        TB_EDIT_FEN,25,20,300,14,ES_AUTOHSCROLL
+END
+
+IDD_DEFINE_PLAYERS DIALOGEX 0, 0, 261, 184
+STYLE DS_SETFONT | DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Define the Players for the Game"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,61,163,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,147,163,50,14
+    GROUPBOX        "White",IDC_STATIC,23,19,99,102
+    GROUPBOX        "Black",IDC_STATIC,131,19,106,102
+    CONTROL         "Human",RB_WHUMAN,"Button",BS_AUTORADIOBUTTON | WS_GROUP,41,34,39,10
+    CONTROL         "Computer",RB_WCOMPUTER,"Button",BS_AUTORADIOBUTTON,41,74,46,10
+    CONTROL         "Human",RB_BHUMAN,"Button",BS_AUTORADIOBUTTON | WS_GROUP,149,34,39,10
+    CONTROL         "Computer",RB_BCOMPUTER,"Button",BS_AUTORADIOBUTTON,149,75,46,10
+    GROUPBOX        "",IDC_STATIC,29,66,87,47
+    GROUPBOX        "",IDC_STATIC,138,67,93,47
+    EDITTEXT        TB_WTIME,79,92,32,14,ES_AUTOHSCROLL
+    EDITTEXT        TB_BTIME,193,93,30,14,ES_AUTOHSCROLL
+    LTEXT           "Think time:",IDC_STATIC,33,89,36,8
+    LTEXT           "Think time:",IDC_STATIC,145,89,36,8
+    LTEXT           "Get the latest version of this program at",IDC_STATIC,70,131,129,8
+    LTEXT           "http://www.cosinekitty.com/chenard",IDC_STATIC,72,142,127,8
+    LTEXT           "(seconds)",IDC_STATIC,35,99,32,9
+    LTEXT           "(seconds)",IDC_STATIC,147,99,32,9
+    CONTROL         "Blunder alert",IDC_CHECK_BLUNDER_ALERT_WHITE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,50,51,55,10
+    CONTROL         "Blunder alert",IDC_CHECK_BLUNDER_ALERT_BLACK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,157,51,55,10
+END
+
+IDD_PROMOTE_PAWN DIALOG  0, 0, 181, 95
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Promote pawn to which piece?"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,103,39,50,14
+    CONTROL         "&Queen",RB_QUEEN,"Button",BS_AUTORADIOBUTTON,35,18,37,10
+    CONTROL         "&Rook",RB_ROOK,"Button",BS_AUTORADIOBUTTON,35,34,33,10
+    CONTROL         "&Bishop",RB_BISHOP,"Button",BS_AUTORADIOBUTTON,35,50,37,10
+    CONTROL         "K&night",RB_KNIGHT,"Button",BS_AUTORADIOBUTTON,35,66,36,10
+END
+
+IDD_EDIT_SQUARE DIALOG  0, 0, 233, 129
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Select contents of square"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,176,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,176,24,50,14
+    GROUPBOX        "side",IDC_STATIC,19,16,141,25
+    GROUPBOX        "piece",IDC_STATIC,19,55,168,55
+    CONTROL         "&Empty",IDC_EDIT_EMPTY,"Button",BS_AUTORADIOBUTTON | WS_GROUP,29,26,35,10
+    CONTROL         "&White",IDC_EDIT_WHITE,"Button",BS_AUTORADIOBUTTON,78,26,35,10
+    CONTROL         "B&lack",IDC_EDIT_BLACK,"Button",BS_AUTORADIOBUTTON,123,26,34,10
+    CONTROL         "&Pawn",IDC_EDIT_PAWN,"Button",BS_AUTORADIOBUTTON | WS_GROUP,44,65,34,10
+    CONTROL         "K&night",IDC_EDIT_KNIGHT,"Button",BS_AUTORADIOBUTTON,44,79,36,10
+    CONTROL         "&Bishop",IDC_EDIT_BISHOP,"Button",BS_AUTORADIOBUTTON,44,93,37,10
+    CONTROL         "&Rook",IDC_EDIT_ROOK,"Button",BS_AUTORADIOBUTTON,124,65,33,10
+    CONTROL         "&Queen",IDC_EDIT_QUEEN,"Button",BS_AUTORADIOBUTTON,124,79,37,10
+    CONTROL         "&King",IDC_EDIT_KING,"Button",BS_AUTORADIOBUTTON,124,93,30,10
+END
+
+IDD_ABOUT DIALOG  0, 0, 182, 95
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About Chenard"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,66,74,50,14,BS_NOTIFY
+    LTEXT           "Chenard for Windows",IDC_STATIC,25,16,127,8
+    LTEXT           "cosinekitty@hotmail.com",IDC_STATIC,17,52,78,8
+    LTEXT           "http://www.cosinekitty.com/chenard",IDC_STATIC,17,61,156,8
+    LTEXT           "*** Unofficial build ***",IDC_STATIC,26,35,120,8
+    GROUPBOX        "",IDC_STATIC,14,8,152,40
+    LTEXT           "A freeware chess program by Don Cross",IDC_STATIC,26,25,134,8
+END
+
+IDD_EDIT_THINK_TIMES DIALOG  0, 0, 182, 77
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Edit Think Times (in seconds)"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,125,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,125,24,50,14
+    LTEXT           "&White",IDC_STATIC,18,20,25,13
+    LTEXT           "&Black",IDC_STATIC,18,44,33,13
+    EDITTEXT        IDC_EDIT_WHITE_TIME,51,19,40,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_BLACK_TIME,51,43,40,12,ES_AUTOHSCROLL
+END
+
+IDD_EDIT_BLUNDER_THRESHOLD DIALOGEX 0, 0, 225, 96
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Edit Blunder Alert Threshold"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,42,76,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,122,76,50,14
+    LTEXT           "Threshold:",IDC_STATIC,7,11,33,13
+    EDITTEXT        IDC_EDIT_BLUNDER_THRESHOLD,48,9,40,12,ES_AUTOHSCROLL
+    LTEXT           "If blunder alert is enabled, this threshold controls how much of a blunder a move must be before Chenard warns you about it.  It is expressed in hundredths of a pawn.  Enter a value in the range 50 to 1000.",IDC_STATIC,8,35,212,39
+    LTEXT           "(50 ... 1000)",IDC_STATIC,99,11,46,8
+END
+
+IDD_DEFINE_PLAYERS2 DIALOG  0, 0, 263, 219
+STYLE DS_SETFONT | DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Define the Players for the Game"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,61,198,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,147,198,50,14
+    GROUPBOX        "White",IDC_STATIC,23,15,99,112
+    GROUPBOX        "Black",IDC_STATIC,131,15,106,112
+    CONTROL         "Human",RB_WHUMAN,"Button",BS_AUTORADIOBUTTON | WS_GROUP,41,26,39,10
+    CONTROL         "Internet",RB_WINTERNET,"Button",BS_AUTORADIOBUTTON,41,37,55,10
+    CONTROL         "Named Pipe",RB_W_NAMEDPIPE,"Button",BS_AUTORADIOBUTTON,37,95,59,10
+    CONTROL         "Computer",RB_WCOMPUTER,"Button",BS_AUTORADIOBUTTON,41,53,46,10
+    CONTROL         "Human",RB_BHUMAN,"Button",BS_AUTORADIOBUTTON | WS_GROUP,149,26,39,10
+    CONTROL         "Internet",RB_BINTERNET,"Button",BS_AUTORADIOBUTTON,149,37,55,10
+    CONTROL         "Named Pipe",RB_B_NAMEDPIPE,"Button",BS_AUTORADIOBUTTON,145,95,59,10
+    CONTROL         "Computer",RB_BCOMPUTER,"Button",BS_AUTORADIOBUTTON,149,54,46,10
+    GROUPBOX        "",IDC_STATIC,29,45,87,47
+    GROUPBOX        "",IDC_STATIC,138,45,93,47
+    EDITTEXT        TB_WTIME,79,71,32,14,ES_AUTOHSCROLL
+    EDITTEXT        TB_BTIME,193,71,30,14,ES_AUTOHSCROLL
+    LTEXT           "Think time:",IDC_STATIC,33,68,36,8
+    LTEXT           "Think time:",IDC_STATIC,145,68,36,8
+    LTEXT           "Get the latest version of this program at",IDC_STATIC,51,172,151,8
+    LTEXT           "http://www.cosinekitty.com/chenard",IDC_STATIC,51,180,167,8
+    LTEXT           "(seconds)",IDC_STATIC,35,77,32,9
+    LTEXT           "(seconds)",IDC_STATIC,147,77,32,9
+    CONTROL         "Connect to remote Chenard",IDC_CHESS_CLIENT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,72,140,103,11
+    GROUPBOX        "",IDC_STATIC,39,135,175,33
+    EDITTEXT        IDC_REMOTE_IP,97,151,104,12,ES_AUTOHSCROLL | WS_DISABLED
+    LTEXT           "IP address:",IDC_STATIC,54,153,37,10
+    EDITTEXT        TB_W_PIPE_NAME,32,106,83,14,ES_AUTOHSCROLL
+    EDITTEXT        TB_B_PIPE_NAME,137,105,90,14,ES_AUTOHSCROLL
+END
+
+IDD_REQUEST_SUGGESTION DIALOGEX 0, 0, 185, 113
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Suggest A Move"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,30,92,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,106,92,50,14
+    LTEXT           "In the box below, enter how many seconds the computer should think, then click on OK for the computer to suggest a move to you.",IDC_STATIC,19,10,152,26
+    EDITTEXT        IDC_EDIT_SUGGEST_TIME,97,45,42,14,ES_AUTOHSCROLL
+    LTEXT           "Think Time:",IDC_STATIC,48,48,46,11
+    GROUPBOX        "",IDC_STATIC,33,35,120,31
+    CONTROL         "Make sound when suggestion is ready",IDC_CHECK_DING_AFTER_SUGGEST,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,25,73,138,10
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO 
+BEGIN
+    IDD_DEFINE_PLAYERS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 254
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 177
+    END
+
+    IDD_PROMOTE_PAWN, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 174
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 88
+    END
+
+    IDD_EDIT_SQUARE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 226
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 122
+    END
+
+    IDD_ABOUT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 175
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 88
+    END
+
+    IDD_EDIT_THINK_TIMES, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 175
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 70
+    END
+
+    IDD_EDIT_BLUNDER_THRESHOLD, DIALOG
+    BEGIN
+        RIGHTMARGIN, 220
+        BOTTOMMARGIN, 90
+    END
+
+    IDD_DEFINE_PLAYERS2, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 256
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 212
+    END
+
+    IDD_REQUEST_SUGGESTION, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 178
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 106
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+999 MENU 
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "&New...\tCtrl+N",             ID_CHENARD_FILE_NEW
+        MENUITEM "&Open...\tCtrl+O",            ID_CHENARD_FILE_OPEN
+        MENUITEM "&Save...\tCtrl+S",            ID_CHENARD_FILE_SAVE
+        MENUITEM "Save &As...",                 ID_CHENARD_FILE_SAVEAS
+        MENUITEM SEPARATOR
+        MENUITEM "E&xit",                       ID_CHENARD_FILE_EXIT
+    END
+    POPUP "&Edit"
+    BEGIN
+        MENUITEM "C&lear board...",             ID_EDIT_CLEARBOARD
+        MENUITEM "&Edit mode",                  ID_EDIT_EDITMODE
+        MENUITEM SEPARATOR
+        MENUITEM "&Copy Game Listing...\tCtrl+C", ID_EDIT_COPYGAMELISTING
+        MENUITEM "Copy &Forsyth-Edwards Notation", ID_EDIT_COPY_FEN
+        MENUITEM "E&nter Forsyth-Edwards Notation", ID_ENTER_FEN
+        MENUITEM SEPARATOR
+        MENUITEM "&Undo Move\tCtrl+Z",          ID_EDIT_UNDOMOVE
+        MENUITEM "&Redo Move\tCtrl+D",          ID_EDIT_REDOMOVE
+    END
+    POPUP "&View"
+    BEGIN
+        MENUITEM "&Freshen\tCtrl+F",            ID_VIEW_FRESHEN
+        MENUITEM "&Rotate board\tCtrl+R",       ID_VIEW_ROTATEBOARD
+        POPUP "&Analysis"
+        BEGIN
+            MENUITEM "&None",                       ID_VIEW_ANALYSIS_NONE
+            MENUITEM "&Best Path",                  ID_VIEW_ANALYSIS_BESTPATH
+            MENUITEM "&Current Path",               ID_VIEW_ANALYSIS_CURRENTPATH
+        END
+        MENUITEM SEPARATOR
+        MENUITEM "&Highlight destination of each move", ID_HIGHLIGHT_MOVE, CHECKED
+        MENUITEM "Animate &opponent moves",     ID_ANIMATE, CHECKED
+        MENUITEM "Spea&k moves through sound card", ID_VIEW_SPEAKMOVESTHROUGHSOUNDCARD
+        MENUITEM "Announce &Mate",              ID_VIEW_ANNOUNCEMATE
+        MENUITEM SEPARATOR
+        POPUP "Board &Size"
+        BEGIN
+            MENUITEM "&Small",                      ID_VIEW_SMALLBOARD, CHECKED
+            MENUITEM "&Medium",                     ID_VIEW_MEDIUMBOARD
+            MENUITEM "&Large",                      ID_VIEW_LARGEBOARD
+        END
+        POPUP "&Piece Style"
+        BEGIN
+            MENUITEM "&Original Style\tby Don Cross", ID_VIEW_PIECESTYLE_ORIGINAL
+            MENUITEM "&Tilburg\tby Eric Schiller and William Cone", ID_VIEW_PIECESTYLE_TILBURG
+            MENUITEM "&Skak\tby Egon Madsen",       ID_VIEW_PIECESTYLE_SKAK
+        END
+    END
+    POPUP "&Game"
+    BEGIN
+        MENUITEM "&Force computer to move now\tCtrl+F12", ID_GAME_FORCEMOVE
+        MENUITEM "&Suggest a move\tF1",         ID_GAME_SUGGEST
+        MENUITEM "S&uggest move again (use last settings)\tF2", ID_GAME_SUGGESTAGAIN
+        MENUITEM "Tactical &benchmark...",      ID_GAME_TACTICALBENCHMARK
+        MENUITEM "Edit &think times...",        ID_EDIT_THINK_TIMES
+        MENUITEM "Edit b&lunder alert threshold...", ID_EDIT_BLUNDER_THRESHOLD
+        MENUITEM "&Allow computer to resign",   ID_GAME_ALLOWCOMPUTERTORESIGN
+        MENUITEM "&Resign...",                  ID_GAME_RESIGN
+        MENUITEM "A&utomatically make singular moves", ID_GAME_AUTO_SINGULAR
+        MENUITEM "Allow e&xtended search",      ID_GAME_ALLOWEXTENDEDSEARCH
+        MENUITEM "Think on &opponent's turn",   ID_GAME_OPPTIME
+    END
+    POPUP "&Help"
+    BEGIN
+        MENUITEM "&About...",                   ID_HELP_ABOUT
+        MENUITEM "Visit Chenard &web page...",  ID_HELP_VISITCHENARDWEBPAGE
+        MENUITEM "How do I &castle?",           ID_HELP_HOWDOICASTLE
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDR_ACCELERATOR1 ACCELERATORS 
+BEGIN
+    "A",            ID_VIEW_DEBUGINFO,      VIRTKEY, CONTROL, NOINVERT
+    "C",            ID_EDIT_COPYGAMELISTING, VIRTKEY, CONTROL, NOINVERT
+    "D",            ID_EDIT_REDOMOVE,       VIRTKEY, CONTROL, NOINVERT
+    "N",            ID_CHENARD_FILE_NEW,    VIRTKEY, CONTROL, NOINVERT
+    "O",            ID_CHENARD_FILE_OPEN,   VIRTKEY, CONTROL, NOINVERT
+    "R",            ID_VIEW_ROTATEBOARD,    VIRTKEY, CONTROL, NOINVERT
+    "S",            ID_CHENARD_FILE_SAVE,   VIRTKEY, CONTROL, NOINVERT
+    VK_DOWN,        ID_KEY_S,               VIRTKEY, NOINVERT
+    VK_END,         ID_KEY_SW,              VIRTKEY, NOINVERT
+    VK_F1,          ID_GAME_SUGGEST,        VIRTKEY, NOINVERT
+    VK_F2,          ID_GAME_SUGGESTAGAIN,   VIRTKEY, NOINVERT
+    VK_F12,         ID_GAME_FORCEMOVE,      VIRTKEY, CONTROL, NOINVERT
+    VK_F7,          ID_DUMP_XPOS_TABLE,     VIRTKEY, CONTROL, ALT, NOINVERT
+    VK_HOME,        ID_KEY_NW,              VIRTKEY, NOINVERT
+    VK_LEFT,        ID_KEY_W,               VIRTKEY, NOINVERT
+    VK_NEXT,        ID_KEY_SE,              VIRTKEY, NOINVERT
+    VK_PRIOR,       ID_KEY_NE,              VIRTKEY, NOINVERT
+    VK_RETURN,      ID_KEY_CHOOSE,          VIRTKEY, NOINVERT
+    VK_RIGHT,       ID_KEY_E,               VIRTKEY, NOINVERT
+    VK_UP,          ID_KEY_N,               VIRTKEY, NOINVERT
+    "Z",            ID_EDIT_UNDOMOVE,       VIRTKEY, CONTROL, NOINVERT
+    "A",            ID_ALGEBRAIC_A,         VIRTKEY, NOINVERT
+    "B",            ID_ALGEBRAIC_B,         VIRTKEY, NOINVERT
+    "C",            ID_ALGEBRAIC_C,         VIRTKEY, NOINVERT
+    "D",            ID_ALGEBRAIC_D,         VIRTKEY, NOINVERT
+    "E",            ID_ALGEBRAIC_E,         VIRTKEY, NOINVERT
+    "F",            ID_ALGEBRAIC_F,         VIRTKEY, NOINVERT
+    "G",            ID_ALGEBRAIC_G,         VIRTKEY, NOINVERT
+    "H",            ID_ALGEBRAIC_H,         VIRTKEY, NOINVERT
+    "1",            ID_ALGEBRAIC_1,         VIRTKEY, NOINVERT
+    "2",            ID_ALGEBRAIC_2,         VIRTKEY, NOINVERT
+    "3",            ID_ALGEBRAIC_3,         VIRTKEY, NOINVERT
+    "4",            ID_ALGEBRAIC_4,         VIRTKEY, NOINVERT
+    "5",            ID_ALGEBRAIC_5,         VIRTKEY, NOINVERT
+    "6",            ID_ALGEBRAIC_6,         VIRTKEY, NOINVERT
+    "7",            ID_ALGEBRAIC_7,         VIRTKEY, NOINVERT
+    "8",            ID_ALGEBRAIC_8,         VIRTKEY, NOINVERT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_ICON1               ICON                    "chenard1.ico"
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

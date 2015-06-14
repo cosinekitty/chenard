@@ -1,0 +1,3 @@
+cd ../src
+g++ -Wall -Wextra -Wshadow -Wnon-virtual-dtor -Wunused -Woverloaded-virtual -O2 -o ../linux/xchenard @../linux/xsourcefiles
+cd ../linux

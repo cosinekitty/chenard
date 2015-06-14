@@ -1,0 +1,14 @@
+bin
+obj
+Debug
+Release
+*.sdf
+*.opensdf
+*.suo
+*.user
+*.userprefs
+*.resources
+*.swp
+*.pyc
+*.psess
+*.vsp

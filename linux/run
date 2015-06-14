@@ -1,0 +1,1 @@
+xboard -debug -fcp ./xchenard -scp ./xchenard -size medium
