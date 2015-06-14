@@ -1,0 +1,409 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\SRC\attack.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SRC\board.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SRC\canmove.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SRC\chenga.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SRC\chengene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SRC\crand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SRC\egdbase.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SRC\endgame.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SRC\eval.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SRC\fancy.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SRC\game.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SRC\gamefile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SRC\gencaps.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SRC\genmove.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SRC\human.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SRC\ichess.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SRC\lrntree.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SRC\material.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SRC\misc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SRC\morder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SRC\move.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SRC\npchess.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SRC\openbook.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SRC\opening.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SRC\player.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SRC\search.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SRC\speak.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SRC\transpos.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SRC\ui.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SRC\uiwin32.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SRC\undopath.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SRC\unmove.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SRC\wbrdbuf.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SRC\wingui.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SRC\wintime.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\SRC\chenga.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SRC\chess.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SRC\gamefile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SRC\ichess.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SRC\lichess.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SRC\lrntree.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SRC\npchess.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SRC\profiler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\res\resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SRC\winchess.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SRC\winguich.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\res\CHENARD1.ICO">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\E_B.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\E_W.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\O_BB_B.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\O_BB_W.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\O_BK_B.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\O_BK_W.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\O_BN_B.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\O_BN_W.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\O_BP_B.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\O_BP_W.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\O_BQ_B.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\O_BQ_W.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\O_BR_B.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\O_BR_W.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\O_E_B.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\O_E_W.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\O_WB_B.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\O_WB_W.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\O_WK_B.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\O_WK_W.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\O_WN_B.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\O_WN_W.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\O_WP_B.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\O_WP_W.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\O_WQ_B.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\O_WQ_W.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\O_WR_B.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\O_WR_W.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\O_X_B.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\O_X_W.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\S_BB_B.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\S_BB_W.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\S_BK_B.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\S_BK_W.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\S_BN_B.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\S_BN_W.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\S_BP_B.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\S_BP_W.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\S_BQ_B.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\S_BQ_W.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\S_BR_B.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\S_BR_W.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\S_WB_B.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\S_WB_W.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\S_WK_B.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\S_WK_W.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\S_WN_B.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\S_WN_W.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\S_WP_B.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\S_WP_W.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\S_WQ_B.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\S_WQ_W.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\S_WR_B.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\S_WR_W.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\T_BB_B.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\T_BB_W.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\T_BK_B.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\T_BK_W.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\T_BN_B.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\T_BN_W.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\T_BP_B.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\T_BP_W.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\T_BQ_B.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\T_BQ_W.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\T_BR_B.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\T_BR_W.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\T_WB_B.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\T_WB_W.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\T_WK_B.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\T_WK_W.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\T_WN_B.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\T_WN_W.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\T_WP_B.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\T_WP_W.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\T_WQ_B.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\T_WQ_W.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\T_WR_B.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\T_WR_W.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\T_X_B.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\res\T_X_W.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\RES\winchen.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>

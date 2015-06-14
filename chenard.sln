@@ -1,13 +1,15 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xchenard", "xchenard\xchenard.vcproj", "{2C475FDB-466E-43C6-8B12-4005E11D41E8}"
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xchenard", "xchenard\xchenard.vcxproj", "{2C475FDB-466E-43C6-8B12-4005E11D41E8}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "openbook", "openbook\openbook.vcproj", "{072808C3-A602-4798-A604-4396E86AD270}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "openbook", "openbook\openbook.vcxproj", "{072808C3-A602-4798-A604-4396E86AD270}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "portable", "portable\portable.vcproj", "{88B971BA-8F28-475D-9FB6-5E0F101911D8}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "portable", "portable\portable.vcxproj", "{88B971BA-8F28-475D-9FB6-5E0F101911D8}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "winchen", "winchen\winchen.vcproj", "{7016A623-EFFF-4678-8B19-03411A258510}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "winchen", "winchen\winchen.vcxproj", "{7016A623-EFFF-4678-8B19-03411A258510}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
