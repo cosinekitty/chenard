@@ -17,7 +17,7 @@ ChessBoard::ChessBoard():
     initialFen (0)
 {
     whiteRepeatHash = new int [REPEAT_HASH_SIZE];
-	blackRepeatHash = new int [REPEAT_HASH_SIZE];
+    blackRepeatHash = new int [REPEAT_HASH_SIZE];
 
     for ( int i=0; i < MAX_GAME_HISTORY; i++ )
     {
@@ -33,8 +33,8 @@ ChessBoard::ChessBoard ( const ChessBoard &other ):
     gameHistory ( new Move [MAX_GAME_HISTORY] ),
     initialFen (0)
 {
-	whiteRepeatHash = new int[REPEAT_HASH_SIZE];
-	blackRepeatHash = new int[REPEAT_HASH_SIZE];
+    whiteRepeatHash = new int[REPEAT_HASH_SIZE];
+    blackRepeatHash = new int[REPEAT_HASH_SIZE];
 
     *this = other;
 }
@@ -49,11 +49,11 @@ ChessBoard & ChessBoard::operator= ( const ChessBoard &other )
         for ( int i=0; i < ply_number; i++ )
             gameHistory[i] = other.gameHistory[i];
 
-		for (unsigned i = 0; i < REPEAT_HASH_SIZE; ++i)
-		{
-			whiteRepeatHash[i] = other.whiteRepeatHash[i];
-			blackRepeatHash[i] = other.blackRepeatHash[i];
-		}
+        for (unsigned i = 0; i < REPEAT_HASH_SIZE; ++i)
+        {
+            whiteRepeatHash[i] = other.whiteRepeatHash[i];
+            blackRepeatHash[i] = other.blackRepeatHash[i];
+        }
 
         for ( int i=0; i<144; i++ )
             board[i] = other.board[i];
@@ -91,16 +91,16 @@ ChessBoard::~ChessBoard()
     if (whiteRepeatHash)
     {
         delete[] whiteRepeatHash;
-		whiteRepeatHash = 0;
+        whiteRepeatHash = 0;
     }
 
-	if (blackRepeatHash)
-	{
-		delete[] blackRepeatHash;
-		blackRepeatHash = 0;
-	}
+    if (blackRepeatHash)
+    {
+        delete[] blackRepeatHash;
+        blackRepeatHash = 0;
+    }
 
-    FreeString (initialFen);
+    FreeString(initialFen);
 }
 
 
@@ -168,8 +168,8 @@ void ChessBoard::Init()
     initialPlyNumber = 0;
     FreeString (initialFen);    // side effect: causes us to interpret this ChessBoard object as unedited.
     lastCapOrPawn = -1;
-	memset(whiteRepeatHash, 0, REPEAT_HASH_SIZE * sizeof(whiteRepeatHash[0]));
-	memset(blackRepeatHash, 0, REPEAT_HASH_SIZE * sizeof(blackRepeatHash[0]));
+    memset(whiteRepeatHash, 0, REPEAT_HASH_SIZE * sizeof(whiteRepeatHash[0]));
+    memset(blackRepeatHash, 0, REPEAT_HASH_SIZE * sizeof(blackRepeatHash[0]));
     cachedHash = CalcHash();
     whiteRepeatHash[cachedHash % REPEAT_HASH_SIZE] = 1;
 }
@@ -234,15 +234,15 @@ bool ChessBoard::IsDefiniteDraw ( int *numReps )
     // Now look for draw based upon position repeated 3 times...
 
     int r = (white_to_move ? whiteRepeatHash : blackRepeatHash)[cachedHash % REPEAT_HASH_SIZE];
-	if (r >= 3)
-	{
-		r = NumberOfRepetitions();		// more expensive calculation - but must determine if really a draw by repetition
-	}
+    if (r >= 3)
+    {
+        r = NumberOfRepetitions();		// more expensive calculation - but must determine if really a draw by repetition
+    }
 
-	if (numReps)
-	{
-		*numReps = r;
-	}
+    if (numReps)
+    {
+        *numReps = r;
+    }
 
     return r >= 3;
 }

@@ -1369,7 +1369,7 @@ protected:
     // value has been seen, as a way to detect repeated board positions.
     // The size of both arrays is the prime number REPEAT_HASH_SIZE defined above.
     int        *whiteRepeatHash;
-	int        *blackRepeatHash;
+    int        *blackRepeatHash;
 
 private:
     bool pgnCloseMatch (const char *pgn, Move move) const;
