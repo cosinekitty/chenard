@@ -420,7 +420,7 @@ void ChessBoard::MakeWhiteMove (
     if ( cachedHash == 0 )
         cachedHash = 0xFFFFFFFF;   // This way we know 0 will never match any hash code
 
-    repeatHash [cachedHash % REPEAT_HASH_SIZE] += 0x10;   // upper nybble for Black to move
+	++blackRepeatHash[cachedHash % REPEAT_HASH_SIZE];
 
 #if BOARD_HASH_DEBUG
     UINT32 actualHash = CalcHash();
@@ -699,7 +699,7 @@ void ChessBoard::MakeBlackMove (
     if ( cachedHash == 0 )
         cachedHash = 0xFFFFFFFF;   // This way we know 0 will never match any hash code
 
-    repeatHash [cachedHash % REPEAT_HASH_SIZE] += 0x01;   // lower nybble for White to move
+	++whiteRepeatHash[cachedHash % REPEAT_HASH_SIZE];
 
 #if BOARD_HASH_DEBUG
     UINT32 actualHash = CalcHash();
