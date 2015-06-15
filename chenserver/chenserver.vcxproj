@@ -114,6 +114,7 @@
     <ClCompile Include="..\src\unmove.cpp" />
     <ClCompile Include="..\src\wintime.cpp" />
     <ClCompile Include="chenserver.cpp" />
+    <ClCompile Include="uiserver.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\chenga.h" />
@@ -122,6 +123,7 @@
     <ClInclude Include="..\src\ichess.h" />
     <ClInclude Include="..\src\lrntree.h" />
     <ClInclude Include="..\src\profiler.h" />
+    <ClInclude Include="uiserver.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -8,9 +8,12 @@
 #include <cstdio>
 #include <cstdlib>
 #include "chess.h"
+#include "uiserver.h"
 
 int main(int argc, const char *argv[])
 {
+	ChessBoard board;
+	ChessUI_Server ui;
 	return 1;
 }
 

@@ -111,6 +111,9 @@
     <ClCompile Include="chenserver.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="uiserver.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\chenga.h">
@@ -129,6 +132,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\profiler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="uiserver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
