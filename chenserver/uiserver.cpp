@@ -2,8 +2,7 @@
 	uiserver.cpp
 */
 
-#include "chess.h"
-#include "uiserver.h"
+#include "chenserver.h"
 
 ChessUI_Server::ChessUI_Server()
 {
