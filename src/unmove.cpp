@@ -144,7 +144,7 @@ void ChessBoard::UnmakeWhiteMove ( Move move, UnmoveInfo &unmove )
     wmaterial        =  unmove.wmaterial;
     prev_move        =  unmove.prev_move;
     lastCapOrPawn    =  unmove.lastCapOrPawn;
-    repeatHash [cachedHash % REPEAT_HASH_SIZE] -= 0x10;  // no longer Black to move
+    --blackRepeatHash[cachedHash % REPEAT_HASH_SIZE];  // no longer Black to move
     cachedHash       =  unmove.cachedHash;
 
     --ply_number;
@@ -286,7 +286,7 @@ void ChessBoard::UnmakeBlackMove ( Move move, UnmoveInfo &unmove )
     prev_move        =  unmove.prev_move;
     lastCapOrPawn    =  unmove.lastCapOrPawn;
 
-    repeatHash [cachedHash % REPEAT_HASH_SIZE] -= 0x01;  // no longer White to move
+    --whiteRepeatHash[cachedHash % REPEAT_HASH_SIZE];  // no longer White to move
     cachedHash       =  unmove.cachedHash;
 
     --ply_number;

@@ -1134,8 +1134,8 @@ public:
 #define MAX_GAME_HISTORY   1500
 #define MAX_MOVE_STRLEN      20
 
-// The following prime number is used as the size of the ChessBoard::repeatHash table.
-#define REPEAT_HASH_SIZE   7001u
+// The following prime number is used as the size of the tables ChessBoard::whiteRepeatHash and ChessBoard::blackRepeatHash.
+#define REPEAT_HASH_SIZE   70001u
 
 
 #define PACKEDFLAG_WHITE_TO_MOVE    0x01
@@ -1365,12 +1365,11 @@ protected:
     // The following are important for detecting draws by repetition
     UINT32      cachedHash;
 
-    // The following array stores the number of times the given (hash%size)
+    // The following arrays store the number of times the given (hash%size)
     // value has been seen, as a way to detect repeated board positions.
-    // The lower nybble (0x0f) is for positions with White to move, and
-    // the upper nybble (0xf0) is for positions with Black to move.
-    // The size of the array is the prime number REPEAT_HASH_SIZE defined above.
-    BYTE       *repeatHash;
+    // The size of both arrays is the prime number REPEAT_HASH_SIZE defined above.
+    int        *whiteRepeatHash;
+    int        *blackRepeatHash;
 
 private:
     bool pgnCloseMatch (const char *pgn, Move move) const;
