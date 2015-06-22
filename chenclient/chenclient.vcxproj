@@ -11,9 +11,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{F168B4B2-EA7F-4F77-922B-B5473612AB04}</ProjectGuid>
+    <ProjectGuid>{979085C2-49AD-4184-9B5B-F093525B1C40}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>chenserver</RootNamespace>
+    <RootNamespace>chenclient</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -53,7 +53,6 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>..\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -71,7 +70,6 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>..\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -82,51 +80,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\attack.cpp" />
-    <ClCompile Include="..\src\board.cpp" />
-    <ClCompile Include="..\src\canmove.cpp" />
-    <ClCompile Include="..\src\chengene.cpp" />
-    <ClCompile Include="..\src\crand.cpp" />
-    <ClCompile Include="..\src\edittree.cpp" />
-    <ClCompile Include="..\src\egdbase.cpp" />
-    <ClCompile Include="..\src\endgame.cpp" />
-    <ClCompile Include="..\src\eval.cpp" />
-    <ClCompile Include="..\src\fancy.cpp" />
-    <ClCompile Include="..\src\game.cpp" />
-    <ClCompile Include="..\src\gamefile.cpp" />
-    <ClCompile Include="..\src\gencaps.cpp" />
-    <ClCompile Include="..\src\genmove.cpp" />
-    <ClCompile Include="..\src\human.cpp" />
-    <ClCompile Include="..\src\ichess.cpp" />
-    <ClCompile Include="..\src\lrntree.cpp" />
-    <ClCompile Include="..\src\material.cpp" />
-    <ClCompile Include="..\src\misc.cpp" />
-    <ClCompile Include="..\src\morder.cpp" />
-    <ClCompile Include="..\src\move.cpp" />
-    <ClCompile Include="..\src\openbook.cpp" />
-    <ClCompile Include="..\src\opening.cpp" />
-    <ClCompile Include="..\src\player.cpp" />
-    <ClCompile Include="..\src\profiler.cpp" />
-    <ClCompile Include="..\src\search.cpp" />
-    <ClCompile Include="..\src\transpos.cpp" />
-    <ClCompile Include="..\src\ui.cpp" />
-    <ClCompile Include="..\src\undopath.cpp" />
-    <ClCompile Include="..\src\unmove.cpp" />
-    <ClCompile Include="..\src\wintime.cpp" />
-    <ClCompile Include="chenserver.cpp" />
-    <ClCompile Include="ifstdio.cpp" />
-    <ClCompile Include="iftcp.cpp" />
-    <ClCompile Include="uiserver.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\src\chenga.h" />
-    <ClInclude Include="..\src\chess.h" />
-    <ClInclude Include="..\src\gamefile.h" />
-    <ClInclude Include="..\src\ichess.h" />
-    <ClInclude Include="..\src\lrntree.h" />
-    <ClInclude Include="..\src\profiler.h" />
-    <ClInclude Include="chenserver.h" />
-    <ClInclude Include="uiserver.h" />
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

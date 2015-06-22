@@ -117,6 +117,9 @@
     <ClCompile Include="ifstdio.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="iftcp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\chenga.h">

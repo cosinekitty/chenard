@@ -13,6 +13,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "winchen", "winchen\winchen.
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "chenserver", "chenserver\chenserver.vcxproj", "{F168B4B2-EA7F-4F77-922B-B5473612AB04}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "chenclient", "chenclient\chenclient.vcxproj", "{979085C2-49AD-4184-9B5B-F093525B1C40}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -99,6 +101,18 @@ Global
 		{F168B4B2-EA7F-4F77-922B-B5473612AB04}.Release|Win32.ActiveCfg = Release|Win32
 		{F168B4B2-EA7F-4F77-922B-B5473612AB04}.Release|Win32.Build.0 = Release|Win32
 		{F168B4B2-EA7F-4F77-922B-B5473612AB04}.Release|x64.ActiveCfg = Release|Win32
+		{979085C2-49AD-4184-9B5B-F093525B1C40}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{979085C2-49AD-4184-9B5B-F093525B1C40}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{979085C2-49AD-4184-9B5B-F093525B1C40}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{979085C2-49AD-4184-9B5B-F093525B1C40}.Debug|Win32.ActiveCfg = Debug|Win32
+		{979085C2-49AD-4184-9B5B-F093525B1C40}.Debug|Win32.Build.0 = Debug|Win32
+		{979085C2-49AD-4184-9B5B-F093525B1C40}.Debug|x64.ActiveCfg = Debug|Win32
+		{979085C2-49AD-4184-9B5B-F093525B1C40}.Release|Any CPU.ActiveCfg = Release|Win32
+		{979085C2-49AD-4184-9B5B-F093525B1C40}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{979085C2-49AD-4184-9B5B-F093525B1C40}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{979085C2-49AD-4184-9B5B-F093525B1C40}.Release|Win32.ActiveCfg = Release|Win32
+		{979085C2-49AD-4184-9B5B-F093525B1C40}.Release|Win32.Build.0 = Release|Win32
+		{979085C2-49AD-4184-9B5B-F093525B1C40}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -8,6 +8,7 @@
 #include <cstdlib>
 #include <string>
 #include <iostream>
+#include <WinSock2.h>
 #include "chess.h"
 #include "uiserver.h"
 
@@ -35,6 +36,35 @@ public:
 	virtual void WriteLine(const std::string& line);
 
 private:
+    ChessCommandInterface_stdio(const ChessCommandInterface_stdio&);                // disable copy constructor
+    ChessCommandInterface_stdio& operator= (const ChessCommandInterface_stdio&);    // disable assignment
 };
 
+class ChessCommandInterface_tcp : public ChessCommandInterface
+{
+public:
+    explicit ChessCommandInterface_tcp(int _port);
+    virtual ~ChessCommandInterface_tcp();
+    virtual bool ReadLine(std::string& line);
+    virtual void WriteLine(const std::string& line);
 
+private:
+    const int port;
+    bool initialized;
+    bool ready;
+    SOCKET hostSocket;
+    SOCKET clientSocket;
+
+private:
+    ChessCommandInterface_tcp(const ChessCommandInterface_tcp&);                // disable copy constructor
+    ChessCommandInterface_tcp& operator= (const ChessCommandInterface_tcp&);    // disable assignment
+
+    void CloseSocket(SOCKET &sock)
+    {
+        if (sock != INVALID_SOCKET)
+        {
+            ::closesocket(sock);
+            sock = INVALID_SOCKET;
+        }
+    }
+};

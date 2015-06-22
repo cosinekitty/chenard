@@ -24,6 +24,7 @@ int main(int argc, const char *argv[])
 		if (1 == sscanf(argv[2], "%d", &port) && (port > 0) && (port <= 0xffff))
 		{
 			// FIXFIXFIX - create TCP interface and store pointer in 'iface'.
+            iface = new ChessCommandInterface_tcp(port);
 		}
 		else
 		{
