@@ -41,11 +41,15 @@ int main(int argc, const char *argv[])
         ChessBoard board;
         ChessUI_Server ui;
 
-        std::string command;
-        while (iface->ReadLine(command) && (command != "exit"))
+        bool keepRunning = true;
+        while (keepRunning)
         {
-            std::string response = ExecuteCommand(board, ui, command);
-            iface->WriteLine(response);
+            std::string command;
+            if (iface->ReadLine(command))
+            {
+                std::string response = ExecuteCommand(board, ui, command, keepRunning);
+                iface->WriteLine(response);
+            }
         }
 
         delete iface;
@@ -86,8 +90,16 @@ void PrintUsage()
         "\n";
 }
 
-std::string ExecuteCommand(ChessBoard& board, ChessUI& ui, const std::string& command)
+std::string ExecuteCommand(ChessBoard& board, ChessUI& ui, const std::string& command, bool &keepRunning)
 {
+    keepRunning = true;
+
+    if (command == "exit")
+    {
+        keepRunning = false;
+        return "OK";
+    }
+
     if (command == "new")
     {
         // Start a new game.

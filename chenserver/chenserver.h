@@ -13,7 +13,7 @@
 #include "uiserver.h"
 
 void PrintUsage();
-std::string ExecuteCommand(ChessBoard &board, ChessUI &ui, const std::string& command);
+std::string ExecuteCommand(ChessBoard &board, ChessUI &ui, const std::string& command, bool& keepRunning);
 
 /*
     ChessCommandInterface is an abstract class representing
