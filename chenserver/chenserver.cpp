@@ -90,30 +90,89 @@ void PrintUsage()
         "\n";
 }
 
+bool ParseCommand(const std::string& command, std::string& verb, std::vector<std::string>& args)
+{
+    using namespace std;
+
+    verb.clear();
+    args.clear();
+
+    std::string tok;
+    for (auto c : command)
+    {
+        if (isspace(c))
+        {
+            if (tok.length() > 0)
+            {
+                if (verb.length() == 0)
+                {
+                    verb = tok;
+                }
+                else
+                {
+                    args.push_back(tok);
+                }
+                tok.clear();
+            }
+        }
+        else
+        {
+            tok.push_back(c);
+        }
+    }
+
+    if (tok.length() > 0)
+    {
+        if (verb.length() == 0)
+        {
+            verb = tok;
+        }
+        else
+        {
+            args.push_back(tok);
+        }
+    }
+
+    return verb.length() > 0;
+}
+
 std::string ExecuteCommand(ChessBoard& board, ChessUI& ui, const std::string& command, bool &keepRunning)
 {
+    using namespace std;
+
     keepRunning = true;
 
-    if (command == "exit")
+    string verb;
+    vector<string> args;
+    if (ParseCommand(command, verb, args))
     {
-        keepRunning = false;
-        return "OK";
+        if (verb == "exit")
+        {
+            keepRunning = false;
+            return "OK";
+        }
+
+        if (verb == "move")
+        {
+            return MakeMoves(board, args);
+        }
+
+        if (command == "status")
+        {
+            return GameStatus(board);
+        }
+
+        if (command == "new")
+        {
+            // Start a new game.
+            board.Init();
+            return "OK";
+        }
+
+        return "UNKNOWN_COMMAND";
     }
 
-    if (command == "status")
-    {
-        return GameStatus(board);
-    }
-
-    if (command == "new")
-    {
-        // Start a new game.
-        board.Init();
-        return "OK";
-    }
-
-    // Unknown command.
-    return "?";
+    return "CANNOT_PARSE";
 }
 
 std::string GameStatus(ChessBoard& board)
@@ -144,6 +203,52 @@ std::string GameStatus(ChessBoard& board)
         text += "FEN_ERROR";     // this should never happen!
     }
     return text;
+}
+
+std::string MakeMoves(ChessBoard& board, const std::vector<std::string>& moveTokenList)
+{
+    using namespace std;
+
+    // If there are any illegal moves in the list, we roll back any moves we made before that.
+    // Therefore, we need to store a list of all (move, unmove) pairs we do make.
+    struct MoveState
+    {
+        Move move;
+        UnmoveInfo unmove;
+
+        MoveState(const Move& _move, const UnmoveInfo& _unmove)
+            : move(_move)
+            , unmove(_unmove)
+            {}
+    };
+    vector<MoveState> stateList;
+
+    for (const string& mtoken : moveTokenList)
+    {
+        Move move;
+        if (ParseFancyMove(mtoken.c_str(), board, move))
+        {
+            UnmoveInfo unmove;
+            board.MakeMove(move, unmove);
+            stateList.push_back(MoveState(move, unmove));
+        }
+        else
+        {            
+            // Illegal or malformed move text.
+            // Roll back all the moves we made before finding this invalid move text.
+            while (stateList.size() > 0)
+            {
+                MoveState s = stateList.back();
+                board.UnmakeMove(s.move, s.unmove);
+                stateList.pop_back();
+            }
+
+            // Report back the problem.
+            return "BAD_MOVE " + mtoken;
+        }
+    }
+
+    return "OK " + to_string(stateList.size());     // return "OK " followed by number of moves we made
 }
 
 #if 0

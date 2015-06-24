@@ -7,6 +7,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <string>
+#include <vector>
 #include <iostream>
 #include <WinSock2.h>
 #include "chess.h"
@@ -15,6 +16,7 @@
 void PrintUsage();
 std::string ExecuteCommand(ChessBoard& board, ChessUI& ui, const std::string& command, bool& keepRunning);
 std::string GameStatus(ChessBoard& board);      // Forsyth Edwards Notation
+std::string MakeMoves(ChessBoard& board, const std::vector<std::string>& moveTokenList);
 //char SquareCharacter(SQUARE);
 
 /*
