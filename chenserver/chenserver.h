@@ -13,7 +13,9 @@
 #include "uiserver.h"
 
 void PrintUsage();
-std::string ExecuteCommand(ChessBoard &board, ChessUI &ui, const std::string& command, bool& keepRunning);
+std::string ExecuteCommand(ChessBoard& board, ChessUI& ui, const std::string& command, bool& keepRunning);
+std::string GameStatus(ChessBoard& board);      // Forsyth Edwards Notation
+//char SquareCharacter(SQUARE);
 
 /*
     ChessCommandInterface is an abstract class representing

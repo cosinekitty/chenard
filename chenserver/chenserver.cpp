@@ -100,6 +100,11 @@ std::string ExecuteCommand(ChessBoard& board, ChessUI& ui, const std::string& co
         return "OK";
     }
 
+    if (command == "status")
+    {
+        return GameStatus(board);
+    }
+
     if (command == "new")
     {
         // Start a new game.
@@ -110,3 +115,59 @@ std::string ExecuteCommand(ChessBoard& board, ChessUI& ui, const std::string& co
     // Unknown command.
     return "?";
 }
+
+std::string GameStatus(ChessBoard& board)
+{
+    const char *result = "*";       // assume the game is not over yet, unless we find otherwise.
+    if (board.GameIsOver())
+    {
+        if (board.CurrentPlayerInCheck())
+        {
+            result = board.WhiteToMove() ? "0-1" : "1-0";     // Whoever has the move just lost.
+        }
+        else
+        {
+            result = "1/2-1/2";
+        }
+    }
+
+    std::string text = result;
+    text.push_back(' ');
+
+    char buffer[200];
+    if (nullptr != board.GetForsythEdwardsNotation(buffer, sizeof(buffer)))
+    {
+        text += buffer;
+    }
+    else
+    {
+        text += "FEN_ERROR";     // this should never happen!
+    }
+    return text;
+}
+
+#if 0
+char SquareCharacter(SQUARE square)
+{
+    switch (square)
+    {
+    case EMPTY:     return '.';
+
+    case WPAWN:     return 'P';
+    case WKNIGHT:   return 'N';
+    case WBISHOP:   return 'B';
+    case WROOK:     return 'R';
+    case WQUEEN:    return 'Q';
+    case WKING:     return 'K';
+
+    case BPAWN:     return 'p';
+    case BKNIGHT:   return 'n';
+    case BBISHOP:   return 'b';
+    case BROOK:     return 'r';
+    case BQUEEN:    return 'q';
+    case BKING:     return 'k';
+
+    default:        return '?';
+    }
+}
+#endif
