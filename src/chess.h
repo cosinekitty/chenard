@@ -392,8 +392,9 @@ struct UnmoveInfo
     UINT32    cachedHash;
 };
 
-
-#define  MAX_MOVES  200        // maximum number of moves in a MoveList
+// http://www.stmintz.com/ccc/index.php?id=424966
+// http://www.chess.com/forum/view/fun-with-chess/what-chess-position-has-the-most-number-of-possible-moves
+#define  MAX_MOVES  220        // maximum number of moves in a MoveList
 
 struct MoveList
 {
