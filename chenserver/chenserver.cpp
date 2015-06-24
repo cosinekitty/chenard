@@ -152,6 +152,11 @@ std::string ExecuteCommand(ChessBoard& board, ChessUI& ui, const std::string& co
             return "OK";
         }
 
+        if (verb == "legal")
+        {
+            return LegalMoveList(board);
+        }
+
         if (verb == "move")
         {
             return MakeMoves(board, args);
@@ -251,7 +256,38 @@ std::string MakeMoves(ChessBoard& board, const std::vector<std::string>& moveTok
     return "OK " + to_string(stateList.size());     // return "OK " followed by number of moves we made
 }
 
-#if 0
+void FormatLongMove(bool whiteToMove, Move move, char notation[6])     // max: "e7e8q\0" is 6 characters
+{
+    int source;
+    int dest;
+    SQUARE prom = move.actualOffsets(whiteToMove, source, dest);
+    notation[0] = 'a' + (XPART(source) - 2);
+    notation[1] = '1' + (YPART(source) - 2);
+    notation[2] = 'a' + (XPART(dest) - 2);
+    notation[3] = '1' + (YPART(dest) - 2);
+    notation[4] = (prom == EMPTY) ? '\0' : tolower(SquareCharacter(prom));
+    notation[5] = '\0';
+}
+
+std::string LegalMoveList(ChessBoard& board)
+{
+    using namespace std;
+
+    MoveList ml;
+    int numMoves = board.GenMoves(ml);
+    string text = to_string(numMoves);
+    bool whiteToMove = board.WhiteToMove();
+    for (int i = 0; i < numMoves; ++i)
+    {
+        char notation[6];
+        FormatLongMove(whiteToMove, ml.m[i], notation);
+        text.push_back(' ');
+        text += notation;
+    }
+    return text;
+}
+
+
 char SquareCharacter(SQUARE square)
 {
     switch (square)
@@ -275,4 +311,3 @@ char SquareCharacter(SQUARE square)
     default:        return '?';
     }
 }
-#endif

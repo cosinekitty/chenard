@@ -17,7 +17,8 @@ void PrintUsage();
 std::string ExecuteCommand(ChessBoard& board, ChessUI& ui, const std::string& command, bool& keepRunning);
 std::string GameStatus(ChessBoard& board);      // Forsyth Edwards Notation
 std::string MakeMoves(ChessBoard& board, const std::vector<std::string>& moveTokenList);
-//char SquareCharacter(SQUARE);
+std::string LegalMoveList(ChessBoard& board);
+char SquareCharacter(SQUARE);
 
 /*
     ChessCommandInterface is an abstract class representing
