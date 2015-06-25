@@ -18,7 +18,12 @@ std::string ExecuteCommand(ChessBoard& board, ChessUI& ui, const std::string& co
 std::string GameStatus(ChessBoard& board);      // Forsyth Edwards Notation
 std::string MakeMoves(ChessBoard& board, const std::vector<std::string>& moveTokenList);
 std::string LegalMoveList(ChessBoard& board);
+std::string TestLegality(ChessBoard& board, const std::string& notation);
 char SquareCharacter(SQUARE);
+
+const size_t LONGMOVE_MAX_CHARS = 6;        // max: "e7e8q\0" is 6 characters
+bool FormatLongMove(bool whiteToMove, Move move, char notation[LONGMOVE_MAX_CHARS]);
+
 
 /*
     ChessCommandInterface is an abstract class representing
@@ -28,7 +33,7 @@ class ChessCommandInterface
 {
 public:
     virtual ~ChessCommandInterface() {}
-    virtual bool ReadLine(std::string& line) = 0;
+    virtual bool ReadLine(std::string& line, bool& keepRunning) = 0;
     virtual void WriteLine(const std::string& line) = 0;
 };
 
@@ -37,7 +42,7 @@ class ChessCommandInterface_stdio : public ChessCommandInterface
 public:
     ChessCommandInterface_stdio();
     virtual ~ChessCommandInterface_stdio();
-    virtual bool ReadLine(std::string& line);
+    virtual bool ReadLine(std::string& line, bool& keepRunning);
     virtual void WriteLine(const std::string& line);
 
 private:
@@ -50,7 +55,7 @@ class ChessCommandInterface_tcp : public ChessCommandInterface
 public:
     explicit ChessCommandInterface_tcp(int _port);
     virtual ~ChessCommandInterface_tcp();
-    virtual bool ReadLine(std::string& line);
+    virtual bool ReadLine(std::string& line, bool& keepRunning);
     virtual void WriteLine(const std::string& line);
 
 private:

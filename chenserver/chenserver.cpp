@@ -45,7 +45,7 @@ int main(int argc, const char *argv[])
         while (keepRunning)
         {
             std::string command;
-            if (iface->ReadLine(command))
+            if (iface->ReadLine(command, keepRunning) && keepRunning)
             {
                 std::string response = ExecuteCommand(board, ui, command, keepRunning);
                 iface->WriteLine(response);
@@ -167,6 +167,16 @@ std::string ExecuteCommand(ChessBoard& board, ChessUI& ui, const std::string& co
             return GameStatus(board);
         }
 
+        if (verb == "test")
+        {
+            // Test a single move for legality.
+            if (args.size() != 1)
+            {
+                return "BAD_ARGS";
+            }
+            return TestLegality(board, args[0]);
+        }
+
         if (command == "new")
         {
             // Start a new game.
@@ -208,6 +218,34 @@ std::string GameStatus(ChessBoard& board)
         text += "FEN_ERROR";     // this should never happen!
     }
     return text;
+}
+
+std::string TestLegality(ChessBoard& board, const std::string& notation)
+{
+    Move move;
+    if (ParseFancyMove(notation.c_str(), board, move))
+    {
+        if (board.isLegal(move))
+        {
+            char pgn[MAX_MOVE_STRLEN + 1];
+            FormatChessMove(board, move, pgn);
+
+            char longmove[LONGMOVE_MAX_CHARS];
+            if (!FormatLongMove(board.WhiteToMove(), move, longmove))
+            {
+                return "FORMAT_INTERNAL_ERROR";
+            }
+
+            return std::string("OK ") + longmove + " " + pgn;
+        }
+        else
+        {
+            // This should never happen because ParseFancyMove() has been updated to
+            // return false if the move is illegal, even if it is well-formed notation.
+            return "PARSE_INTERNAL_ERROR";
+        }
+    }
+    return "ILLEGAL";
 }
 
 std::string MakeMoves(ChessBoard& board, const std::vector<std::string>& moveTokenList)
@@ -256,17 +294,28 @@ std::string MakeMoves(ChessBoard& board, const std::vector<std::string>& moveTok
     return "OK " + to_string(stateList.size());     // return "OK " followed by number of moves we made
 }
 
-void FormatLongMove(bool whiteToMove, Move move, char notation[6])     // max: "e7e8q\0" is 6 characters
+bool FormatLongMove(bool whiteToMove, Move move, char notation[LONGMOVE_MAX_CHARS])
 {
     int source;
     int dest;
     SQUARE prom = move.actualOffsets(whiteToMove, source, dest);
-    notation[0] = 'a' + (XPART(source) - 2);
-    notation[1] = '1' + (YPART(source) - 2);
-    notation[2] = 'a' + (XPART(dest) - 2);
-    notation[3] = '1' + (YPART(dest) - 2);
-    notation[4] = (prom == EMPTY) ? '\0' : tolower(SquareCharacter(prom));
-    notation[5] = '\0';
+    char pchar = (prom == EMPTY) ? '\0' : tolower(SquareCharacter(prom));
+    if (pchar == '?' || source < OFFSET(2, 2) || source > OFFSET(9, 9) || dest < OFFSET(2, 2) || dest > OFFSET(9, 9))
+    {
+        // Something is wrong with this move!
+        notation[0] = '\0';
+        return false;
+    }
+    else
+    {
+        notation[0] = 'a' + (XPART(source) - 2);
+        notation[1] = '1' + (YPART(source) - 2);
+        notation[2] = 'a' + (XPART(dest) - 2);
+        notation[3] = '1' + (YPART(dest) - 2);
+        notation[4] = pchar;
+        notation[5] = '\0';
+        return true;
+    }
 }
 
 std::string LegalMoveList(ChessBoard& board)
@@ -280,7 +329,10 @@ std::string LegalMoveList(ChessBoard& board)
     for (int i = 0; i < numMoves; ++i)
     {
         char notation[6];
-        FormatLongMove(whiteToMove, ml.m[i], notation);
+        if (!FormatLongMove(whiteToMove, ml.m[i], notation))
+        {
+            return "INTERNAL_ERROR";    // should never happen!
+        }
         text.push_back(' ');
         text += notation;
     }

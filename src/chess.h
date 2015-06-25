@@ -1534,24 +1534,35 @@ void GetGameListing (
     unsigned maxListingLength );
 
 
-bool ParseFancyMove (
-    const char  *fancyMoveNotation,
+bool ParseMove (
+    const char  *notation,
     ChessBoard  &board,
     int         &source,
     int         &dest,
     SQUARE      &promIndex,
-    Move        &move         // redundant with (source,dest,promIndex), but may be more immediately useful
+    Move        &move
 );
 
 inline bool ParseFancyMove (
-    const char  *fancyMoveNotation,
+    const char  *notation,
     ChessBoard  &board,
     Move        &move )
 {
-    int     source;         // discarded
-    int     dest;           // discarded
-    SQUARE  promIndex;      // discarded
-    return ParseFancyMove (fancyMoveNotation, board, source, dest, promIndex, move);
+    int     ignoredSource;
+    int     ignoredDest;
+    SQUARE  ignoredPromIndex;
+    return ParseMove(notation, board, ignoredSource, ignoredDest, ignoredPromIndex, move);
+}
+
+inline bool ParseFancyMove(
+    const char *notation,
+    ChessBoard &board,
+    int        &source,
+    int        &dest,
+    SQUARE     &promIndex)
+{
+    Move ignoredMove;
+    return ParseMove(notation, board, source, dest, promIndex, ignoredMove);
 }
 
 extern int Learn_Output;

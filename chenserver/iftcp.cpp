@@ -79,9 +79,10 @@ ChessCommandInterface_tcp::~ChessCommandInterface_tcp()
 }
 
 
-bool ChessCommandInterface_tcp::ReadLine(std::string& line)
+bool ChessCommandInterface_tcp::ReadLine(std::string& line, bool& keepRunning)
 {
     line.clear();
+    keepRunning = true;
 
     CloseSocket(clientSocket);
 

@@ -14,10 +14,11 @@ ChessCommandInterface_stdio::~ChessCommandInterface_stdio()
 }
 
 
-bool ChessCommandInterface_stdio::ReadLine(std::string& line)
+bool ChessCommandInterface_stdio::ReadLine(std::string& line, bool& keepRunning)
 {
     line.clear();
-    return !!std::getline(std::cin, line);
+    keepRunning = !!std::getline(std::cin, line);       // stop running when we hit EOF
+    return keepRunning;
 }
 
 

@@ -110,7 +110,6 @@
     <ClCompile Include="..\src\search.cpp" />
     <ClCompile Include="..\src\transpos.cpp" />
     <ClCompile Include="..\src\ui.cpp" />
-    <ClCompile Include="..\src\undopath.cpp" />
     <ClCompile Include="..\src\unmove.cpp" />
     <ClCompile Include="..\src\wintime.cpp" />
     <ClCompile Include="chenserver.cpp" />

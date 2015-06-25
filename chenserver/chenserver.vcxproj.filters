@@ -111,9 +111,6 @@
     <ClCompile Include="..\src\ui.cpp">
       <Filter>Source Files\engine</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\undopath.cpp">
-      <Filter>Source Files\engine</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\unmove.cpp">
       <Filter>Source Files\engine</Filter>
     </ClCompile>
