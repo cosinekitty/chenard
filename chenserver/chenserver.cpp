@@ -38,7 +38,7 @@ int main(int argc, const char *argv[])
 
     if (iface != nullptr)
     {
-        ChessBoard board;
+        ChessGameState game;
         ChessUI_Server ui;
 
         bool keepRunning = true;
@@ -47,7 +47,7 @@ int main(int argc, const char *argv[])
             std::string command;
             if (iface->ReadLine(command, keepRunning) && keepRunning)
             {
-                std::string response = ExecuteCommand(board, ui, command, keepRunning);
+                std::string response = ExecuteCommand(game, ui, command, keepRunning);
                 iface->WriteLine(response);
             }
         }
@@ -136,9 +136,11 @@ bool ParseCommand(const std::string& command, std::string& verb, std::vector<std
     return verb.length() > 0;
 }
 
-std::string ExecuteCommand(ChessBoard& board, ChessUI& ui, const std::string& command, bool &keepRunning)
+std::string ExecuteCommand(ChessGameState& game, ChessUI& ui, const std::string& command, bool &keepRunning)
 {
     using namespace std;
+
+    static const char BAD_ARGS[] = "BAD_ARGS";
 
     keepRunning = true;
 
@@ -154,24 +156,24 @@ std::string ExecuteCommand(ChessBoard& board, ChessUI& ui, const std::string& co
 
         if (verb == "legal")
         {
-            return LegalMoveList(board);
+            return LegalMoveList(game);
         }
 
         if (verb == "move")
         {
-            return MakeMoves(board, args);
+            return MakeMoves(game, args);
         }
 
         if (verb == "new")
         {
             // Start a new game.
-            board.Init();
+            game.Reset();
             return "OK";
         }
 
         if (verb == "status")
         {
-            return GameStatus(board);
+            return GameStatus(game);
         }
 
         if (verb == "test")
@@ -179,9 +181,18 @@ std::string ExecuteCommand(ChessBoard& board, ChessUI& ui, const std::string& co
             // Test a single move for legality.
             if (args.size() != 1)
             {
-                return "BAD_ARGS";
+                return BAD_ARGS;
             }
-            return TestLegality(board, args[0]);
+            return TestLegality(game, args[0]);
+        }
+
+        if (verb == "think")
+        {
+            if (args.size() != 1)
+            {
+                return BAD_ARGS;
+            }
+            return Think(game, atoi(args[0].c_str()));
         }
 
         return "UNKNOWN_COMMAND";
@@ -190,100 +201,46 @@ std::string ExecuteCommand(ChessBoard& board, ChessUI& ui, const std::string& co
     return "CANNOT_PARSE";
 }
 
-std::string GameStatus(ChessBoard& board)
+std::string GameStatus(ChessGameState& game)
 {
-    const char *result = "*";       // assume the game is not over yet, unless we find otherwise.
-    if (board.GameIsOver())
-    {
-        if (board.CurrentPlayerInCheck())
-        {
-            result = board.WhiteToMove() ? "0-1" : "1-0";     // Whoever has the move just lost.
-        }
-        else
-        {
-            result = "1/2-1/2";
-        }
-    }
-
-    std::string text = result;
+    std::string text = game.GameResult();
     text.push_back(' ');
-
-    char buffer[200];
-    if (nullptr != board.GetForsythEdwardsNotation(buffer, sizeof(buffer)))
-    {
-        text += buffer;
-    }
-    else
-    {
-        text += "FEN_ERROR";     // this should never happen!
-    }
+    text += game.GetForsythEdwardsNotation();
     return text;
 }
 
-std::string TestLegality(ChessBoard& board, const std::string& notation)
+std::string TestLegality(ChessGameState& game, const std::string& notation)
 {
     Move move;
-    if (ParseFancyMove(notation.c_str(), board, move))
+    if (game.ParseMove(notation, move))
     {
-        if (board.isLegal(move))
-        {
-            char pgn[MAX_MOVE_STRLEN + 1];
-            FormatChessMove(board, move, pgn);
-
-            char longmove[LONGMOVE_MAX_CHARS];
-            if (!FormatLongMove(board.WhiteToMove(), move, longmove))
-            {
-                return "FORMAT_INTERNAL_ERROR";
-            }
-
-            return std::string("OK ") + longmove + " " + pgn;
-        }
-        else
-        {
-            // This should never happen because ParseFancyMove() has been updated to
-            // return false if the move is illegal, even if it is well-formed notation.
-            return "PARSE_INTERNAL_ERROR";
-        }
+        return std::string("OK ") + game.FormatLongMove(move) + " " + game.FormatPgn(move);
     }
     return "ILLEGAL";
 }
 
-std::string MakeMoves(ChessBoard& board, const std::vector<std::string>& moveTokenList)
+std::string MakeMoves(ChessGameState& game, const std::vector<std::string>& moveTokenList)
 {
     using namespace std;
 
-    // If there are any illegal moves in the list, we roll back any moves we made before that.
-    // Therefore, we need to store a list of all (move, unmove) pairs we do make.
-    struct MoveState
-    {
-        Move move;
-        UnmoveInfo unmove;
-
-        MoveState(const Move& _move, const UnmoveInfo& _unmove)
-            : move(_move)
-            , unmove(_unmove)
-            {}
-    };
-    vector<MoveState> stateList;
+    int numPushedMoves = 0;
 
     for (const string& mtoken : moveTokenList)
     {
         Move move;
-        if (ParseFancyMove(mtoken.c_str(), board, move))
+        if (game.ParseMove(mtoken, move))
         {
-            UnmoveInfo unmove;
-            board.MakeMove(move, unmove);
-            stateList.push_back(MoveState(move, unmove));
+            game.PushMove(move);
+            ++numPushedMoves;
         }
         else
         {            
             // Illegal or malformed move text.
             // Roll back all the moves we made before finding this invalid move text.
-            while (stateList.size() > 0)
+            while (numPushedMoves > 0)
             {
-                MoveState s = stateList.back();
-                board.UnmakeMove(s.move, s.unmove);
-                stateList.pop_back();
+                game.PopMove();
+                --numPushedMoves;
             }
 
             // Report back the problem.
@@ -291,7 +248,18 @@ std::string MakeMoves(ChessBoard& board, const std::vector<std::string>& moveTok
         }
     }
 
-    return "OK " + to_string(stateList.size());     // return "OK " followed by number of moves we made
+    return "OK " + to_string(numPushedMoves);     // return "OK " followed by number of moves we made
+}
+
+std::string Think(ChessGameState& game, int thinkTimeMillis)
+{
+    const int MAX_THINK_MINUTES = 5;        // adjust as needed
+    const int MAX_THINK_MILLIS = 1000 * 60 * MAX_THINK_MINUTES;
+    if ((thinkTimeMillis > 0) && (thinkTimeMillis <= MAX_THINK_MILLIS))
+    {
+
+    }
+    return "BAD_THINK_TIME";
 }
 
 bool FormatLongMove(bool whiteToMove, Move move, char notation[LONGMOVE_MAX_CHARS])
@@ -318,23 +286,15 @@ bool FormatLongMove(bool whiteToMove, Move move, char notation[LONGMOVE_MAX_CHAR
     }
 }
 
-std::string LegalMoveList(ChessBoard& board)
+std::string LegalMoveList(ChessGameState& game)
 {
-    using namespace std;
-
     MoveList ml;
-    int numMoves = board.GenMoves(ml);
-    string text = to_string(numMoves);
-    bool whiteToMove = board.WhiteToMove();
+    int numMoves = game.GenMoves(ml);
+    std::string text = std::to_string(numMoves);
     for (int i = 0; i < numMoves; ++i)
     {
-        char notation[6];
-        if (!FormatLongMove(whiteToMove, ml.m[i], notation))
-        {
-            return "INTERNAL_ERROR";    // should never happen!
-        }
         text.push_back(' ');
-        text += notation;
+        text += game.FormatLongMove(ml.m[i]);
     }
     return text;
 }

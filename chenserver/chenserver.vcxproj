@@ -113,6 +113,7 @@
     <ClCompile Include="..\src\unmove.cpp" />
     <ClCompile Include="..\src\wintime.cpp" />
     <ClCompile Include="chenserver.cpp" />
+    <ClCompile Include="gamestate.cpp" />
     <ClCompile Include="ifstdio.cpp" />
     <ClCompile Include="iftcp.cpp" />
     <ClCompile Include="uiserver.cpp" />

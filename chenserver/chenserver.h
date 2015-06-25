@@ -4,6 +4,7 @@
     Main header file for server version of Chenard chess engine.
 */
 
+#include <assert.h>
 #include <cstdio>
 #include <cstdlib>
 #include <string>
@@ -13,17 +14,55 @@
 #include "chess.h"
 #include "uiserver.h"
 
+class ChessGameState;
+
 void PrintUsage();
-std::string ExecuteCommand(ChessBoard& board, ChessUI& ui, const std::string& command, bool& keepRunning);
-std::string GameStatus(ChessBoard& board);      // Forsyth Edwards Notation
-std::string MakeMoves(ChessBoard& board, const std::vector<std::string>& moveTokenList);
-std::string LegalMoveList(ChessBoard& board);
-std::string TestLegality(ChessBoard& board, const std::string& notation);
-char SquareCharacter(SQUARE);
+std::string ExecuteCommand(ChessGameState& game, ChessUI& ui, const std::string& command, bool& keepRunning);
+std::string GameStatus(ChessGameState& game);      // Forsyth Edwards Notation
+std::string MakeMoves(ChessGameState& game, const std::vector<std::string>& moveTokenList);
+std::string LegalMoveList(ChessGameState& game);
+std::string TestLegality(ChessGameState& game, const std::string& notation);
+std::string Think(ChessGameState& game, int thinkTimeMillis);
 
 const size_t LONGMOVE_MAX_CHARS = 6;        // max: "e7e8q\0" is 6 characters
 bool FormatLongMove(bool whiteToMove, Move move, char notation[LONGMOVE_MAX_CHARS]);
+char SquareCharacter(SQUARE);
 
+class ChessGameState
+{
+private:
+    struct MoveState
+    {
+        Move move;
+        UnmoveInfo unmove;
+
+        MoveState(const Move& _move, const UnmoveInfo& _unmove)
+            : move(_move)
+            , unmove(_unmove)
+        {}
+    };
+
+    ChessBoard board;
+    std::vector<MoveState> moveStack;
+
+public:
+    ChessGameState() {}
+
+    void Reset();
+    const char *GameResult();
+    std::string GetForsythEdwardsNotation();
+    std::string FormatLongMove(Move move);
+    std::string FormatPgn(Move move);       // caller must pass only verified legal moves
+    bool ParseMove(const std::string& notation, Move& move);    // returns true only if notation represents legal move
+    int NumMoves() const { return static_cast<int>(moveStack.size()); }
+    void PushMove(Move move);   // caller must pass only verified legal moves
+    void PopMove();
+    int GenMoves(MoveList& ml) { return board.GenMoves(ml); }
+
+private:
+    ChessGameState(const ChessGameState&);              // disable copy constructor
+    ChessGameState& operator=(const ChessGameState&);   // disable assignment operator
+};
 
 /*
     ChessCommandInterface is an abstract class representing
