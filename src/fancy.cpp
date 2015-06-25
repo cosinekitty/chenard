@@ -34,153 +34,149 @@ bool ParseMove(
     SQUARE      &promIndex,
     Move        &move)         // redundant with (source,dest,promIndex), but may be more immediately useful
 {
-    if (string == NULL) 
+    if (string != NULL) 
     {
-        goto bad_move_notation;
-    }
+        MoveList ml;
+        int numMatchingMoves = 0;
 
-    MoveList ml;
-    int numMatchingMoves = 0;
+        if (string[0] >= 'a' && string[0] <= 'h' &&
+            string[1] >= '1' && string[1] <= '8' &&
+            string[2] >= 'a' && string[2] <= 'h' &&
+            string[3] >= '1' && string[3] <= '8' &&
+            (string[4] == '\0' || string[5] == '\0'))
+        {
+            source = OFFSET(string[0] - 'a' + 2, string[1] - '1' + 2);
+            dest = OFFSET(string[2] - 'a' + 2, string[3] - '1' + 2);
 
-    if (string[0] >= 'a' && string[0] <= 'h' &&
-        string[1] >= '1' && string[1] <= '8' &&
-        string[2] >= 'a' && string[2] <= 'h' &&
-        string[3] >= '1' && string[3] <= '8' &&
-        (string[4] == '\0' || string[5] == '\0'))
-    {
-        source = OFFSET(string[0] - 'a' + 2, string[1] - '1' + 2);
-        dest = OFFSET(string[2] - 'a' + 2, string[3] - '1' + 2);
+            switch (string[4]) {
+            case '\0':
+                promIndex = P_INDEX;    // numerically 0
+                break;
 
-        switch (string[4]) {
-        case '\0':
-            promIndex = P_INDEX;    // numerically 0
-            break;
+            case 'q':
+                promIndex = Q_INDEX;
+                break;
 
-        case 'q':
-            promIndex = Q_INDEX;
-            break;
+            case 'r':
+                promIndex = R_INDEX;
+                break;
 
-        case 'r':
-            promIndex = R_INDEX;
-            break;
+            case 'b':
+                promIndex = B_INDEX;
+                break;
 
-        case 'b':
-            promIndex = B_INDEX;
-            break;
+            case 'n':
+                promIndex = N_INDEX;
+                break;
 
-        case 'n':
-            promIndex = N_INDEX;
-            break;
+            default:
+                goto bad_move_notation;     // cannot possibly be a valid PGN formatted move, so give up
+            }
 
-        default:
-            goto bad_move_notation;     // cannot possibly be a valid PGN formatted move, so give up
+            // Generate all legal moves from this position and see if we can find the same
+            // source/destination pair and pawn promotion.  If exactly one move matches,
+            // we have found a legal move.
+            board.GenMoves(ml);
+            for (int i = 0; i < ml.num; ++i)
+            {
+                int mSource;
+                int mDest;
+                SQUARE mProm = ml.m[i].actualOffsets(board, mSource, mDest);
+                SQUARE mPromIndex = UPIECE_INDEX(mProm);
+                if ((source == mSource) && (dest == mDest) && (promIndex == mPromIndex))
+                {
+                    if (++numMatchingMoves != 1)
+                    {
+                        ChessFatal("Longmove ambiguity in move parser.");
+                        goto bad_move_notation;     // on some platforms we might not exit immediately from ChessFatal().
+                    }
+                    move = ml.m[i];
+                }
+            }
+
+            if (numMatchingMoves != 1)
+            {
+                goto bad_move_notation;
+            }
+
+            return true;
         }
 
-        // Generate all legal moves from this position and see if we can find the same
-        // source/destination pair and pawn promotion.  If exactly one move matches,
-        // we have found a legal move.
-        board.GenMoves(ml);
-        for (int i = 0; i < ml.num; ++i)
+        size_t  stringLength = strlen(string);
+        if (stringLength < 2 || stringLength > 7) 
         {
-            int mSource;
-            int mDest;
-            SQUARE mProm = ml.m[i].actualOffsets(board, mSource, mDest);
-            SQUARE mPromIndex = UPIECE_INDEX(mProm);
-            if ((source == mSource) && (dest == mDest) && (promIndex == mPromIndex))
+            goto bad_move_notation;   // the length of this string is incompatible with any possible PGN formatted move!
+        }
+
+        // http://www.very-best.de/pgn-spec.htm  Section 8.2.3 includes the following:
+        //
+        //    "Neither the appearance nor the absence of either a check or checkmating indicator 
+        //     is used for disambiguation purposes. This means that if two (or more) pieces of the 
+        //     same type can move to the same square the differences in checking status of the moves 
+        //     does not allieviate the need for the standard rank and file disabiguation described above."
+        //
+        // To be a little bit on the tolerant side, we will match moves whether or not 'string' has a '+' or '#' on the end,
+        // since this cannot possibly lead to ambiguity in move notation.
+        // To implement this parser tolerance, we will strip off '+' or '#' whenever it appears on either
+        // the input value 'string', or in the generated local variable 'pgn'.
+
+        char copy[8];              // we just checked length of 'string', so...
+        strcpy(copy, string);      // ... this is perfectly safe!
+        switch (copy[stringLength - 1]) 
+        {
+        case '+':
+        case '#':
+            copy[stringLength - 1] = '\0';
+            break;
+        }
+
+        char pgn[MAX_MOVE_STRLEN + 1];
+
+        board.GenMoves(ml);
+        for (int i = 0; i < ml.num; ++i) 
+        {
+            // Convert move to PGN...
+            FormatChessMove(board, ml, ml.m[i], pgn);
+            // We assume the PGN generator (FormatChessMove) is working correctly,
+            // meaning that it will not generate the same PGN notation for two distinct chess moves.
+
+            size_t pgnLength = strlen(pgn);
+            if (pgnLength >= 2 && pgnLength <= 7) 
             {
-                if (++numMatchingMoves != 1)
+                switch (pgn[pgnLength - 1]) 
                 {
-                    ChessFatal("Longmove ambiguity in move parser.");
+                case '+':
+                case '#':
+                    pgn[pgnLength - 1] = '\0';
+                    break;
+                }
+            }
+            else 
+            {
+                ChessFatal("Invalid PGN length in move parser.");
+                goto bad_move_notation;     // on some platforms we might not exit immediately from ChessFatal().
+            }
+
+            if (0 == strcmp(copy, pgn)) 
+            {
+                SQUARE piece = ml.m[i].actualOffsets(board, source, dest);
+
+                if (++numMatchingMoves != 1) 
+                {
+                    ChessFatal("PGN ambiguity in move parser.");
                     goto bad_move_notation;     // on some platforms we might not exit immediately from ChessFatal().
                 }
+
+                promIndex = UPIECE_INDEX(piece);
                 move = ml.m[i];
             }
         }
 
-        if (numMatchingMoves != 1)
+        if (numMatchingMoves == 1) 
         {
-            goto bad_move_notation;
+            return true;
         }
-
-        return true;
-    }
-
-    size_t  stringLength = strlen(string);
-    if (stringLength < 2 || stringLength > 7) 
-    {
-        goto bad_move_notation;   // the length of this string is incompatible with any possible PGN formatted move!
-    }
-
-    // http://www.very-best.de/pgn-spec.htm  Section 8.2.3 includes the following:
-    //
-    //    "Neither the appearance nor the absence of either a check or checkmating indicator 
-    //     is used for disambiguation purposes. This means that if two (or more) pieces of the 
-    //     same type can move to the same square the differences in checking status of the moves 
-    //     does not allieviate the need for the standard rank and file disabiguation described above."
-    //
-    // To be a little bit on the tolerant side, we will match moves whether or not 'string' has a '+' or '#' on the end,
-    // since this cannot possibly lead to ambiguity in move notation.
-    // To implement this parser tolerance, we will strip off '+' or '#' whenever it appears on either
-    // the input value 'string', or in the generated local variable 'pgn'.
-
-    char copy[8];              // we just checked length of 'string', so...
-    strcpy(copy, string);      // ... this is perfectly safe!
-    switch (copy[stringLength - 1]) 
-    {
-    case '+':
-    case '#':
-        copy[stringLength - 1] = '\0';
-        break;
-    }
-
-    char pgn[MAX_MOVE_STRLEN + 1];
-
-    board.GenMoves(ml);
-    for (int i = 0; i < ml.num; ++i) 
-    {
-        // Convert move to PGN...
-        FormatChessMove(board, ml, ml.m[i], pgn);
-        // We assume the PGN generator (FormatChessMove) is working correctly,
-        // meaning that it will not generate the same PGN notation for two distinct chess moves.
-
-        size_t pgnLength = strlen(pgn);
-        if (pgnLength >= 2 && pgnLength <= 7) 
-        {
-            switch (pgn[pgnLength - 1]) 
-            {
-            case '+':
-            case '#':
-                pgn[pgnLength - 1] = '\0';
-                break;
-            }
-        }
-        else 
-        {
-            ChessFatal("Invalid PGN length in move parser.");
-            goto bad_move_notation;     // on some platforms we might not exit immediately from ChessFatal().
-        }
-
-        if (0 == strcmp(copy, pgn)) 
-        {
-            SQUARE piece = ml.m[i].actualOffsets(board, source, dest);
-
-            if (++numMatchingMoves != 1) 
-            {
-                ChessFatal("PGN ambiguity in move parser.");
-                goto bad_move_notation;     // on some platforms we might not exit immediately from ChessFatal().
-            }
-
-            promIndex = UPIECE_INDEX(piece);
-            move = ml.m[i];
-        }
-    }
-
-    if (numMatchingMoves == 1) 
-    {
-        return true;
-    }
-    else 
-    {
+        
         // I have seen cases where a PGN file generated by other software
         // will have a move like "Ngf3", even though "Nf3" was unambiguous.
         // Let's try to hack around that here by checking for that case and using recursion.
@@ -208,21 +204,21 @@ bool ParseMove(
                 }
             }
         }
-
-    bad_move_notation:
-        // Getting here means the move notation is invalid, malformed, or illegal.
-        // Clear all output parameters and return false.
-        // If the caller is ill-behaved and ignores the return value, 
-        // at least give them output parameters that don't match any legal move.
-        // This is especially important when numMatchingMoves > 1,
-        // because we have already set the output parameters to the most recent matching move
-        // (assuming ChessFatal has not yet ended execution: it can behave differently on different platforms).
-        source = 0;
-        dest = 0;
-        promIndex = 0;
-        memset(&move, 0, sizeof(Move));
-        return false;
     }
+
+bad_move_notation:
+    // Getting here means the move notation is invalid, malformed, or illegal.
+    // Clear all output parameters and return false.
+    // If the caller is ill-behaved and ignores the return value, 
+    // at least give them output parameters that don't match any legal move.
+    // This is especially important when numMatchingMoves > 1,
+    // because we have already set the output parameters to the most recent matching move
+    // (assuming ChessFatal has not yet ended execution: it can behave differently on different platforms).
+    source = 0;
+    dest = 0;
+    promIndex = 0;
+    memset(&move, 0, sizeof(Move));
+    return false;
 }
 
 
