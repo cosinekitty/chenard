@@ -162,14 +162,14 @@ std::string ExecuteCommand(ChessBoard& board, ChessUI& ui, const std::string& co
             return MakeMoves(board, args);
         }
 
-        if (command == "new")
+        if (verb == "new")
         {
             // Start a new game.
             board.Init();
             return "OK";
         }
 
-        if (command == "status")
+        if (verb == "status")
         {
             return GameStatus(board);
         }
