@@ -11,6 +11,7 @@ Chenard supports the following platforms:
 - WinBoard plug-in engine.
 - Linux xboard plug-in engine.
 - Linux command-line.
+- Mac OS command-line.
 - TTY version for use on serial teletype machines.
 
 For more information, see the [Chenard home page](http://cosinekitty.com/chenard/).
