@@ -162,6 +162,13 @@ std::string ExecuteCommand(ChessBoard& board, ChessUI& ui, const std::string& co
             return MakeMoves(board, args);
         }
 
+        if (command == "new")
+        {
+            // Start a new game.
+            board.Init();
+            return "OK";
+        }
+
         if (command == "status")
         {
             return GameStatus(board);
@@ -175,13 +182,6 @@ std::string ExecuteCommand(ChessBoard& board, ChessUI& ui, const std::string& co
                 return "BAD_ARGS";
             }
             return TestLegality(board, args[0]);
-        }
-
-        if (command == "new")
-        {
-            // Start a new game.
-            board.Init();
-            return "OK";
         }
 
         return "UNKNOWN_COMMAND";
