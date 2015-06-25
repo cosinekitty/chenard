@@ -6,8 +6,8 @@ It is not the strongest AI out there, but it will provide a serious challenge fo
 
 Chenard supports the following platforms:
 
-- Windows 32-bit (GUI and command-line)
-- Windows 64-bit (GUI and command-line)
+- Windows 32-bit and 64-bit (GUI and command-line)
+- TCP server (allows using Chenard logic outside of C/C++)
 - WinBoard plug-in engine
 - Linux xboard plug-in engine
 - Linux command-line
