@@ -136,7 +136,7 @@ bool ParseCommand(const std::string& command, std::string& verb, std::vector<std
     return verb.length() > 0;
 }
 
-std::string ExecuteCommand(ChessGameState& game, ChessUI& ui, const std::string& command, bool &keepRunning)
+std::string ExecuteCommand(ChessGameState& game, ChessUI_Server& ui, const std::string& command, bool &keepRunning)
 {
     using namespace std;
 
@@ -192,7 +192,7 @@ std::string ExecuteCommand(ChessGameState& game, ChessUI& ui, const std::string&
             {
                 return BAD_ARGS;
             }
-            return Think(game, atoi(args[0].c_str()));
+            return Think(ui, game, atoi(args[0].c_str()));
         }
 
         return "UNKNOWN_COMMAND";
@@ -251,13 +251,31 @@ std::string MakeMoves(ChessGameState& game, const std::vector<std::string>& move
     return "OK " + to_string(numPushedMoves);     // return "OK " followed by number of moves we made
 }
 
-std::string Think(ChessGameState& game, int thinkTimeMillis)
+std::string Think(ChessUI_Server& ui, ChessGameState& game, int thinkTimeMillis)
 {
+    using namespace std;
+
+    if (game.IsGameOver())
+    {
+        return "GAME_OVER";
+    }
+
     const int MAX_THINK_MINUTES = 5;        // adjust as needed
     const int MAX_THINK_MILLIS = 1000 * 60 * MAX_THINK_MINUTES;
     if ((thinkTimeMillis > 0) && (thinkTimeMillis <= MAX_THINK_MILLIS))
     {
-
+        Move move;
+        if (game.Think(ui, thinkTimeMillis, move))
+        {
+            // Must format the response BEFORE making the move because board must be in pre-move state.
+            string response = string("OK ") + game.FormatLongMove(move) + " " + game.FormatPgn(move);
+            game.PushMove(move);
+            return response;
+        }
+        else
+        {
+            return "THINK_ERROR";
+        }
     }
     return "BAD_THINK_TIME";
 }

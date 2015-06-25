@@ -17,12 +17,12 @@
 class ChessGameState;
 
 void PrintUsage();
-std::string ExecuteCommand(ChessGameState& game, ChessUI& ui, const std::string& command, bool& keepRunning);
+std::string ExecuteCommand(ChessGameState& game, ChessUI_Server& ui, const std::string& command, bool& keepRunning);
 std::string GameStatus(ChessGameState& game);      // Forsyth Edwards Notation
 std::string MakeMoves(ChessGameState& game, const std::vector<std::string>& moveTokenList);
 std::string LegalMoveList(ChessGameState& game);
 std::string TestLegality(ChessGameState& game, const std::string& notation);
-std::string Think(ChessGameState& game, int thinkTimeMillis);
+std::string Think(ChessUI_Server& ui, ChessGameState& game, int thinkTimeMillis);
 
 const size_t LONGMOVE_MAX_CHARS = 6;        // max: "e7e8q\0" is 6 characters
 bool FormatLongMove(bool whiteToMove, Move move, char notation[LONGMOVE_MAX_CHARS]);
@@ -58,6 +58,8 @@ public:
     void PushMove(Move move);   // caller must pass only verified legal moves
     void PopMove();
     int GenMoves(MoveList& ml) { return board.GenMoves(ml); }
+    bool Think(ChessUI_Server& ui, int thinkTimeMillis, Move& move);
+    bool IsGameOver() { return board.GameIsOver(); }
 
 private:
     ChessGameState(const ChessGameState&);              // disable copy constructor

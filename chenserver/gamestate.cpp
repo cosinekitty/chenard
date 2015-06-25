@@ -96,3 +96,13 @@ void ChessGameState::PopMove()
         moveStack.pop_back();
     }
 }
+
+bool ChessGameState::Think(ChessUI_Server& ui, int thinkTimeMillis, Move& move)
+{
+    int centis = (thinkTimeMillis + 9) / 10;    // convert milliseconds to centiseconds and round up
+    ComputerChessPlayer thinker(ui);
+    thinker.setResignFlag(false);       // do not allow computer to resign
+    thinker.SetTimeLimit(centis);       // set upper limit on how long computer is allowed to think
+    INT32 timeSpent = 0;
+    return thinker.GetMove(board, move, timeSpent);
+}

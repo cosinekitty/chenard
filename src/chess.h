@@ -855,7 +855,7 @@ class ComputerChessPlayer: public ChessPlayer
 {
 public:
     ComputerChessPlayer ( ChessUI & );
-    ~ComputerChessPlayer();
+    virtual ~ComputerChessPlayer();
 
     static void LazyInitXposTable();
 
