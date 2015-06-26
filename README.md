@@ -6,10 +6,12 @@ It is not the strongest AI out there, but it will provide a serious challenge fo
 
 Chenard supports the following platforms:
 
-- Windows 32-bit (GUI and command-line)
-- Windows 64-bit (GUI and command-line)
-- WinBoard plug-in engine
-- Linux xboard plug-in engine
-- Linux command-line
+- Windows 32-bit and 64-bit (GUI and command-line).
+- TCP server (provides chess logic outside of C/C++).
+- WinBoard plug-in engine.
+- Linux xboard plug-in engine.
+- Linux command-line.
+- Mac OS command-line.
+- TTY version for use on serial teletype machines.
 
 For more information, see the [Chenard home page](http://cosinekitty.com/chenard/).

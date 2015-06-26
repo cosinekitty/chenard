@@ -1639,13 +1639,10 @@ void ComputerChessPlayer::SetSearchDepth ( int NewSearchDepth )
 
 void ComputerChessPlayer::SetTimeLimit ( INT32 hundredthsOfSeconds )
 {
-    if ( hundredthsOfSeconds < 10 )
-        ChessFatal ( "Invalid search time for ComputerChessPlayer" );
-
     maxlevel = NODES_ARRAY_SIZE/4 - 1;
     searchType = CCPST_TIMED_SEARCH; 
     searchAborted = false;
-    timeLimit = hundredthsOfSeconds;
+    timeLimit = (hundredthsOfSeconds >= 10) ? hundredthsOfSeconds : 10; // enforce minimum reasonable think time: 0.1 seconds.
     stopTime = ChessTime() + timeLimit;
 }
 

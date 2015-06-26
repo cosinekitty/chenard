@@ -238,7 +238,6 @@ bool ChessUI_stdio::ReadMove (
     char s[200];
     char Prompt[80];
     int newTimeLimit = 0;
-    Move move;      // ignored
 
     sprintf ( Prompt, "%s move> ", board.WhiteToMove() ? "White" : "Black" );
     printf ( "%s", Prompt );
@@ -249,7 +248,7 @@ bool ChessUI_stdio::ReadMove (
 
         TrimString(s);
 
-        if ( ParseFancyMove (s, board, source, dest, promIndex, move) )
+        if ( ParseFancyMove (s, board, source, dest, promIndex) )
         {
             return true;
         }
