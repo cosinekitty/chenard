@@ -90,6 +90,22 @@ void PrintUsage()
         "\n";
 }
 
+inline void EndToken(std::string& tok, std::string& verb, std::vector<std::string>& args)
+{
+    if (tok.length() > 0)           // Did we find a token (a group of consecutive non-space characters)?
+    {
+        if (verb.length() == 0)
+        {
+            verb = tok;             // The first token becomes the verb.
+        }
+        else
+        {
+            args.push_back(tok);    // Any tokens after the first become arguments.
+        }
+        tok.clear();                // Get ready for another token (if there are any more).
+    }
+}
+
 bool ParseCommand(const std::string& command, std::string& verb, std::vector<std::string>& args)
 {
     using namespace std;
@@ -98,22 +114,11 @@ bool ParseCommand(const std::string& command, std::string& verb, std::vector<std
     args.clear();
 
     std::string tok;
-    for (auto c : command)
+    for (char c : command)
     {
         if (isspace(c))
         {
-            if (tok.length() > 0)
-            {
-                if (verb.length() == 0)
-                {
-                    verb = tok;
-                }
-                else
-                {
-                    args.push_back(tok);
-                }
-                tok.clear();
-            }
+            EndToken(tok, verb, args);
         }
         else
         {
@@ -121,17 +126,7 @@ bool ParseCommand(const std::string& command, std::string& verb, std::vector<std
         }
     }
 
-    if (tok.length() > 0)
-    {
-        if (verb.length() == 0)
-        {
-            verb = tok;
-        }
-        else
-        {
-            args.push_back(tok);
-        }
-    }
+    EndToken(tok, verb, args);
 
     return verb.length() > 0;
 }
@@ -193,6 +188,15 @@ std::string ExecuteCommand(ChessGameState& game, ChessUI_Server& ui, const std::
                 return BAD_ARGS;
             }
             return Think(ui, game, atoi(args[0].c_str()));
+        }
+
+        if (verb == "undo")
+        {
+            if (args.size() != 1)
+            {
+                return BAD_ARGS;
+            }
+            return Undo(game, atoi(args[0].c_str()));
         }
 
         return "UNKNOWN_COMMAND";
@@ -317,6 +321,20 @@ std::string LegalMoveList(ChessGameState& game)
     return text;
 }
 
+std::string Undo(ChessGameState& game, int numTurns)
+{
+    if (numTurns < 0 || numTurns > game.NumTurns())
+    {
+        return "BAD_NUM_TURNS";
+    }
+
+    for (int i = 0; i < numTurns; ++i)
+    {
+        game.PopMove();
+    }
+
+    return "OK";
+}
 
 char SquareCharacter(SQUARE square)
 {
