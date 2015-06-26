@@ -16,6 +16,13 @@
 
 class ChessGameState;
 
+enum MoveFormatKind
+{
+    MOVE_FORMAT_INVALID,
+    MOVE_FORMAT_ALGEBRAIC,
+    MOVE_FORMAT_PGN,
+};
+
 void PrintUsage();
 std::string ExecuteCommand(ChessGameState& game, ChessUI_Server& ui, const std::string& command, bool& keepRunning);
 std::string GameStatus(ChessGameState& game);      // Forsyth Edwards Notation
@@ -24,6 +31,7 @@ std::string LegalMoveList(ChessGameState& game);
 std::string TestLegality(ChessGameState& game, const std::string& notation);
 std::string Think(ChessUI_Server& ui, ChessGameState& game, int thinkTimeMillis);
 std::string Undo(ChessGameState& game, int numTurns);
+std::string History(ChessGameState& game, const std::vector<std::string>& args);
 
 const size_t LONGMOVE_MAX_CHARS = 6;        // max: "e7e8q\0" is 6 characters
 bool FormatLongMove(bool whiteToMove, Move move, char notation[LONGMOVE_MAX_CHARS]);
@@ -52,8 +60,10 @@ public:
     void Reset();
     const char *GameResult();
     std::string GetForsythEdwardsNotation();
-    std::string FormatLongMove(Move move);
-    std::string FormatPgn(Move move);       // caller must pass only verified legal moves
+    std::string FormatAlg(Move move);      // caller must pass only verified legal moves
+    std::string FormatPgn(Move move);      // caller must pass only verified legal moves
+    std::string Format(Move move, MoveFormatKind format);       // caller must pass only verified legal moves, and must pass valid format specifier
+    std::vector<std::string> History(MoveFormatKind format);
     bool ParseMove(const std::string& notation, Move& move);    // returns true only if notation represents legal move
     int NumTurns() const { return static_cast<int>(moveStack.size()); }
     void PushMove(Move move);   // caller must pass only verified legal moves

@@ -38,17 +38,6 @@ std::string ChessGameState::GetForsythEdwardsNotation()
     return std::string(buffer);
 }
 
-std::string ChessGameState::FormatLongMove(Move move)
-{
-    char longmove[LONGMOVE_MAX_CHARS];
-    if (!::FormatLongMove(board.WhiteToMove(), move, longmove))
-    {
-        assert(false);
-        return "BADLM";     // cryptic, but fits in 5 characters as required by a longmove
-    }
-    return std::string(longmove);
-}
-
 bool ChessGameState::ParseMove(const std::string& notation, Move& move)
 {
     if (::ParseFancyMove(notation.c_str(), board, move))
@@ -62,16 +51,77 @@ bool ChessGameState::ParseMove(const std::string& notation, Move& move)
     return false;
 }
 
+std::string ChessGameState::FormatAlg(Move move)
+{
+    char algebraic[LONGMOVE_MAX_CHARS];
+    if (!::FormatLongMove(board.WhiteToMove(), move, algebraic))
+    {
+        assert(false);
+        return "BADALG";
+    }
+    return std::string(algebraic);
+}
+
 std::string ChessGameState::FormatPgn(Move move)
 {
     if (board.isLegal(move))
     {
         char pgn[MAX_MOVE_STRLEN + 1];
-        FormatChessMove(board, move, pgn);
+        ::FormatChessMove(board, move, pgn);
         return std::string(pgn);
     }
     assert(false);      // caller should not have passed an illegal move
     return "BADPGN";
+}
+
+std::string ChessGameState::Format(Move move, MoveFormatKind format)
+{
+    switch (format)
+    {
+    case MOVE_FORMAT_ALGEBRAIC:
+        return FormatAlg(move);
+
+    case MOVE_FORMAT_PGN:
+        return FormatPgn(move);
+
+    default:
+        assert(false);      // caller should verify format
+        return "BAD_FORMAT";
+    }
+}
+
+std::vector<std::string> ChessGameState::History(MoveFormatKind format)
+{
+    using namespace std;
+
+    // Every time we format a move, we need the board to be in the state it was
+    // just before that move was made.
+    // Pop all the moves from the move stack one by one and push onto 'revStack'.
+    // This has the effect of reversing the order of the moves as we rewind 
+    // the board back to its initial state.
+    vector<MoveState> revStack;
+    while (moveStack.size() > 0)
+    {
+        MoveState m = moveStack.back();
+        moveStack.pop_back();
+        revStack.push_back(m);
+        board.UnmakeMove(m.move, m.unmove);
+    }
+
+    // When we get here, 'revStack' has the earliest moves at the back
+    // and the most recent moves to the front.
+    // Now we make the moves in forward order so that we can format each move.
+    vector<string> history;
+    while (revStack.size() > 0)
+    {
+        MoveState m = revStack.back();
+        revStack.pop_back();
+        moveStack.push_back(m);
+        history.push_back(Format(m.move, format));
+        board.MakeMove(m.move, m.unmove);
+    }
+
+    return history;
 }
 
 void ChessGameState::PushMove(Move move) 

@@ -149,6 +149,11 @@ std::string ExecuteCommand(ChessGameState& game, ChessUI_Server& ui, const std::
             return "OK";
         }
 
+        if (verb == "history")
+        {
+            return History(game, args);
+        }
+
         if (verb == "legal")
         {
             return LegalMoveList(game);
@@ -218,7 +223,7 @@ std::string TestLegality(ChessGameState& game, const std::string& notation)
     Move move;
     if (game.ParseMove(notation, move))
     {
-        return std::string("OK ") + game.FormatLongMove(move) + " " + game.FormatPgn(move);
+        return std::string("OK ") + game.FormatAlg(move) + " " + game.FormatPgn(move);
     }
     return "ILLEGAL";
 }
@@ -272,7 +277,7 @@ std::string Think(ChessUI_Server& ui, ChessGameState& game, int thinkTimeMillis)
         if (game.Think(ui, thinkTimeMillis, move))
         {
             // Must format the response BEFORE making the move because board must be in pre-move state.
-            string response = string("OK ") + game.FormatLongMove(move) + " " + game.FormatPgn(move);
+            string response = string("OK ") + game.FormatAlg(move) + " " + game.FormatPgn(move);
             game.PushMove(move);
             return response;
         }
@@ -316,7 +321,7 @@ std::string LegalMoveList(ChessGameState& game)
     for (int i = 0; i < numMoves; ++i)
     {
         text.push_back(' ');
-        text += game.FormatLongMove(ml.m[i]);
+        text += game.FormatAlg(ml.m[i]);
     }
     return text;
 }
@@ -334,6 +339,46 @@ std::string Undo(ChessGameState& game, int numTurns)
     }
 
     return "OK";
+}
+
+MoveFormatKind ParseMoveFormat(const std::string& text)
+{
+    if (text == "pgn")
+    {
+        return MOVE_FORMAT_PGN;
+    }
+
+    if (text == "alg")
+    {
+        return MOVE_FORMAT_ALGEBRAIC;
+    }
+
+    return MOVE_FORMAT_INVALID;
+}
+
+std::string History(ChessGameState& game, const std::vector<std::string>& args)
+{
+    using namespace std;
+
+    MoveFormatKind format = MOVE_FORMAT_ALGEBRAIC;
+    if (args.size() > 0)
+    {
+        format = ParseMoveFormat(args[0]);
+    }
+
+    if (format == MOVE_FORMAT_INVALID)
+    {
+        return "BAD_FORMAT";
+    }
+
+    vector<string> history = game.History(format);
+    string listing = "OK ";
+    listing += to_string(history.size());
+    for (string movetext : history)
+    {
+        listing += " " + movetext;
+    }
+    return listing;
 }
 
 char SquareCharacter(SQUARE square)
