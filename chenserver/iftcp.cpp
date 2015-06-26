@@ -94,38 +94,23 @@ bool ChessCommandInterface_tcp::ReadLine(std::string& line, bool& keepRunning)
         {
             const int BUFFERLENGTH = 256;
             char buffer[BUFFERLENGTH];
-            int bytesRead = 0;
 
             while (true)
             {
-                int bytes = recv(clientSocket, buffer + bytesRead, sizeof(buffer) - bytesRead, 0);
-                if (bytes < 0)
+                int bytes = recv(clientSocket, buffer, sizeof(buffer), 0);
+                if (bytes <= 0)
                 {
                     std::cerr << "ERROR reading from client." << std::endl;
                     break;
                 }
-                
-                if (bytes == 0)
-                {
-                    std::cerr << "ERROR: missing newline in message" << std::endl;
-                    break;
-                }
 
-                int bufend = bytesRead + bytes;
-                while (bytesRead < bufend)
+                for (int i = 0; i < bytes; ++i)
                 {
-                    if (buffer[bytesRead] == '\n')
+                    if (buffer[i] == '\n')
                     {
                         return true;
                     }
-                    line.push_back(buffer[bytesRead]);
-                    ++bytesRead;
-                }
-
-                if (bytesRead == sizeof(buffer))
-                {
-                    std::cerr << "ERROR: buffer overflow" << std::endl;
-                    break;
+                    line.push_back(buffer[i]);
                 }
             }
         }
