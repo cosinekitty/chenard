@@ -93,6 +93,8 @@ void ChessGameState::PopMove()
     assert(moveStack.size() > 0);
     if (moveStack.size() > 0)
     {
+        MoveState tail = moveStack.back();
+        board.UnmakeMove(tail.move, tail.unmove);
         moveStack.pop_back();
     }
 }
