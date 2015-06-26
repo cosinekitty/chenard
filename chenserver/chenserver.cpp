@@ -323,7 +323,7 @@ std::string LegalMoveList(ChessGameState& game)
 
 std::string Undo(ChessGameState& game, int numTurns)
 {
-    if (numTurns < 0 || numTurns > game.NumTurns())
+    if (numTurns < 1 || numTurns > game.NumTurns())
     {
         return "BAD_NUM_TURNS";
     }
