@@ -39,21 +39,6 @@ char SquareCharacter(SQUARE);
 
 class ChessGameState
 {
-private:
-    struct MoveState
-    {
-        Move move;
-        UnmoveInfo unmove;
-
-        MoveState(const Move& _move, const UnmoveInfo& _unmove)
-            : move(_move)
-            , unmove(_unmove)
-        {}
-    };
-
-    ChessBoard board;
-    std::vector<MoveState> moveStack;
-
 public:
     ChessGameState() {}
 
@@ -75,6 +60,20 @@ public:
 private:
     ChessGameState(const ChessGameState&);              // disable copy constructor
     ChessGameState& operator=(const ChessGameState&);   // disable assignment operator
+
+    struct MoveState
+    {
+        Move move;
+        UnmoveInfo unmove;
+
+        MoveState(const Move& _move, const UnmoveInfo& _unmove)
+            : move(_move)
+            , unmove(_unmove)
+        {}
+    };
+
+    ChessBoard board;
+    std::vector<MoveState> moveStack;
 };
 
 /*
