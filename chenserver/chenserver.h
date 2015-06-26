@@ -24,10 +24,13 @@ enum MoveFormatKind
 };
 
 void PrintUsage();
+MoveFormatKind ParseFormatArg(const std::vector<std::string>& args, size_t& index);     // use if other args may follow format
+bool ParseFormatArg(const std::vector<std::string>& args, std::string& errorToken, MoveFormatKind& format);     // use if format is only arg
+std::string DualMoveFormatResponse(ChessGameState& game, Move move);
 std::string ExecuteCommand(ChessGameState& game, ChessUI_Server& ui, const std::string& command, bool& keepRunning);
 std::string GameStatus(ChessGameState& game);      // Forsyth Edwards Notation
 std::string MakeMoves(ChessGameState& game, const std::vector<std::string>& moveTokenList);
-std::string LegalMoveList(ChessGameState& game);
+std::string LegalMoveList(ChessGameState& game, const std::vector<std::string>& args);
 std::string TestLegality(ChessGameState& game, const std::string& notation);
 std::string Think(ChessUI_Server& ui, ChessGameState& game, int thinkTimeMillis);
 std::string Undo(ChessGameState& game, int numTurns);

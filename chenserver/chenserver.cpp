@@ -90,6 +90,46 @@ void PrintUsage()
         "\n";
 }
 
+MoveFormatKind ParseFormatArg(const std::vector<std::string>& args, size_t& index)      // use if other args may follow format
+{
+    if (index < args.size())
+    {
+        const std::string& ftext = args[index++];
+        if (ftext == "pgn")
+        {
+            return MOVE_FORMAT_PGN;
+        }
+
+        if (ftext == "alg")
+        {
+            return MOVE_FORMAT_ALGEBRAIC;
+        }
+
+        return MOVE_FORMAT_INVALID;
+    }
+
+    return MOVE_FORMAT_ALGEBRAIC;
+}
+
+bool ParseFormatArg(const std::vector<std::string>& args, std::string& errorToken, MoveFormatKind& format)      // use if format is only arg
+{
+    size_t index = 0;
+    format = ParseFormatArg(args, index);
+    if (format == MOVE_FORMAT_INVALID)
+    {
+        errorToken = "BAD_FORMAT";
+        return false;
+    }
+    if (index != args.size())
+    {
+        errorToken = "BAD_ARGS";
+        format = MOVE_FORMAT_INVALID;
+        return false;
+    }
+    errorToken.clear();
+    return true;
+}
+
 inline void EndToken(std::string& tok, std::string& verb, std::vector<std::string>& args)
 {
     if (tok.length() > 0)           // Did we find a token (a group of consecutive non-space characters)?
@@ -156,7 +196,7 @@ std::string ExecuteCommand(ChessGameState& game, ChessUI_Server& ui, const std::
 
         if (verb == "legal")
         {
-            return LegalMoveList(game);
+            return LegalMoveList(game, args);
         }
 
         if (verb == "move")
@@ -218,12 +258,17 @@ std::string GameStatus(ChessGameState& game)
     return text;
 }
 
+std::string DualMoveFormatResponse(ChessGameState& game, Move move)
+{
+    return std::string("OK ") + game.FormatAlg(move) + " " + game.FormatPgn(move);
+}
+
 std::string TestLegality(ChessGameState& game, const std::string& notation)
 {
     Move move;
     if (game.ParseMove(notation, move))
     {
-        return std::string("OK ") + game.FormatAlg(move) + " " + game.FormatPgn(move);
+        return DualMoveFormatResponse(game, move);
     }
     return "ILLEGAL";
 }
@@ -277,7 +322,7 @@ std::string Think(ChessUI_Server& ui, ChessGameState& game, int thinkTimeMillis)
         if (game.Think(ui, thinkTimeMillis, move))
         {
             // Must format the response BEFORE making the move because board must be in pre-move state.
-            string response = string("OK ") + game.FormatAlg(move) + " " + game.FormatPgn(move);
+            string response = DualMoveFormatResponse(game, move);
             game.PushMove(move);
             return response;
         }
@@ -313,16 +358,24 @@ bool FormatLongMove(bool whiteToMove, Move move, char notation[LONGMOVE_MAX_CHAR
     }
 }
 
-std::string LegalMoveList(ChessGameState& game)
+std::string LegalMoveList(ChessGameState& game, const std::vector<std::string>& args)
 {
-    MoveList ml;
-    int numMoves = game.GenMoves(ml);
-    std::string text = std::to_string(numMoves);
-    for (int i = 0; i < numMoves; ++i)
+    using namespace std;
+
+    string text;
+    MoveFormatKind format;
+    if (ParseFormatArg(args, text, format))
     {
-        text.push_back(' ');
-        text += game.FormatAlg(ml.m[i]);
+        MoveList ml;
+        int numMoves = game.GenMoves(ml);
+        text = "OK " + to_string(numMoves);
+        for (int i = 0; i < numMoves; ++i)
+        {
+            text.push_back(' ');
+            text += game.Format(ml.m[i], format);
+        }
     }
+
     return text;
 }
 
@@ -341,42 +394,20 @@ std::string Undo(ChessGameState& game, int numTurns)
     return "OK";
 }
 
-MoveFormatKind ParseMoveFormat(const std::string& text)
-{
-    if (text == "pgn")
-    {
-        return MOVE_FORMAT_PGN;
-    }
-
-    if (text == "alg")
-    {
-        return MOVE_FORMAT_ALGEBRAIC;
-    }
-
-    return MOVE_FORMAT_INVALID;
-}
-
 std::string History(ChessGameState& game, const std::vector<std::string>& args)
 {
     using namespace std;
 
-    MoveFormatKind format = MOVE_FORMAT_ALGEBRAIC;
-    if (args.size() > 0)
+    MoveFormatKind format;
+    string listing;
+    if (ParseFormatArg(args, listing, format))
     {
-        format = ParseMoveFormat(args[0]);
-    }
-
-    if (format == MOVE_FORMAT_INVALID)
-    {
-        return "BAD_FORMAT";
-    }
-
-    vector<string> history = game.History(format);
-    string listing = "OK ";
-    listing += to_string(history.size());
-    for (string movetext : history)
-    {
-        listing += " " + movetext;
+        vector<string> history = game.History(format);
+        listing = "OK " + to_string(history.size());
+        for (string movetext : history)
+        {
+            listing += " " + movetext;
+        }
     }
     return listing;
 }
