@@ -5,6 +5,7 @@
 */
 
 #include <assert.h>
+#include <time.h>
 #include <cstdio>
 #include <cstdlib>
 #include <string>
@@ -22,6 +23,20 @@ enum MoveFormatKind
     MOVE_FORMAT_ALGEBRAIC,
     MOVE_FORMAT_PGN,
 };
+
+inline bool StartsWith(const std::string& text, const std::string& prefix)
+{
+    return
+        (text.length() >= prefix.length()) &&
+        (0 == text.compare(0, prefix.length(), prefix));
+}
+
+inline bool EndsWith(const std::string& text, const std::string& suffix)
+{
+    return
+        (text.length() >= suffix.length()) &&
+        (0 == text.compare(text.length() - suffix.length(), suffix.length(), suffix));
+}
 
 void PrintUsage();
 MoveFormatKind ParseFormatArg(const std::vector<std::string>& args, size_t& index);     // use if other args may follow format
@@ -118,8 +133,9 @@ private:
     bool ready;
     SOCKET hostSocket;
     SOCKET clientSocket;
+    enum data_mode { MODE_LINE, MODE_HTTP } mode;
+    char httpMinorVersion;
 
-private:
     ChessCommandInterface_tcp(const ChessCommandInterface_tcp&);                // disable copy constructor
     ChessCommandInterface_tcp& operator= (const ChessCommandInterface_tcp&);    // disable assignment
 
@@ -131,4 +147,6 @@ private:
             sock = INVALID_SOCKET;
         }
     }
+
+    std::string UrlDecode(const std::string& urltext);
 };
