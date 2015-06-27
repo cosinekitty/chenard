@@ -164,7 +164,7 @@ bool ChessCommandInterface_tcp::ReadLine(std::string& line, bool& keepRunning)
                     else
                     {
                         assert(false);  // unknown mode
-                        return false;
+                        goto read_failure;
                     }
                 }
             }
@@ -179,6 +179,8 @@ bool ChessCommandInterface_tcp::ReadLine(std::string& line, bool& keepRunning)
         std::cerr << "ReadLine ERROR: client socket was not initialized" << std::endl;
     }
 
+read_failure:
+    CloseSocket(clientSocket);
     line.clear();
     return false;
 }
