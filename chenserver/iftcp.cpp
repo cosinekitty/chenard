@@ -103,6 +103,7 @@ bool ChessCommandInterface_tcp::ReadLine(std::string& line, bool& keepRunning)
             static const string HTTP_FIRST_LINE_SUFFIX_0 = " HTTP/1.0\r";
             static const string HTTP_FIRST_LINE_SUFFIX_1 = " HTTP/1.1\r";
             static const char HTTP_HEADER_END[] = "\r\n\r\n";
+            assert(HTTP_FIRST_LINE_SUFFIX_0.length() == HTTP_FIRST_LINE_SUFFIX_1.length());
             int headerEndIndex = 0;
 
             while (true)
@@ -132,7 +133,6 @@ bool ChessCommandInterface_tcp::ReadLine(std::string& line, bool& keepRunning)
                                 // Decode the URI from the line and keep it.
                                 int offset = HTTP_FIRST_LINE_PREFIX.length();
                                 int extract = line.length() - (HTTP_FIRST_LINE_PREFIX.length() + HTTP_FIRST_LINE_SUFFIX_0.length());
-                                assert(HTTP_FIRST_LINE_SUFFIX_0.length() == HTTP_FIRST_LINE_SUFFIX_1.length());
                                 line = UrlDecode(line.substr(offset, extract));
                                 mode = MODE_HTTP;       // remember to send an HTTP response back to the client in WriteLine()
                                 httpMinorVersion = http10 ? '0' : '1';      // remember which minor version to use in response
