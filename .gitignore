@@ -12,3 +12,7 @@ Release
 *.pyc
 *.psess
 *.vsp
+.idea
+*.map
+fen/fen.js
+fen/ui.js
