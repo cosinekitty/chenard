@@ -3,13 +3,31 @@
 /// <reference path="jquery.d.ts" />
 /// <reference path="fen.ts" />
 
+var RotateFlag:boolean = false;
+var SquarePixels:number = 44;
+
 function MakeImageContainer(x:number, y:number): string {
     return '<div id="Square_' + x.toString() + y.toString() + '"' +
-        ' style="position:absolute; left:' + (44*x).toFixed() + 'px; top:' + (44*(7-y)).toFixed() + 'px;"></div>';
+        ' style="position:absolute; left:' +
+        (SquarePixels*x).toFixed() + 'px; top:' +
+        (SquarePixels*(7-y)).toFixed() + 'px;"></div>';
 }
 
 function MakeImageHtml(filename:string): string {
-    return '<img src="' + filename + '" width="44" height="44"/>';
+    return '<img src="' + filename + '" width="'+SquarePixels+'" height="'+SquarePixels+'"/>';
+}
+
+function MakeFileLabel(x:number): string {
+    return '<div class="RankFileText" id="FileLabel_' + x.toFixed() + '"' +
+        ' style="position: absolute; top: ' + (SquarePixels*8 + 4).toFixed() + 'px; ' +
+        ' left: ' + (SquarePixels*x + 20).toFixed() + 'px; ">x</div>';
+}
+
+function MakeRankLabel(y:number): string {
+    return '<div class="RankFileText" id="RankLabel_' + y.toFixed() + '"' +
+        ' style="position: absolute; left:-12px; top:' +
+        (SquarePixels*y + 14).toFixed() + 'px;' +
+        '">y</div>';
 }
 
 function InitBoardDisplay() {
@@ -20,6 +38,12 @@ function InitBoardDisplay() {
         for (x=0; x<8; ++x) {
             html += MakeImageContainer(x, y);
         }
+    }
+    for (x=0; x<8; ++x) {
+        html += MakeFileLabel(x);
+    }
+    for (y=0; y<8; ++y) {
+        html += MakeRankLabel(y);
     }
     $('#DivBoard').html(html);
     SetBoard('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR');
@@ -32,8 +56,6 @@ function SetBoard(text:string):boolean {
     }
     return false;
 }
-
-var RotateFlag:boolean = false;
 
 function UpdateBoard(text:string):boolean {
     var board: fen.ChessBoard;
@@ -49,6 +71,8 @@ function UpdateBoard(text:string):boolean {
     var imageFileName: string;
     for (y=0; y < 8; ++y) {
         ry = RotateFlag ? (7-y) : y;
+        $('#RankLabel_' + ry.toFixed()).text('87654321'.charAt(y));
+        $('#FileLabel_' + ry.toFixed()).text('abcdefgh'.charAt(y));
         for (x=0; x < 8; ++x) {
             rx = RotateFlag ? (7-x) : x;
             imageFileName = 'bitmap/' + board.ImageFileName(x, y);
