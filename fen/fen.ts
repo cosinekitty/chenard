@@ -61,9 +61,12 @@ module fen {
             var r:number;
             var numEmpty:number;
             var c:string;
+            var rowcount:number;
             for (r=7; r >= 0; --r) {
                 // Decode each rank string into 8 squares.
+                rowcount = 0;
                 for (i=0; i < ranks[r].length; ++i) {
+                    ++rowcount;
                     switch (c = ranks[r].charAt(i)) {
                         case 'P': this.squares.push(ChessSquare.WPAWN);      break;
                         case 'N': this.squares.push(ChessSquare.WKNIGHT);    break;
@@ -78,6 +81,7 @@ module fen {
                         case 'q': this.squares.push(ChessSquare.BQUEEN);     break;
                         case 'k': this.squares.push(ChessSquare.BKING);      break;
                         case '1': case '2': case '3': case '4': case '5': case '6': case '7': case '8':
+                            rowcount += (+c - 1);
                             for (numEmpty = +c; numEmpty > 0; --numEmpty) {
                                 this.squares.push(ChessSquare.EMPTY);
                             }
@@ -85,6 +89,9 @@ module fen {
                         default:
                             throw 'Invalid character in FEN layout text.';
                     }
+                }
+                if (rowcount != 8) {
+                    throw 'Invalid number of pieces in row: ' + ranks[r];
                 }
             }
 
