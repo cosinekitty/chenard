@@ -19,7 +19,7 @@ ChessPlayer* ChessUI_Server::CreatePlayer(ChessSide)
     return nullptr;
 }
 
-void ChessUI_Server::ReportEndOfGame(ChessSide winner)
+void ChessUI_Server::ReportEndOfGame(ChessSide /*winner*/)
 {
     // Nothing to do here.
 }
@@ -30,10 +30,10 @@ void ChessUI_Server::Resign(ChessSide, QuitGameReason)
 }
 
 bool ChessUI_Server::ReadMove(
-    ChessBoard  &board,
-    int         &source,
-    int         &dest,
-    SQUARE      &promPieceIndex)
+    ChessBoard  &,
+    int         & /*source*/,
+    int         & /*dest*/,
+    SQUARE      & /*promPieceIndex*/)
 {
     ChessFatal("ChessUI_Server::ReadMove() should not have been called!");
     return false;
@@ -50,19 +50,19 @@ void ChessUI_Server::DisplayMove(ChessBoard &, Move)
     // Nothing to do here.
 }
 
-void ChessUI_Server::RecordMove(ChessBoard &, Move, INT32 thinkTime)
+void ChessUI_Server::RecordMove(ChessBoard &, Move, INT32 /*thinkTime*/)
 {
     ChessFatal("ChessUI_Server::RecordMove() should not have been called!");
 }
 
 void ChessUI_Server::ReportComputerStats(
-    INT32   thinkTime,
-    UINT32  nodesVisited,
-    UINT32  nodesEvaluated,
-    UINT32  nodesGenerated,
-    int     fwSearchDepth,
-    UINT32  vis[NODES_ARRAY_SIZE],
-    UINT32  gen[NODES_ARRAY_SIZE])
+    INT32   /*thinkTime*/,
+    UINT32  /*nodesVisited*/,
+    UINT32  /*nodesEvaluated*/,
+    UINT32  /*nodesGenerated*/,
+    int     /*fwSearchDepth*/,
+    UINT32  /*vis*/ [NODES_ARRAY_SIZE],
+    UINT32  /*gen*/ [NODES_ARRAY_SIZE])
 {
     // Nothing to do here.
 }

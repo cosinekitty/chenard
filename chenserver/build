@@ -1,2 +1,2 @@
 #!/bin/bash
-g++ -std=c++11 -Wall -O2 -o ~/bin/chenserver -I ../src @linux-source-files
+g++ -std=c++11 -Wall -Werror -Wextra -Wshadow -Wnon-virtual-dtor -Wunused -Woverloaded-virtual -O2 -o ~/bin/chenserver -I ../src @linux-source-files
