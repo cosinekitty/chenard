@@ -51,5 +51,9 @@ $(function(){
         }
     });
 
+    $('#TextBoxFen').click(function(){
+        $(this).select();
+    });
+
     InitBoardDisplay();
 });
