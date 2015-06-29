@@ -6,9 +6,7 @@
 function MakeImageContainer(x:number, y:number, filename:string): string {
     return '<div id="Square_' + x.toString() + y.toString() + '"' +
         ' src="' + filename + '"' +
-        ' style="position:absolute; left:' + (44*x).toFixed() + 'px; top:' + (44*y).toFixed() + 'px;">' +
-        MakeImageHtml(filename) +
-        '</div>';
+        ' style="position:absolute; left:' + (44*x).toFixed() + 'px; top:' + (44*(7-y)).toFixed() + 'px;"></div>';
 }
 
 function MakeImageHtml(filename:string): string {
@@ -26,29 +24,43 @@ function InitBoardDisplay() {
         }
     }
     $('#DivBoard').html(html);
+    SetBoard('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR');
+}
+
+function SetBoard(text:string):boolean {
+    if (UpdateBoard(text)) {
+        $('#TextBoxFen').val(text);
+        return true;
+    }
+    return false;
+}
+
+function UpdateBoard(text:string):boolean {
+    var board: fen.ChessBoard;
+    try {
+        board = new fen.ChessBoard(text);
+    } catch (ex) {
+        $('#DivErrorText').text(ex);
+        return false;
+    }
+
+    var x:number;
+    var y:number;
+    var imageFileName: string;
+    for (y=0; y < 8; ++y) {
+        for (x=0; x < 8; ++x) {
+            imageFileName = 'bitmap/' + board.ImageFileName(x, y);
+            $('#Square_' + x.toString() + y.toString()).html(MakeImageHtml(imageFileName));
+        }
+    }
+    return true;
 }
 
 $(function(){
     $('#ButtonDisplay').click(function(){
         $('#DivErrorText').text('');
         var text: string = $('#TextBoxFen').prop('value');
-        var board: fen.ChessBoard;
-        try {
-            board = new fen.ChessBoard(text);
-        } catch (ex) {
-            $('#DivErrorText').text(ex);
-            return;
-        }
-
-        var x:number;
-        var y:number;
-        var imageFileName: string;
-        for (y=0; y < 8; ++y) {
-            for (x=0; x < 8; ++x) {
-                imageFileName = 'bitmap/' + board.ImageFileName(x, y);
-                $('#Square_' + x.toString() + y.toString()).html(MakeImageHtml(imageFileName));
-            }
-        }
+        UpdateBoard(text);
     });
 
     $('#TextBoxFen').click(function(){
