@@ -3,3 +3,8 @@
 .RankFileText {
     font-family: monospace;
 }
+
+.FenEditBox {
+    font-family: monospace;
+    font-size: smaller;
+}
