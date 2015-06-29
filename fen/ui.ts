@@ -62,16 +62,19 @@ function ClearBoard():void {
 }
 
 $(function(){
+    var textBoxFen = $('#TextBoxFen');
+
     $('#ButtonDisplay').click(function(){
         $('#DivErrorText').text('');
-        UpdateBoard($('#TextBoxFen').prop('value'));
+        UpdateBoard(textBoxFen.prop('value'));
     });
 
-    $('#TextBoxFen').click(function(){
+    textBoxFen.click(function(){
         $(this).select();
     }).keyup(function(e){
         if (e.keyCode == 13) {
-            UpdateBoard($('#TextBoxFen').prop('value'));
+            UpdateBoard(textBoxFen.prop('value'));
+            $(this).select();
         }
     });
 
