@@ -62,12 +62,13 @@ function SetBoard(text:string):boolean {
 }
 
 function UpdateBoard(text:string):boolean {
+    $('#DivErrorText').text('');
     var board: fen.ChessBoard;
     try {
         board = new fen.ChessBoard(text);
     } catch (ex) {
+        ClearBoard();   // must clear before setting error text, because this will clear the error text!
         $('#DivErrorText').text(ex);
-        ClearBoard();
         return false;
     }
 
@@ -94,7 +95,6 @@ $(function(){
     var textBoxFen = $('#TextBoxFen');
 
     $('#ButtonDisplay').click(function(){
-        $('#DivErrorText').text('');
         UpdateBoard(textBoxFen.prop('value'));
     });
 
