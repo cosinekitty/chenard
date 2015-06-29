@@ -13,6 +13,7 @@ ChessCommandInterface_tcp::ChessCommandInterface_tcp(int _port)
     , mode(MODE_LINE)
     , httpMinorVersion('\0')
 {
+#ifdef _MSC_VER
     WSADATA data;
     const WORD versionRequested = MAKEWORD(2, 2);
     int result = WSAStartup(versionRequested, &data);
@@ -22,6 +23,7 @@ ChessCommandInterface_tcp::ChessCommandInterface_tcp(int _port)
 
         if (data.wVersion == versionRequested)
         {
+#endif
             // Open the socket.
             SOCKADDR_IN addr;
             memset(&addr, 0, sizeof(addr));
@@ -54,6 +56,7 @@ ChessCommandInterface_tcp::ChessCommandInterface_tcp(int _port)
             {
                 std::cerr << "ERROR: Could not open host socket." << std::endl;
             }
+#ifdef _MSC_VER
         }
         else
         {
@@ -64,6 +67,7 @@ ChessCommandInterface_tcp::ChessCommandInterface_tcp(int _port)
     {
         std::cerr << "ERROR: WSAStartup() returned " << result << std::endl;
     }
+#endif
 }
 
 
@@ -73,11 +77,13 @@ ChessCommandInterface_tcp::~ChessCommandInterface_tcp()
     CloseSocket(clientSocket);
     CloseSocket(hostSocket);
 
+#ifdef _MSC_VER
     if (initialized)
     {
         WSACleanup();
         initialized = false;
     }
+#endif
 }
 
 
@@ -268,7 +274,12 @@ inline std::string HttpResponseDate()
     char buf[RFC1123_TIME_LEN + 1];
 
     time(&t);
+#ifdef _MSC_VER    
     gmtime_s(&tm, &t);
+#else
+    // http://stackoverflow.com/questions/19051762/difference-between-gmtime-r-and-gmtime-s
+    gmtime_r(&t, &tm);
+#endif
 
     strftime(buf, sizeof(buf), "---, %d --- %Y %H:%M:%S GMT", &tm);
     memcpy(buf, DAY_NAMES[tm.tm_wday], 3);

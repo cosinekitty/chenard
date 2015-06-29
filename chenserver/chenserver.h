@@ -11,8 +11,29 @@
 #include <string>
 #include <vector>
 #include <iostream>
-#include <WinSock2.h>
-#include "chess.h"
+#include "chess.h"      // pick up handy CHENARD_LINUX preprocessor symbol
+#if CHENARD_LINUX
+    #include <stdlib.h>
+    #include <unistd.h>
+    #include <cstring>
+    #include <sys/types.h> 
+    #include <sys/socket.h>
+    #include <netinet/in.h>
+    
+    // Hacks to help WinSock code build on Linux.
+    typedef int SOCKET;
+    typedef sockaddr_in SOCKADDR_IN;
+    typedef sockaddr *LPSOCKADDR;
+    const int INVALID_SOCKET = -1;
+    
+    #define closesocket close
+#else
+    #ifdef _MSC_VER     // Windows?
+        #include <WinSock2.h>
+    #else
+        #error We do not know how to do socket programming on this platform.
+    #endif
+#endif
 #include "uiserver.h"
 
 class ChessGameState;

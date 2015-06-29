@@ -1,0 +1,2 @@
+#!/bin/bash
+g++ -std=c++11 -Wall -O2 -o ~/bin/chenserver -I ../src @linux-source-files
