@@ -23,7 +23,7 @@ module fen {
         private squares: ChessSquare[];
 
         constructor(fentext: string) {
-            // r1bqkbnr/pppp1ppp/2n5/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 3 3
+            // r1bqkb1r/pppp1ppp/2n2n2/1B2p3/4P3/5N2/PPPP1PPP/RNBQ1RK1 b kq - 5 4
 
             this.squares = [];
 
@@ -94,13 +94,19 @@ module fen {
         }
 
         public Square(x:number, y:number): ChessSquare {
-            if (!ChessBoard.IsInteger(x) || (x<0) || (x>7)) {
-                throw "x coordinate must be integer in the range 0..7";
-            }
-            if (!ChessBoard.IsInteger(y) || (y<0) || (y>7)) {
-                throw "y coordinate must be integer in the range 0..7";
-            }
+            ChessBoard.ValidateCoord(x);
+            ChessBoard.ValidateCoord(y);
             return this.squares[(8*y) + x];
+        }
+
+        private static ValidateCoord(n:number):void {
+            if (!ChessBoard.IsValidCoord(n)) {
+                throw "Chess board coordinates must both be integers in the range 0..7.";
+            }
+        }
+
+        private static IsValidCoord(n:number): boolean {
+            return ChessBoard.IsInteger(n) && (n >= 0) && (n <= 7);
         }
 
         private static IsInteger(n:number): boolean {
@@ -111,18 +117,18 @@ module fen {
             var sq = this.Square(x, y);     // will validate coordinates for us
             var bg:string = 'bw'.charAt((x+y) & 1);     // square background color code: 'b' or 'w'
             switch (sq) {
-                case ChessSquare.WPAWN:     return bg + 'wp' + '.png';
-                case ChessSquare.WKNIGHT:   return bg + 'wn' + '.png';
-                case ChessSquare.WBISHOP:   return bg + 'wb' + '.png';
-                case ChessSquare.WROOK:     return bg + 'wr' + '.png';
-                case ChessSquare.WQUEEN:    return bg + 'wq' + '.png';
-                case ChessSquare.WKING:     return bg + 'wk' + '.png';
-                case ChessSquare.BPAWN:     return bg + 'bp' + '.png';
-                case ChessSquare.BKNIGHT:   return bg + 'bn' + '.png';
-                case ChessSquare.BBISHOP:   return bg + 'bb' + '.png';
-                case ChessSquare.BROOK:     return bg + 'br' + '.png';
-                case ChessSquare.BQUEEN:    return bg + 'bq' + '.png';
-                case ChessSquare.BKING:     return bg + 'bk' + '.png';
+                case ChessSquare.WPAWN:     return bg + 'wp.png';
+                case ChessSquare.WKNIGHT:   return bg + 'wn.png';
+                case ChessSquare.WBISHOP:   return bg + 'wb.png';
+                case ChessSquare.WROOK:     return bg + 'wr.png';
+                case ChessSquare.WQUEEN:    return bg + 'wq.png';
+                case ChessSquare.WKING:     return bg + 'wk.png';
+                case ChessSquare.BPAWN:     return bg + 'bp.png';
+                case ChessSquare.BKNIGHT:   return bg + 'bn.png';
+                case ChessSquare.BBISHOP:   return bg + 'bb.png';
+                case ChessSquare.BROOK:     return bg + 'br.png';
+                case ChessSquare.BQUEEN:    return bg + 'bq.png';
+                case ChessSquare.BKING:     return bg + 'bk.png';
                 default:                    return bg + 'sq.png';
             }
         }
