@@ -3,9 +3,8 @@
 /// <reference path="jquery.d.ts" />
 /// <reference path="fen.ts" />
 
-function MakeImageContainer(x:number, y:number, filename:string): string {
+function MakeImageContainer(x:number, y:number): string {
     return '<div id="Square_' + x.toString() + y.toString() + '"' +
-        ' src="' + filename + '"' +
         ' style="position:absolute; left:' + (44*x).toFixed() + 'px; top:' + (44*(7-y)).toFixed() + 'px;"></div>';
 }
 
@@ -16,11 +15,10 @@ function MakeImageHtml(filename:string): string {
 function InitBoardDisplay() {
     var x:number;
     var y:number;
-    var imageFileNames:string[] = ['bitmap/bsq.png', 'bitmap/wsq.png'];
     var html:string = '';
     for (y=7; y>=0; --y) {
         for (x=0; x<8; ++x) {
-            html += MakeImageContainer(x, y, imageFileNames[(x+y)&1]);
+            html += MakeImageContainer(x, y);
         }
     }
     $('#DivBoard').html(html);
@@ -35,6 +33,8 @@ function SetBoard(text:string):boolean {
     return false;
 }
 
+var RotateFlag:boolean = false;
+
 function UpdateBoard(text:string):boolean {
     var board: fen.ChessBoard;
     try {
@@ -45,13 +45,14 @@ function UpdateBoard(text:string):boolean {
         return false;
     }
 
-    var x:number;
-    var y:number;
+    var x, rx, y, ry:number;
     var imageFileName: string;
     for (y=0; y < 8; ++y) {
+        ry = RotateFlag ? (7-y) : y;
         for (x=0; x < 8; ++x) {
+            rx = RotateFlag ? (7-x) : x;
             imageFileName = 'bitmap/' + board.ImageFileName(x, y);
-            $('#Square_' + x.toString() + y.toString()).html(MakeImageHtml(imageFileName));
+            $('#Square_' + rx.toString() + ry.toString()).html(MakeImageHtml(imageFileName));
         }
     }
     return true;
@@ -76,6 +77,15 @@ $(function(){
             UpdateBoard(textBoxFen.prop('value'));
             $(this).select();
         }
+    });
+
+    $('#ButtonRotate').click(function(){
+        RotateFlag = !RotateFlag;
+        UpdateBoard(textBoxFen.prop('value'));
+    });
+
+    $('#ButtonClear').click(function(){
+        SetBoard('8/8/8/8/8/8/8/8');
     });
 
     InitBoardDisplay();
