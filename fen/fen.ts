@@ -111,18 +111,18 @@ module fen {
             var sq = this.Square(x, y);     // will validate coordinates for us
             var bg:string = 'bw'.charAt((x+y) & 1);     // square background color code: 'b' or 'w'
             switch (sq) {
-                case ChessSquare.WPAWN:     return 'wp' + bg + '.png';
-                case ChessSquare.WKNIGHT:   return 'wn' + bg + '.png';
-                case ChessSquare.WBISHOP:   return 'wb' + bg + '.png';
-                case ChessSquare.WROOK:     return 'wr' + bg + '.png';
-                case ChessSquare.WQUEEN:    return 'wq' + bg + '.png';
-                case ChessSquare.WKING:     return 'wk' + bg + '.png';
-                case ChessSquare.BPAWN:     return 'bp' + bg + '.png';
-                case ChessSquare.BKNIGHT:   return 'bn' + bg + '.png';
-                case ChessSquare.BBISHOP:   return 'bb' + bg + '.png';
-                case ChessSquare.BROOK:     return 'br' + bg + '.png';
-                case ChessSquare.BQUEEN:    return 'bq' + bg + '.png';
-                case ChessSquare.BKING:     return 'bk' + bg + '.png';
+                case ChessSquare.WPAWN:     return bg + 'wp' + '.png';
+                case ChessSquare.WKNIGHT:   return bg + 'wn' + '.png';
+                case ChessSquare.WBISHOP:   return bg + 'wb' + '.png';
+                case ChessSquare.WROOK:     return bg + 'wr' + '.png';
+                case ChessSquare.WQUEEN:    return bg + 'wq' + '.png';
+                case ChessSquare.WKING:     return bg + 'wk' + '.png';
+                case ChessSquare.BPAWN:     return bg + 'bp' + '.png';
+                case ChessSquare.BKNIGHT:   return bg + 'bn' + '.png';
+                case ChessSquare.BBISHOP:   return bg + 'bb' + '.png';
+                case ChessSquare.BROOK:     return bg + 'br' + '.png';
+                case ChessSquare.BQUEEN:    return bg + 'bq' + '.png';
+                case ChessSquare.BKING:     return bg + 'bk' + '.png';
                 default:                    return bg + 'sq.png';
             }
         }

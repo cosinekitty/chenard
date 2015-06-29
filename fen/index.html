@@ -3,8 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <title>Forsyth-Edwards Notation display tool</title>
+    <link rel="stylesheet" type="text/css" href="reset.css">
 </head>
 <body>
+
+<div>
+    <label for="TextBoxFen">Enter FEN:</label>
+    <input type="text" value="" id="TextBoxFen" size="80">
+    <input type="button" value="Display" id="ButtonDisplay">
+</div>
+
+<div id="DivErrorText"></div>
+
+<div id="DivBoard" style="width:352px; height:352px; background-color: beige;"></div>
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
 <script src="fen.js"></script>
