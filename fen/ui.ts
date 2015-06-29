@@ -41,6 +41,7 @@ function UpdateBoard(text:string):boolean {
         board = new fen.ChessBoard(text);
     } catch (ex) {
         $('#DivErrorText').text(ex);
+        ClearBoard();
         return false;
     }
 
@@ -56,15 +57,22 @@ function UpdateBoard(text:string):boolean {
     return true;
 }
 
+function ClearBoard():void {
+    UpdateBoard('8/8/8/8/8/8/8/8');
+}
+
 $(function(){
     $('#ButtonDisplay').click(function(){
         $('#DivErrorText').text('');
-        var text: string = $('#TextBoxFen').prop('value');
-        UpdateBoard(text);
+        UpdateBoard($('#TextBoxFen').prop('value'));
     });
 
     $('#TextBoxFen').click(function(){
         $(this).select();
+    }).keyup(function(e){
+        if (e.keyCode == 13) {
+            UpdateBoard($('#TextBoxFen').prop('value'));
+        }
     });
 
     InitBoardDisplay();
