@@ -20,13 +20,13 @@ function MakeImageHtml(filename:string): string {
 function MakeFileLabel(x:number): string {
     return '<div class="RankFileText" id="FileLabel_' + x.toFixed() + '"' +
         ' style="position: absolute; top: ' + (SquarePixels*8 + 4).toFixed() + 'px; ' +
-        ' left: ' + (SquarePixels*x + 20).toFixed() + 'px; ">x</div>';
+        ' left: ' + (SquarePixels*x + 19).toFixed() + 'px; ">x</div>';
 }
 
 function MakeRankLabel(y:number): string {
     return '<div class="RankFileText" id="RankLabel_' + y.toFixed() + '"' +
         ' style="position: absolute; left:-12px; top:' +
-        (SquarePixels*y + 14).toFixed() + 'px;' +
+        (SquarePixels*y + 15).toFixed() + 'px;' +
         '">y</div>';
 }
 
@@ -46,6 +46,10 @@ function InitBoardDisplay() {
         html += MakeRankLabel(y);
     }
     $('#DivBoard').html(html);
+    ResetBoard();
+}
+
+function ResetBoard() {
     SetBoard('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR');
 }
 
@@ -106,6 +110,10 @@ $(function(){
     $('#ButtonRotate').click(function(){
         RotateFlag = !RotateFlag;
         UpdateBoard(textBoxFen.prop('value'));
+    });
+
+    $('#ButtonReset').click(function(){
+        ResetBoard();
     });
 
     $('#ButtonClear').click(function(){
