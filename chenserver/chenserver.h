@@ -44,7 +44,10 @@
         return s >= 0;
     }
     
-    #define closesocket close
+    inline int closesocket(SOCKET s)
+    {
+        return close(s);
+    }
 #else
     #ifdef _MSC_VER     // Windows?
         #include <WinSock2.h>
