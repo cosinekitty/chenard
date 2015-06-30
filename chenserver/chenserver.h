@@ -5,12 +5,13 @@
 */
 
 #include <assert.h>
-#include <time.h>
 #include <cstdio>
 #include <cstdlib>
-#include <string>
-#include <vector>
 #include <iostream>
+#include <memory>
+#include <string>
+#include <time.h>
+#include <vector>
 #include "chess.h"      // pick up handy CHENARD_LINUX preprocessor symbol
 #ifdef __APPLE__
     #include <sstream>

@@ -10,12 +10,12 @@
 int main(int argc, const char *argv[])
 {
     int rc = 1;
-    ChessCommandInterface *iface = nullptr;
+    std::unique_ptr<ChessCommandInterface> iface;
     int argindex = 1;
     if ((argc > 1) && (0 == strcmp(argv[1], "-s")))
     {
         ++argindex;
-        iface = new ChessCommandInterface_stdio();
+        iface.reset(new ChessCommandInterface_stdio());
     }
     else if ((argc > 2) && (0 == strcmp(argv[1], "-p")))
     {
@@ -23,7 +23,7 @@ int main(int argc, const char *argv[])
         int port = 0;
         if (1 == sscanf(argv[2], "%d", &port) && (port > 0) && (port <= 0xffff))
         {
-            iface = new ChessCommandInterface_tcp(port);
+            iface.reset(new ChessCommandInterface_tcp(port));
         }
         else
         {
@@ -35,7 +35,7 @@ int main(int argc, const char *argv[])
         PrintUsage();
     }
 
-    if (iface != nullptr)
+    if (iface)
     {
         ChessGameState game;
         ChessUI_Server ui;
@@ -51,8 +51,6 @@ int main(int argc, const char *argv[])
             }
         }
 
-        delete iface;
-        iface = nullptr;
         rc = 0;
     }
 
