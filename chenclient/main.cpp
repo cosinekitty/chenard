@@ -43,6 +43,9 @@ int main(int argc, const char *argv[])
     if (argc != 4)
     {
         std::cerr << "USAGE:  chenclient server port \"message\"" << std::endl;
+        std::cerr << std::endl;
+        std::cerr << "For more information, visit:" << std::endl;
+        std::cerr << "https://github.com/cosinekitty/chenard/wiki/ChenServer" << std::endl;
         return 1;
     }
 

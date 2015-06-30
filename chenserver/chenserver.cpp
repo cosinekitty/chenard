@@ -87,6 +87,9 @@ void PrintUsage()
         "\n"
         "chenserver -p port\n"
         "    Runs the Chenard server using the specified TCP port.\n"
+        "\n"
+        "For more information, visit:\n"
+        "https://github.com/cosinekitty/chenard/wiki/ChenServer\n"
         "\n";
 }
 
