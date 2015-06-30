@@ -25,12 +25,22 @@
     typedef sockaddr *LPSOCKADDR;
     const int INVALID_SOCKET = -1;
     
+    inline bool IsValidSocket(SOCKET s)
+    {
+        return s >= 0;
+    }
+    
     #define closesocket close
 #else
     #ifdef _MSC_VER     // Windows?
         #define _WINSOCK_DEPRECATED_NO_WARNINGS
         #include <WinSock2.h>
         #include <WS2tcpip.h>
+        
+        inline bool IsValidSocket(SOCKET s)
+        {
+            return s != INVALID_SOCKET;
+        }
     #else
         #error We do not know how to do socket programming on this platform.
     #endif

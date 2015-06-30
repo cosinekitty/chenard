@@ -26,13 +26,23 @@
     typedef sockaddr *LPSOCKADDR;
     const int INVALID_SOCKET = -1;
     
+    inline bool IsValidSocket(SOCKET s)
+    {
+        return s >= 0;
+    }
+    
     #define closesocket close
 #else
     #ifdef _MSC_VER     // Windows?
         #include <WinSock2.h>
+        
+        inline bool IsValidSocket(SOCKET s)
+        {
+            return s != INVALID_SOCKET;
+        }
     #else
         #error We do not know how to do socket programming on this platform.
-    #endif
+    #endif    
 #endif
 #include "uiserver.h"
 
@@ -162,7 +172,7 @@ private:
 
     void CloseSocket(SOCKET &sock)
     {
-        if (sock != INVALID_SOCKET)
+        if (IsValidSocket(sock))
         {
             ::closesocket(sock);
             sock = INVALID_SOCKET;

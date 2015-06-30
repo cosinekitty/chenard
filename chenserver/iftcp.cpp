@@ -33,7 +33,7 @@ ChessCommandInterface_tcp::ChessCommandInterface_tcp(int _port)
 
             // Wait for an inbound TCP connection.
             hostSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-            if (hostSocket != INVALID_SOCKET)
+            if (IsValidSocket(hostSocket))
             {
                 // Bind socket to the port number.
                 if (0 == bind(hostSocket, (LPSOCKADDR)&addr, sizeof(addr)))
@@ -92,7 +92,7 @@ bool ChessCommandInterface_tcp::ReadLine(std::string& line, bool& keepRunning)
     using namespace std;
 
     line.clear();
-    keepRunning = true;
+    keepRunning = ready;
     mode = MODE_LINE;
 
     CloseSocket(clientSocket);
@@ -101,7 +101,7 @@ bool ChessCommandInterface_tcp::ReadLine(std::string& line, bool& keepRunning)
     {
         // Wait for an inbound connection.
         clientSocket = accept(hostSocket, nullptr, nullptr);
-        if (clientSocket != INVALID_SOCKET)
+        if (IsValidSocket(clientSocket))
         {
             const int BUFFERLENGTH = 256;
             char buffer[BUFFERLENGTH];
@@ -297,7 +297,7 @@ void ChessCommandInterface_tcp::WriteLine(const std::string& line)
 {
     using namespace std;
 
-    if (clientSocket != INVALID_SOCKET)
+    if (IsValidSocket(clientSocket))
     {
         string response;
 
