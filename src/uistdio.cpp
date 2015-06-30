@@ -221,6 +221,20 @@ void ChessUI_stdio::EnableCombatMode()
 }
 
 
+void PrintForsythEdwardsNotation(ChessBoard& board)
+{
+    char buffer [200];
+    if (board.GetForsythEdwardsNotation(buffer, sizeof(buffer)))
+    {
+        printf("%s\n", buffer);
+    }
+    else
+    {
+        printf("ERROR: Could not generate Forsyth-Edwards notation.\n");
+    }
+}
+
+
 bool ChessUI_stdio::ReadMove (
     ChessBoard  &board,
     int         &source,
@@ -425,6 +439,10 @@ bool ChessUI_stdio::ReadMove (
         {
             boardDisplayType = Next (boardDisplayType);
             DrawBoard (board);
+        }
+        else if ( strcmp ( s, "fen" ) == 0 )
+        {
+            PrintForsythEdwardsNotation(board);
         }
         else
         {
