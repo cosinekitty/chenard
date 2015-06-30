@@ -16,3 +16,5 @@ Release
 *.map
 fen/fen.js
 fen/ui.js
+chenclient/chenclient
+chenserver/chenserver
