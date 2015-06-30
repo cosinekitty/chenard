@@ -30,7 +30,10 @@
         return s >= 0;
     }
     
-    #define closesocket close
+    inline int closesocket(SOCKET s)
+    {
+        return close(s);
+    }
 #else
     #ifdef _MSC_VER     // Windows?
         #define _WINSOCK_DEPRECATED_NO_WARNINGS
@@ -113,7 +116,7 @@ bool SendCommand(const std::string& server, int port, const std::string& command
     else
     {
         const std::string iptext = inet_ntoa(**(in_addr **)host->h_addr_list);
-        std::cout << "Resolved host '" << host->h_name << "' = " << iptext << std::endl;
+        //std::cout << "Resolved host '" << host->h_name << "' = " << iptext << std::endl;
         SOCKADDR_IN target;
         target.sin_family = AF_INET;
         target.sin_port = htons(port);
