@@ -1,2 +1,2 @@
 #!/bin/bash
-g++ -o chenserver -std=c++11 -Wall -Werror -Wextra -Wshadow -Wnon-virtual-dtor -Wunused -Woverloaded-virtual -O2 -I ../src @linux-source-files
+g++ -o chenserver -std=c++11 -stdlib=libc++ -Wall -Werror -Wextra -Wshadow -Wnon-virtual-dtor -Wunused -Woverloaded-virtual -O2 -I ../src @linux-source-files
