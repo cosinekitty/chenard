@@ -1,10 +1,40 @@
-#define _WINSOCK_DEPRECATED_NO_WARNINGS
+/*
+    main.cpp  -  Sample client for ChenServer, by Don Cross.
+    
+    https://github.com/cosinekitty/chenard/wiki/ChenServer
+*/
+
+#define CHENARD_LINUX   (defined(__linux__) || defined(__APPLE__))    
 
 #include <stdlib.h>
 #include <string>
 #include <iostream>
-#include <WinSock2.h>
-#include <WS2tcpip.h>
+#if CHENARD_LINUX
+    #include <stdlib.h>
+    #include <unistd.h>
+    #include <cstring>
+    #include <sys/types.h> 
+    #include <sys/socket.h>
+    #include <netinet/in.h>
+    #include <arpa/inet.h>
+    #include <netdb.h>
+    
+    // Hacks to help WinSock code build on Linux.
+    typedef int SOCKET;
+    typedef sockaddr_in SOCKADDR_IN;
+    typedef sockaddr *LPSOCKADDR;
+    const int INVALID_SOCKET = -1;
+    
+    #define closesocket close
+#else
+    #ifdef _MSC_VER     // Windows?
+        #define _WINSOCK_DEPRECATED_NO_WARNINGS
+        #include <WinSock2.h>
+        #include <WS2tcpip.h>
+    #else
+        #error We do not know how to do socket programming on this platform.
+    #endif
+#endif
 
 bool SendCommand(const std::string& server, int port, const std::string& command, std::string& response);
 
@@ -26,6 +56,7 @@ int main(int argc, const char *argv[])
         return 1;
     }
 
+#ifdef _MSC_VER
     WSADATA data;
     const WORD versionRequested = MAKEWORD(2, 2);
     int result = WSAStartup(versionRequested, &data);
@@ -33,11 +64,13 @@ int main(int argc, const char *argv[])
     {
         if (data.wVersion == versionRequested)
         {
+#endif        
             std::string response;
             if (SendCommand(server, port, message, response))
             {
                 std::cout << response << std::endl;
             }
+#ifdef _MSC_VER
         }
         else
         {
@@ -49,6 +82,7 @@ int main(int argc, const char *argv[])
     {
         std::cerr << "ERROR: Could not initialize WinSock." << std::endl;
     }
+#endif        
     return 1;
 }
 
@@ -79,7 +113,7 @@ bool SendCommand(const std::string& server, int port, const std::string& command
         }
         else
         {
-            if (0 != connect(sock, (SOCKADDR *)&target, sizeof(target)))
+            if (0 != connect(sock, (LPSOCKADDR)&target, sizeof(target)))
             {
                 std::cerr << "Cannot connect to host" << std::endl;
             }

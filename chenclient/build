@@ -1,0 +1,2 @@
+#!/bin/bash
+g++ -std=c++11 -Wall -Werror -Wextra -Wshadow -Wnon-virtual-dtor -Wunused -Woverloaded-virtual -O2 -o ~/bin/chenclient -I ../src main.cpp
