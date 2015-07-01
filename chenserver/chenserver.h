@@ -163,7 +163,9 @@ public:
 
 private:
     const int port;
+#ifdef _MSC_VER
     bool initialized;
+#endif
     bool ready;
     SOCKET hostSocket;
     SOCKET clientSocket;
