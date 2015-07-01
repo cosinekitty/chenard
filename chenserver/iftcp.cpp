@@ -6,7 +6,9 @@
 
 ChessCommandInterface_tcp::ChessCommandInterface_tcp(int _port)
     : port(_port)
+#ifdef _MSC_VER
     , initialized(false)
+#endif
     , ready(false)
     , hostSocket(INVALID_SOCKET)
     , clientSocket(INVALID_SOCKET)
