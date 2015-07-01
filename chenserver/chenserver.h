@@ -94,6 +94,8 @@ class ChessGameState
 {
 public:
     ChessGameState() {}
+    ChessGameState(const ChessGameState&) = delete;
+    ChessGameState& operator=(const ChessGameState&) = delete;
 
     void Reset();
     const char *GameResult();
@@ -111,9 +113,6 @@ public:
     bool IsGameOver() { return board.GameIsOver(); }
 
 private:
-    ChessGameState(const ChessGameState&);              // disable copy constructor
-    ChessGameState& operator=(const ChessGameState&);   // disable assignment operator
-
     struct MoveState
     {
         Move move;
@@ -145,19 +144,19 @@ class ChessCommandInterface_stdio : public ChessCommandInterface
 {
 public:
     ChessCommandInterface_stdio();
+    ChessCommandInterface_stdio(const ChessCommandInterface_stdio&) = delete;
+    ChessCommandInterface_stdio& operator= (const ChessCommandInterface_stdio&) = delete;
     virtual ~ChessCommandInterface_stdio();
     virtual bool ReadLine(std::string& line, bool& keepRunning);
     virtual void WriteLine(const std::string& line);
-
-private:
-    ChessCommandInterface_stdio(const ChessCommandInterface_stdio&);                // disable copy constructor
-    ChessCommandInterface_stdio& operator= (const ChessCommandInterface_stdio&);    // disable assignment
 };
 
 class ChessCommandInterface_tcp : public ChessCommandInterface
 {
 public:
     explicit ChessCommandInterface_tcp(int _port);
+    ChessCommandInterface_tcp(const ChessCommandInterface_tcp&) = delete;
+    ChessCommandInterface_tcp& operator= (const ChessCommandInterface_tcp&) = delete;
     virtual ~ChessCommandInterface_tcp();
     virtual bool ReadLine(std::string& line, bool& keepRunning);
     virtual void WriteLine(const std::string& line);
@@ -171,8 +170,6 @@ private:
     enum data_mode { MODE_LINE, MODE_HTTP } mode;
     char httpMinorVersion;
 
-    ChessCommandInterface_tcp(const ChessCommandInterface_tcp&);                // disable copy constructor
-    ChessCommandInterface_tcp& operator= (const ChessCommandInterface_tcp&);    // disable assignment
 
     void CloseSocket(SOCKET &sock)
     {
