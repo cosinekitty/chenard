@@ -62,7 +62,7 @@ const char *GetWhitePlayerString()  // used by SavePortableGameNotation()
     return "White";
 }
 
-const char *GetBlackPlayerString()	// used by SavePortableGameNotation()
+const char *GetBlackPlayerString()  // used by SavePortableGameNotation()
 {
     return "Black";
 }
