@@ -28,15 +28,15 @@
 #define CHENARD_LINUX   (defined(__linux__) || defined(__APPLE__))    
 
 #if CHENARD_LINUX
-	#define stricmp strcasecmp
+    #define stricmp strcasecmp
 #endif
 
 #ifdef _MSC_VER
-	// Microsoft C++ compiler.
-	// Disable warnings about deprecated functions like sprintf(), sscanf(), etc.
-	// I would like to fix these, but no equivalent exists in Linux that I can tell.
-	// Maybe some day I will make macros that expand to sprintf_s in Microsoft, or sprintf in Linux.
-	#pragma warning (disable: 4996)
+    // Microsoft C++ compiler.
+    // Disable warnings about deprecated functions like sprintf(), sscanf(), etc.
+    // I would like to fix these, but no equivalent exists in Linux that I can tell.
+    // Maybe some day I will make macros that expand to sprintf_s in Microsoft, or sprintf in Linux.
+    #pragma warning (disable: 4996)
 #endif // _MSC_VER
 
 class ChessBoard;

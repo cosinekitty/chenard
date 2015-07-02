@@ -24,11 +24,11 @@ NamedPipeChessPlayer::NamedPipeChessPlayer (ChessUI &_ui, const char *_MachineNa
     SetQuitReason(qgr_lostConnection);
 
     if (_MachineName && strlen(_MachineName) < sizeof(MachineName)) {
-		if (_MachineName[0]) {
-			strcpy (MachineName, _MachineName);
-		} else {
-			strcpy (MachineName, ".");
-		}
+        if (_MachineName[0]) {
+            strcpy (MachineName, _MachineName);
+        } else {
+            strcpy (MachineName, ".");
+        }
         sprintf (PipeName, "\\\\%s\\pipe\\flywheel_chess_thinker", MachineName);
         NamedPipe = CreateFileA (
             PipeName,
@@ -123,7 +123,7 @@ bool NamedPipeChessPlayer::GetMove (ChessBoard &board, Move &move, INT32 &timeSp
                                                 xprom = LegalMoves.m[i].actualOffsets (board, xsource, xdest);
                                                 if (xsource==rsource && xdest==rdest && xprom==rprom) {
                                                     move = LegalMoves.m[i];
-													userInterface.DisplayMove (board, move);
+                                                    userInterface.DisplayMove (board, move);
                                                     return true;
                                                 }
                                             }

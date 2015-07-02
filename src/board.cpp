@@ -236,7 +236,7 @@ bool ChessBoard::IsDefiniteDraw ( int *numReps )
     int r = (white_to_move ? whiteRepeatHash : blackRepeatHash)[cachedHash % REPEAT_HASH_SIZE];
     if (r >= 3)
     {
-        r = NumberOfRepetitions();		// more expensive calculation - but must determine if really a draw by repetition
+        r = NumberOfRepetitions();    // more expensive calculation - but must determine if really a draw by repetition
     }
 
     if (numReps)
@@ -469,9 +469,9 @@ void ChessBoard::EditCommand ( Move edit )
 void ChessBoard::Update()
 {
     int i;
-	for (i=0; i < PIECE_ARRAY_SIZE; i++) {
+    for (i=0; i < PIECE_ARRAY_SIZE; i++) {
         inventory[i] = 0;
-	}
+    }
 
     lastCapOrPawn = -1;
     wmaterial = 0;
@@ -483,37 +483,37 @@ void ChessBoard::Update()
             ++inventory [ SPIECE_INDEX(s) ];
 
             switch (s) {
-                case WKING:    wmaterial += KING_VAL;    wk_offset = i;		break;
+                case WKING:    wmaterial += KING_VAL;    wk_offset = i;     break;
                 case WQUEEN:   wmaterial += QUEEN_VAL;   break;
                 case WROOK:    wmaterial += ROOK_VAL;    break;
                 case WBISHOP:  wmaterial += BISHOP_VAL;  break;
                 case WKNIGHT:  wmaterial += KNIGHT_VAL;  break;
                 case WPAWN:    wmaterial += PAWN_VAL;    break;
 
-                case BKING:    bmaterial += KING_VAL;    bk_offset = i;		break;
+                case BKING:    bmaterial += KING_VAL;    bk_offset = i;     break;
                 case BQUEEN:   bmaterial += QUEEN_VAL;   break;
                 case BROOK:    bmaterial += ROOK_VAL;    break;
                 case BBISHOP:  bmaterial += BISHOP_VAL;  break;
                 case BKNIGHT:  bmaterial += KNIGHT_VAL;  break;
                 case BPAWN:    bmaterial += PAWN_VAL;    break;
 
-				default:
-					ChessFatal ("ChessBoard::Update():  Corrupt board contents!");
+                default:
+                    ChessFatal ("ChessBoard::Update():  Corrupt board contents!");
             }
         }
     }
 
-	if ( IsAttackedByBlack(wk_offset) ) {
+    if ( IsAttackedByBlack(wk_offset) ) {
         flags |= SF_WCHECK;
-	} else {
+    } else {
         flags &= ~SF_WCHECK;
-	}
+    }
 
-	if ( IsAttackedByWhite(bk_offset) ) {
+    if ( IsAttackedByWhite(bk_offset) ) {
         flags |= SF_BCHECK;
-	} else {
+    } else {
         flags &= ~SF_BCHECK;
-	}
+    }
 
     cachedHash = CalcHash();
 }

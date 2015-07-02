@@ -42,10 +42,10 @@ void Speak (const char *pgn)
         if (pgn[1]=='-' && pgn[2]=='O') {
             if (pgn[3]=='-' && pgn[4]=='O') {
                 PlayWav ("ooo");
-                index = 5;	// skip over "O-O-O", in case there is a "+", etc.
+                index = 5;      // skip over "O-O-O", in case there is a "+", etc.
             } else {
                 PlayWav ("oo");
-                index = 3;	// skip over "O-O", in case there is a "+", etc.
+                index = 3;      // skip over "O-O", in case there is a "+", etc.
             }
         } else {
             assert (false);     // not valid PGN notation!

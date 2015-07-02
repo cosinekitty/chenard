@@ -23,7 +23,7 @@
 #include "chess.h"
 
 #if CHENARD_LINUX
-	#include <sys/time.h>
+    #include <sys/time.h>
 #endif
 
 #include "gamefile.h"

@@ -2145,7 +2145,7 @@ void Chenard_FileOpen()
 
 static bool WaveFilesExist()
 {
-	char c;
+    char c;
     char filename [256];
 
     // See if 1.WAV through 8.WAV exist...

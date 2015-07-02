@@ -939,5 +939,5 @@ int main(int argc, const char *argv[])
         TheTerminal.print("\r\n");
     }
     TheTerminal.close();
- 	return rc;
+    return rc;
 }

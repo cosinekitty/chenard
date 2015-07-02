@@ -29,7 +29,7 @@
 #define RB_BCOMPUTER         108
 #define RB_W_NAMEDPIPE       109
 #define RB_B_NAMEDPIPE       110
-#define TB_EDIT_FEN			 600
+#define TB_EDIT_FEN          600
 
 #define IDD_PROMOTE_PAWN     101
 #define RB_QUEEN             201
@@ -43,7 +43,7 @@
 #define IDD_DEFINE_PLAYERS2             168
 #define IDD_EDIT_THINK_TIMES            169
 #define IDD_ABOUT                       170
-#define IDD_ENTER_FEN					171
+#define IDD_ENTER_FEN                   171
 #define IDD_EDIT_BLUNDER_THRESHOLD      172
 
 #define IDR_ACCELERATOR1                400

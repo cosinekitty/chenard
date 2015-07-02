@@ -47,7 +47,7 @@ INT32 ChessTime()
         __int64 diff = pc.QuadPart - startTime.QuadPart;
         diff /= performanceFrequency.QuadPart;
         return (INT32) diff;
-	}
+    }
 }
 
 

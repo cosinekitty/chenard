@@ -1599,7 +1599,7 @@ void ChessUI_win32_gui::DebugPly ( int depth, ChessBoard &board, Move move )
 
             TempBoard = TopBoard;
 
-			int i;
+            int i;
             for ( i=0; i<=depth; i++ )
             {
                 char moveString [64];
@@ -1900,13 +1900,13 @@ void ChessUI_win32_gui::ReportComputerStats (
     FormatDisplayedInteger (nodesEvaluated, "evaluated=", displayString);
     ChessDisplayTextBuffer::SetText ( STATIC_ID_NODES_EVALUATED, displayString );
 
-	displayString[0] = '\0';     // fallback in case eval/sec cannot be displayed
+    displayString[0] = '\0';     // fallback in case eval/sec cannot be displayed
     if (thinkTime > 5) {
-		double nodesPerSecond = double(nodesEvaluated) * 100.0 / double(thinkTime);
+        double nodesPerSecond = double(nodesEvaluated) * 100.0 / double(thinkTime);
         if (nodesPerSecond >= 0.0 && nodesPerSecond < 1.0e+12) {
             FormatDisplayedInteger ((unsigned long) nodesPerSecond, "eval/sec=", displayString);
         }
-	}
+    }
     ChessDisplayTextBuffer::SetText ( STATIC_ID_NODES_EVALPERSEC, displayString );
 
     unsigned long elapsedSeconds = thinkTime / 100;

@@ -31,7 +31,7 @@
 // even though this is a <conio.h> is a system header on Windows,
 // because chess.h is where I determine the value of CHENARD_LINUX.
 #if !CHENARD_LINUX
-	#include <conio.h>
+    #include <conio.h>
 #endif
 
 

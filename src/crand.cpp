@@ -20,10 +20,10 @@ static  INT32    Seed = 1;
 static INT16 _ChessRandom ()
 {
     Seed = MULTIPLIER * Seed + INCREMENT;
-	INT16 r = INT16(Seed >> 16) & 0x7fff;
-	if (r < 0) {
-		ChessFatal ("Negative value returned by _ChessRandom");
-	}
+    INT16 r = INT16(Seed >> 16) & 0x7fff;
+    if (r < 0) {
+        ChessFatal ("Negative value returned by _ChessRandom");
+    }
     return r;
 }
 
@@ -44,10 +44,10 @@ int ChessRandom ( int n )
     }
 
     int r = int(_ChessRandom()) % n;
-	if (r<0 || r>=n) {
-		ChessFatal ("ChessRandom is broken!");
-	}
-	return r;
+    if (r<0 || r>=n) {
+        ChessFatal ("ChessRandom is broken!");
+    }
+    return r;
 }
 
 
