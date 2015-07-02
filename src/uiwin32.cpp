@@ -95,10 +95,8 @@ ChessPlayer *ChessUI_win32_gui::CreatePlayer ( ChessSide side )
     switch (playerType)
     {
     case DefPlayerInfo::computerPlayer:
-    {
-        ComputerChessPlayer *puter = new ComputerChessPlayer (*this);
-        if (puter)
         {
+            ComputerChessPlayer *puter = new ComputerChessPlayer (*this);
             player = puter;
             if (useSeconds)
             {
@@ -113,46 +111,45 @@ ChessPlayer *ChessUI_win32_gui::CreatePlayer ( ChessSide side )
             extern bool Global_AllowResignFlag;
             puter->setResignFlag(Global_AllowResignFlag);
         }
-    }
-    break;
+        break;
 
     case DefPlayerInfo::humanPlayer:
-    {
-        player = new HumanChessPlayer (*this);
-    }
-    break;
+        {
+            player = new HumanChessPlayer (*this);
+        }
+        break;
 
 #if SUPPORT_INTERNET
     case DefPlayerInfo::internetPlayer:
-    {
-        const InternetConnectionInfo &cinfo =
-            (side == SIDE_WHITE) ?
-            DefPlayer.whiteInternetConnect :
-            DefPlayer.blackInternetConnect;
-
-        extern bool Global_InternetPlayersReady;
-        while ( !Global_InternetPlayersReady )
         {
-            Sleep(500);
-        }
+            const InternetConnectionInfo &cinfo =
+                (side == SIDE_WHITE) ?
+                DefPlayer.whiteInternetConnect :
+                DefPlayer.blackInternetConnect;
 
-        MessageBox ( hwnd, "Remote connection established...\nready to play!", "", MB_OK | MB_ICONINFORMATION );
-        player = new InternetChessPlayer (*this, cinfo);
-    }
-    break;
+            extern bool Global_InternetPlayersReady;
+            while ( !Global_InternetPlayersReady )
+            {
+                Sleep(500);
+            }
+
+            MessageBox ( hwnd, "Remote connection established...\nready to play!", "", MB_OK | MB_ICONINFORMATION );
+            player = new InternetChessPlayer (*this, cinfo);
+        }
+        break;
 #endif  // SUPPORT_INTERNET
 
 #if SUPPORT_NAMED_PIPE
     case DefPlayerInfo::namedPipePlayer:
-    {
-        const char *serverMachineName =
-            (side == SIDE_WHITE) ?
-            DefPlayer.whiteServerName :
-            DefPlayer.blackServerName;
+        {
+            const char *serverMachineName =
+                (side == SIDE_WHITE) ?
+                DefPlayer.whiteServerName :
+                DefPlayer.blackServerName;
 
-        player = new NamedPipeChessPlayer (*this, serverMachineName);
-    }
-    break;
+            player = new NamedPipeChessPlayer (*this, serverMachineName);
+        }
+        break;
 #endif // SUPPORT_NAMED_PIPE
     }
 
@@ -363,53 +360,51 @@ BOOL CALLBACK SuggestMove_DlgProc (
     switch ( msg )
     {
     case WM_INITDIALOG:
-    {
-        // Set check box to match previous "ding after suggestion" option.
-        CheckDlgButton(
-            hwnd,
-            IDC_CHECK_DING_AFTER_SUGGEST,
-            Global_DingAfterSuggest ? BST_CHECKED : BST_UNCHECKED);
+        {
+            // Set check box to match previous "ding after suggestion" option.
+            CheckDlgButton(
+                hwnd,
+                IDC_CHECK_DING_AFTER_SUGGEST,
+                Global_DingAfterSuggest ? BST_CHECKED : BST_UNCHECKED);
 
-        // Remember think time setting from previous suggested moves...
+            // Remember think time setting from previous suggested moves...
 
-        int length = sprintf ( buffer, "%lg", double(SuggestThinkTime)/100.0 );
-        SetWindowText (timeEditBox, buffer);
-        SetFocus (timeEditBox);
+            int length = sprintf ( buffer, "%lg", double(SuggestThinkTime)/100.0 );
+            SetWindowText (timeEditBox, buffer);
+            SetFocus (timeEditBox);
 
-        // Select the text inside the text box, so the user does not need to hit TAB key to edit it.
-        // http://msdn.microsoft.com/en-us/library/bb761661(VS.85).aspx
-        SendMessage (timeEditBox, EM_SETSEL, 0 /*starting position*/, length /*one past end position*/);
-    }
-    break;
+            // Select the text inside the text box, so the user does not need to hit TAB key to edit it.
+            // http://msdn.microsoft.com/en-us/library/bb761661(VS.85).aspx
+            SendMessage (timeEditBox, EM_SETSEL, 0 /*starting position*/, length /*one past end position*/);
+        }
+        break;
 
     case WM_COMMAND:
-    {
-        switch ( wparam )
         {
-        case IDOK:
-        {
-            buffer[0] = '\0';
-            GetWindowText ( timeEditBox, buffer, sizeof(buffer) );
-            double thinkTime = atof(buffer);
-            if ( thinkTime < 0.1 )
-                thinkTime = 0.1;
+            switch ( wparam )
+            {
+            case IDOK:
+                {
+                    buffer[0] = '\0';
+                    GetWindowText ( timeEditBox, buffer, sizeof(buffer) );
+                    double thinkTime = atof(buffer);
+                    if ( thinkTime < 0.1 )
+                        thinkTime = 0.1;
 
-            SuggestThinkTime = INT32 ( thinkTime * 100 );
-            Global_DingAfterSuggest = IsDlgButtonChecked(hwnd, IDC_CHECK_DING_AFTER_SUGGEST) ? true : false;
-            EndDialog ( hwnd, IDOK );
-            result = TRUE;
+                    SuggestThinkTime = INT32 ( thinkTime * 100 );
+                    Global_DingAfterSuggest = IsDlgButtonChecked(hwnd, IDC_CHECK_DING_AFTER_SUGGEST) ? true : false;
+                    EndDialog ( hwnd, IDOK );
+                    result = TRUE;
+                }
+                break;
+
+            case IDCANCEL:
+                EndDialog ( hwnd, IDCANCEL );
+                result = TRUE;
+                break;
+            }
         }
         break;
-
-        case IDCANCEL:
-        {
-            EndDialog ( hwnd, IDCANCEL );
-            result = TRUE;
-        }
-        break;
-        }
-    }
-    break;
     }
 
     return result;
@@ -970,55 +965,43 @@ BlunderAlertParms* ChessUI_win32_gui::blunderAlert_Initialize (const ChessBoard&
         // will use to think about all the moves the human might make.
         ComputerChessPlayer* blunderAlertThinker = new ComputerChessPlayer(*this);
 
-        if (blunderAlertThinker != NULL)
+        // Make the thinker appropriate for a background task.
+        blunderAlertThinker->blunderAlert_SetInstanceFlag();    // avoids mate prediction announcements
+        blunderAlertThinker->setEnableMoveDisplay(false);       // do not display the move the computer selects
+        blunderAlertThinker->SetSearchBias(0);                  // fastest possible analysis, no randomness
+        blunderAlertThinker->SetOpeningBookEnable(false);       // force tactical analysis every time (no opening book)
+        blunderAlertThinker->SetTrainingEnable(false);          // force tactical analysis every time (no experience)
+        blunderAlertThinker->setExtendedSearchFlag(false);      // always search exactly as long as told
+        blunderAlertThinker->setResignFlag(false);              // do not let the thinker resign
+
+        blunderAlertParms = new BlunderAlertParms(&board, blunderAlertThinker, Global_BlunderAlertThreshold);
+
+        // Create a new thread to process the blunder alert analysis.
+        // IMPORTANT: _beginthread may return an invalid handle even
+        // though the thread was started properly, because blunder alert
+        // thread might exit very quickly.
+        uintptr_t threadHandle = _beginthread(BlunderAlertThreadFunc, 0, blunderAlertParms);
+        if (threadHandle == INVALID_THREAD)
         {
-            // Make the thinker appropriate for a background task.
-            blunderAlertThinker->blunderAlert_SetInstanceFlag();    // avoids mate prediction announcements
-            blunderAlertThinker->setEnableMoveDisplay(false);       // do not display the move the computer selects
-            blunderAlertThinker->SetSearchBias(0);                  // fastest possible analysis, no randomness
-            blunderAlertThinker->SetOpeningBookEnable(false);       // force tactical analysis every time (no opening book)
-            blunderAlertThinker->SetTrainingEnable(false);          // force tactical analysis every time (no experience)
-            blunderAlertThinker->setExtendedSearchFlag(false);      // always search exactly as long as told
-            blunderAlertThinker->setResignFlag(false);              // do not let the thinker resign
-
-            blunderAlertParms = new BlunderAlertParms(&board, blunderAlertThinker, Global_BlunderAlertThreshold);
-
-            if (blunderAlertParms != NULL)
+            // If the thread actually did run, we can tell for sure by looking at
+            // blunderAlertParms for the flag saying it started and finished.
+            if (!blunderAlertParms->isStarted)
             {
-                // Create a new thread to process the blunder alert analysis.
-                // IMPORTANT: _beginthread may return an invalid handle even
-                // though the thread was started properly, because blunder alert
-                // thread might exit very quickly.
-                uintptr_t threadHandle = _beginthread(BlunderAlertThreadFunc, 0, blunderAlertParms);
-                if (threadHandle == INVALID_THREAD)
-                {
-                    // If the thread actually did run, we can tell for sure by looking at
-                    // blunderAlertParms for the flag saying it started and finished.
-                    if (!blunderAlertParms->isStarted)
-                    {
-                        // Assume there really was a failure to start the thread.
-                        delete blunderAlertParms;
-                        blunderAlertParms = NULL;
-                    }
-                }
-
-                if (blunderAlertParms != NULL)
-                {
-                    // Getting here means we believe we have started the thread successfully.
-                    // Wait until it tells us that we can safely proceed.
-                    // Otherwise we risk corrupting the chess board before
-                    // the child thread has finished making a safe copy of it.
-                    while (!blunderAlertParms->isStarted)
-                    {
-                        Sleep(10);
-                    }
-                }
+                // Assume there really was a failure to start the thread.
+                delete blunderAlertParms;
+                blunderAlertParms = NULL;
             }
-            else
+        }
+
+        if (blunderAlertParms != NULL)
+        {
+            // Getting here means we believe we have started the thread successfully.
+            // Wait until it tells us that we can safely proceed.
+            // Otherwise we risk corrupting the chess board before
+            // the child thread has finished making a safe copy of it.
+            while (!blunderAlertParms->isStarted)
             {
-                // Memory failure allocating parameters!
-                // Avoid leaking the thinker...
-                delete blunderAlertThinker;
+                Sleep(10);
             }
         }
     }
@@ -2118,8 +2101,7 @@ double ChessUI_win32_gui::runTacticalBenchmark()
     Move move;
     UnmoveInfo unmove;
 
-    LoadGameFromHardcode (
-        VarokGame, sizeof(VarokGame)/sizeof(VarokGame[0]), tboard );
+    LoadGameFromHardcode(VarokGame, sizeof(VarokGame)/sizeof(VarokGame[0]), tboard);
     benchmarkExpectedMove.source = 0;
     benchmarkExpectedMove.dest = 0;
     TheBoardDisplayBuffer.update (tboard);
@@ -2410,9 +2392,6 @@ bool ChessUI_win32_gui::oppTime_startThinking (
     if ( !oppTimeParms.oppThinker )
     {
         oppTimeParms.oppThinker = new ComputerChessPlayer (*this);
-        if ( !oppTimeParms.oppThinker )
-            return false;
-
         oppTimeParms.oppThinker->oppTime_SetInstanceFlag();
         oppTimeParms.oppThinker->setEnableMoveDisplay (false);
         oppTimeParms.oppThinker->SetSearchBias(1);      // allow randomized search
@@ -2985,4 +2964,3 @@ thread_exit:
          Adding support for thinking on opponent's time.
 
 */
-
