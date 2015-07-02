@@ -32,7 +32,7 @@ UINT32 OffsetMush [144] =
     0xCAB98467, 0xACBE1918, 0xBF07E0F3, 0x2E001E97,
     0x93A0F2C8, 0xD3AE930D, 0x241AAB1D, 0x53B59E16,
 
-    0x763A2550, 0x683A8C25, 0x6D649356, 0xAA07A163, 
+    0x763A2550, 0x683A8C25, 0x6D649356, 0xAA07A163,
     0xECFF7A21, 0x85F21A3D, 0x69910950, 0xFFE520C4,
     0x9E2BADB1, 0x9919CAAB, 0xD1BB5EEC, 0xBE772461,
     0x29E13885, 0xCFBCB1BE, 0xFEADC57B, 0x41F6459D,
@@ -108,60 +108,60 @@ UINT32 ChessBoard::CalcHash() const
 
 #if BOARD_HASH_DEBUG
 
-    #include <stdio.h>
+#include <stdio.h>
 
-    void DebugDumpBoard ( const SQUARE board [144], const char *message, Move move )
+void DebugDumpBoard ( const SQUARE board [144], const char *message, Move move )
+{
+    const char *debugFilename = "chenbug.txt";
+    FILE *db = fopen ( debugFilename, "at" );
+    if ( db )
     {
-        const char *debugFilename = "chenbug.txt";
-        FILE *db = fopen ( debugFilename, "at" );
-        if ( db )
+        fprintf ( db, "[source=%d (%d,%d); dest=%d (%d,%d)]\n%s\n\n",
+                  int(move.source), int(XPART(move.source)), int(YPART(move.source)),
+                  int(move.dest), int(XPART(move.dest)), int(YPART(move.dest)),
+                  message );
+
+        for ( int y=OFFSET(2,2); y <= OFFSET(2,9); y += NORTH )
         {
-            fprintf ( db, "[source=%d (%d,%d); dest=%d (%d,%d)]\n%s\n\n", 
-                int(move.source), int(XPART(move.source)), int(YPART(move.source)),
-                int(move.dest), int(XPART(move.dest)), int(YPART(move.dest)),
-                message );
-
-            for ( int y=OFFSET(2,2); y <= OFFSET(2,9); y += NORTH )
+            for ( int x=0; x < 8; ++x )
             {
-                for ( int x=0; x < 8; ++x )
+                int ofs = x + y;
+                char piece = '?';
+                switch ( board[ofs] )
                 {
-                    int ofs = x + y;
-                    char piece = '?';
-                    switch ( board[ofs] )
-                    {
-                        case EMPTY:     piece = '.';    break;
+                case EMPTY:     piece = '.';    break;
 
-                        case WPAWN:     piece = 'P';    break;
-                        case WKNIGHT:   piece = 'N';    break;
-                        case WBISHOP:   piece = 'B';    break;
-                        case WROOK:     piece = 'R';    break;
-                        case WQUEEN:    piece = 'Q';    break;
-                        case WKING:     piece = 'K';    break;
+                case WPAWN:     piece = 'P';    break;
+                case WKNIGHT:   piece = 'N';    break;
+                case WBISHOP:   piece = 'B';    break;
+                case WROOK:     piece = 'R';    break;
+                case WQUEEN:    piece = 'Q';    break;
+                case WKING:     piece = 'K';    break;
 
-                        case BPAWN:     piece = 'p';    break;
-                        case BKNIGHT:   piece = 'n';    break;
-                        case BBISHOP:   piece = 'b';    break;
-                        case BROOK:     piece = 'r';    break;
-                        case BQUEEN:    piece = 'q';    break;
-                        case BKING:     piece = 'k';    break;
-                    }
-
-                    fprintf ( db, "%c", piece );
+                case BPAWN:     piece = 'p';    break;
+                case BKNIGHT:   piece = 'n';    break;
+                case BBISHOP:   piece = 'b';    break;
+                case BROOK:     piece = 'r';    break;
+                case BQUEEN:    piece = 'q';    break;
+                case BKING:     piece = 'k';    break;
                 }
-                fprintf ( db, "\n" );
+
+                fprintf ( db, "%c", piece );
             }
-
-            fprintf ( db, "\n---------------------------------\n\n" );
-
-            fclose(db);
+            fprintf ( db, "\n" );
         }
+
+        fprintf ( db, "\n---------------------------------\n\n" );
+
+        fclose(db);
     }
+}
 
 #endif
 
 
 
-void ChessBoard::MakeWhiteMove ( 
+void ChessBoard::MakeWhiteMove (
     Move         &move,
     UnmoveInfo   &unmove,
     bool      look_for_self_check,
@@ -191,7 +191,7 @@ void ChessBoard::MakeWhiteMove (
     SQUARE piece = board[source];
 
 #if BOARD_HASH_DEBUG
-    if ( !(piece & WHITE_MASK) ) 
+    if ( !(piece & WHITE_MASK) )
     {
         DebugDumpBoard ( board, "attempt to move non-white piece in MakeWhiteMove", move );
         ChessFatal ( "Attempt to move non-white piece in MakeWhiteMove" );
@@ -215,93 +215,93 @@ void ChessBoard::MakeWhiteMove (
 
         switch ( dest & SPECIAL_MOVE_MASK )      // Get kind of special move from 'dest'
         {
-            case SPECIAL_MOVE_PROMOTE_NORM:
-                piece = PROM_PIECE ( dest, WHITE_IND );
-                --inventory [WP_INDEX];
-                ++inventory [SPIECE_INDEX(piece)];
-                wmaterial += (RAW_PIECE_VALUE(piece) - PAWN_VAL);
-                LIFT_PIECE(board[source],source);
-                board [source] = EMPTY;
-                board [dest = source + NORTH] = piece;
-                DROP_PIECE(piece,dest);
-                lastCapOrPawn = ply_number;
-                break;
+        case SPECIAL_MOVE_PROMOTE_NORM:
+            piece = PROM_PIECE ( dest, WHITE_IND );
+            --inventory [WP_INDEX];
+            ++inventory [SPIECE_INDEX(piece)];
+            wmaterial += (RAW_PIECE_VALUE(piece) - PAWN_VAL);
+            LIFT_PIECE(board[source],source);
+            board [source] = EMPTY;
+            board [dest = source + NORTH] = piece;
+            DROP_PIECE(piece,dest);
+            lastCapOrPawn = ply_number;
+            break;
 
-            case SPECIAL_MOVE_PROMOTE_CAP_EAST:
-                capture = board [source + NORTHEAST];
-                LIFT_PIECE(capture, source + NORTHEAST);
-                piece = PROM_PIECE ( dest, WHITE_IND );
-                --inventory [WP_INDEX];    // promoted pawn "disappears"
-                ++inventory [SPIECE_INDEX(piece)];   // prom piece "created"
-                wmaterial += (RAW_PIECE_VALUE(piece) - PAWN_VAL);
-                LIFT_PIECE(board[source],source);
-                board [source] = EMPTY;
-                board [dest = source + NORTHEAST] = piece;
-                DROP_PIECE(piece,dest);
-                break;
+        case SPECIAL_MOVE_PROMOTE_CAP_EAST:
+            capture = board [source + NORTHEAST];
+            LIFT_PIECE(capture, source + NORTHEAST);
+            piece = PROM_PIECE ( dest, WHITE_IND );
+            --inventory [WP_INDEX];    // promoted pawn "disappears"
+            ++inventory [SPIECE_INDEX(piece)];   // prom piece "created"
+            wmaterial += (RAW_PIECE_VALUE(piece) - PAWN_VAL);
+            LIFT_PIECE(board[source],source);
+            board [source] = EMPTY;
+            board [dest = source + NORTHEAST] = piece;
+            DROP_PIECE(piece,dest);
+            break;
 
-            case SPECIAL_MOVE_PROMOTE_CAP_WEST:
-                capture = board [source + NORTHWEST];
-                LIFT_PIECE(capture, source + NORTHWEST);
-                piece = PROM_PIECE ( dest, WHITE_IND );
-                --inventory [WP_INDEX];    // promoted pawn "disappears"
-                ++inventory [SPIECE_INDEX(piece)];   // prom piece "created"
-                wmaterial += (RAW_PIECE_VALUE(piece) - PAWN_VAL);
-                LIFT_PIECE(board[source],source);
-                board [source] = EMPTY;
-                board [dest = source + NORTHWEST] = piece;
-                DROP_PIECE(piece, dest);
-                break;
+        case SPECIAL_MOVE_PROMOTE_CAP_WEST:
+            capture = board [source + NORTHWEST];
+            LIFT_PIECE(capture, source + NORTHWEST);
+            piece = PROM_PIECE ( dest, WHITE_IND );
+            --inventory [WP_INDEX];    // promoted pawn "disappears"
+            ++inventory [SPIECE_INDEX(piece)];   // prom piece "created"
+            wmaterial += (RAW_PIECE_VALUE(piece) - PAWN_VAL);
+            LIFT_PIECE(board[source],source);
+            board [source] = EMPTY;
+            board [dest = source + NORTHWEST] = piece;
+            DROP_PIECE(piece, dest);
+            break;
 
-            case SPECIAL_MOVE_KCASTLE:
-                dest = wk_offset = OFFSET(8,2);
-                LIFT_PIECE(WKING,OFFSET(6,2));
-                DROP_PIECE(WKING,OFFSET(8,2));
-                board [OFFSET(6,2)] = EMPTY;
-                board [OFFSET(8,2)] = WKING;
-                LIFT_PIECE(WROOK,OFFSET(9,2));
-                DROP_PIECE(WROOK,OFFSET(7,2));
-                board [OFFSET(9,2)] = EMPTY;
-                board [OFFSET(7,2)] = WROOK;
-                flags |= (SF_WKMOVED | SF_WKRMOVED);
-                break;
+        case SPECIAL_MOVE_KCASTLE:
+            dest = wk_offset = OFFSET(8,2);
+            LIFT_PIECE(WKING,OFFSET(6,2));
+            DROP_PIECE(WKING,OFFSET(8,2));
+            board [OFFSET(6,2)] = EMPTY;
+            board [OFFSET(8,2)] = WKING;
+            LIFT_PIECE(WROOK,OFFSET(9,2));
+            DROP_PIECE(WROOK,OFFSET(7,2));
+            board [OFFSET(9,2)] = EMPTY;
+            board [OFFSET(7,2)] = WROOK;
+            flags |= (SF_WKMOVED | SF_WKRMOVED);
+            break;
 
-            case SPECIAL_MOVE_QCASTLE:
-                dest = wk_offset = OFFSET(4,2);
-                LIFT_PIECE(WKING,OFFSET(6,2));
-                DROP_PIECE(WKING,OFFSET(4,2));
-                board [OFFSET(6,2)] = EMPTY;
-                board [OFFSET(4,2)] = WKING;
-                LIFT_PIECE(WROOK,OFFSET(2,2));
-                DROP_PIECE(WROOK,OFFSET(5,2));
-                board [OFFSET(2,2)] = EMPTY;
-                board [OFFSET(5,2)] = WROOK;
-                flags |= (SF_WKMOVED | SF_WQRMOVED);
-                break;
+        case SPECIAL_MOVE_QCASTLE:
+            dest = wk_offset = OFFSET(4,2);
+            LIFT_PIECE(WKING,OFFSET(6,2));
+            DROP_PIECE(WKING,OFFSET(4,2));
+            board [OFFSET(6,2)] = EMPTY;
+            board [OFFSET(4,2)] = WKING;
+            LIFT_PIECE(WROOK,OFFSET(2,2));
+            DROP_PIECE(WROOK,OFFSET(5,2));
+            board [OFFSET(2,2)] = EMPTY;
+            board [OFFSET(5,2)] = WROOK;
+            flags |= (SF_WKMOVED | SF_WQRMOVED);
+            break;
 
-            case SPECIAL_MOVE_EP_EAST:
-                LIFT_PIECE(board[source],source);
-                board [source] = EMPTY;            // pick up w-pawn
-                board [dest = source + NORTHEAST] = piece;   // put w-pawn down
-                DROP_PIECE(piece,dest);
-                capture = board [source + EAST];   // remove captured b-pawn
-                LIFT_PIECE(capture, source + EAST);
-                board [source + EAST] = EMPTY;
-                break;
+        case SPECIAL_MOVE_EP_EAST:
+            LIFT_PIECE(board[source],source);
+            board [source] = EMPTY;            // pick up w-pawn
+            board [dest = source + NORTHEAST] = piece;   // put w-pawn down
+            DROP_PIECE(piece,dest);
+            capture = board [source + EAST];   // remove captured b-pawn
+            LIFT_PIECE(capture, source + EAST);
+            board [source + EAST] = EMPTY;
+            break;
 
-            case SPECIAL_MOVE_EP_WEST:
-                LIFT_PIECE(board[source],source);
-                board [source] = EMPTY;              // pick up w-pawn
-                board [dest = source + NORTHWEST] = piece;  // put w-pawn down
-                DROP_PIECE(piece,dest);
-                capture = board [source + WEST];     // remove captured b-pawn
-                LIFT_PIECE(capture, source + WEST);
-                board [source + WEST] = EMPTY;
-                break;
+        case SPECIAL_MOVE_EP_WEST:
+            LIFT_PIECE(board[source],source);
+            board [source] = EMPTY;              // pick up w-pawn
+            board [dest = source + NORTHWEST] = piece;  // put w-pawn down
+            DROP_PIECE(piece,dest);
+            capture = board [source + WEST];     // remove captured b-pawn
+            LIFT_PIECE(capture, source + WEST);
+            board [source + WEST] = EMPTY;
+            break;
 
-            default:
-                ChessFatal ( "Invalid special move code in ChessBoard::MakeWhiteMove" );
-                break;
+        default:
+            ChessFatal ( "Invalid special move code in ChessBoard::MakeWhiteMove" );
+            break;
         }
     }
     else   // This is a "normal" move...
@@ -440,7 +440,7 @@ void ChessBoard::MakeWhiteMove (
 //---------------------------------------------------------------------------
 
 
-void ChessBoard::MakeBlackMove ( 
+void ChessBoard::MakeBlackMove (
     Move         &move,
     UnmoveInfo   &unmove,
     bool      look_for_self_check,
@@ -470,7 +470,7 @@ void ChessBoard::MakeBlackMove (
     SQUARE piece = board[source];
 
 #if BOARD_HASH_DEBUG
-    if ( !(piece & BLACK_MASK) ) 
+    if ( !(piece & BLACK_MASK) )
     {
         DebugDumpBoard ( board, "attempt to move non-black piece in MakeBlackMove", move );
         ChessFatal ( "Attempt to move non-black piece in MakeBlackMove" );
@@ -494,93 +494,93 @@ void ChessBoard::MakeBlackMove (
 
         switch ( dest & SPECIAL_MOVE_MASK )      // Get kind of special move from 'dest'
         {
-            case SPECIAL_MOVE_PROMOTE_NORM:
-                piece = PROM_PIECE ( dest, BLACK_IND );
-                --inventory [BP_INDEX];
-                ++inventory [SPIECE_INDEX(piece)];
-                bmaterial += (RAW_PIECE_VALUE(piece) - PAWN_VAL);
-                LIFT_PIECE(board[source],source);
-                board [source] = EMPTY;
-                board [dest = source + SOUTH] = piece;
-                DROP_PIECE(piece,dest);
-                lastCapOrPawn = ply_number;
-                break;
+        case SPECIAL_MOVE_PROMOTE_NORM:
+            piece = PROM_PIECE ( dest, BLACK_IND );
+            --inventory [BP_INDEX];
+            ++inventory [SPIECE_INDEX(piece)];
+            bmaterial += (RAW_PIECE_VALUE(piece) - PAWN_VAL);
+            LIFT_PIECE(board[source],source);
+            board [source] = EMPTY;
+            board [dest = source + SOUTH] = piece;
+            DROP_PIECE(piece,dest);
+            lastCapOrPawn = ply_number;
+            break;
 
-            case SPECIAL_MOVE_PROMOTE_CAP_EAST:
-                capture = board [source + SOUTHEAST];
-                LIFT_PIECE(capture, source + SOUTHEAST);
-                piece = PROM_PIECE ( dest, BLACK_IND );
-                --inventory [BP_INDEX];    // promoted pawn "disappears"
-                ++inventory [SPIECE_INDEX(piece)];   // prom piece "created"
-                bmaterial += (RAW_PIECE_VALUE(piece) - PAWN_VAL);
-                LIFT_PIECE(board[source],source);
-                board [source] = EMPTY;
-                board [dest = source + SOUTHEAST] = piece;
-                DROP_PIECE(piece,dest);
-                break;
+        case SPECIAL_MOVE_PROMOTE_CAP_EAST:
+            capture = board [source + SOUTHEAST];
+            LIFT_PIECE(capture, source + SOUTHEAST);
+            piece = PROM_PIECE ( dest, BLACK_IND );
+            --inventory [BP_INDEX];    // promoted pawn "disappears"
+            ++inventory [SPIECE_INDEX(piece)];   // prom piece "created"
+            bmaterial += (RAW_PIECE_VALUE(piece) - PAWN_VAL);
+            LIFT_PIECE(board[source],source);
+            board [source] = EMPTY;
+            board [dest = source + SOUTHEAST] = piece;
+            DROP_PIECE(piece,dest);
+            break;
 
-            case SPECIAL_MOVE_PROMOTE_CAP_WEST:
-                capture = board [source + SOUTHWEST];
-                LIFT_PIECE(capture, source + SOUTHWEST);
-                piece = PROM_PIECE ( dest, BLACK_IND );
-                --inventory [BP_INDEX];    // promoted pawn "disappears"
-                ++inventory [SPIECE_INDEX(piece)];   // prom piece "created"
-                bmaterial += (RAW_PIECE_VALUE(piece) - PAWN_VAL);
-                LIFT_PIECE(board[source], source);
-                board [source] = EMPTY;
-                board [dest = source + SOUTHWEST] = piece;
-                DROP_PIECE(piece,dest);
-                break;
+        case SPECIAL_MOVE_PROMOTE_CAP_WEST:
+            capture = board [source + SOUTHWEST];
+            LIFT_PIECE(capture, source + SOUTHWEST);
+            piece = PROM_PIECE ( dest, BLACK_IND );
+            --inventory [BP_INDEX];    // promoted pawn "disappears"
+            ++inventory [SPIECE_INDEX(piece)];   // prom piece "created"
+            bmaterial += (RAW_PIECE_VALUE(piece) - PAWN_VAL);
+            LIFT_PIECE(board[source], source);
+            board [source] = EMPTY;
+            board [dest = source + SOUTHWEST] = piece;
+            DROP_PIECE(piece,dest);
+            break;
 
-            case SPECIAL_MOVE_KCASTLE:
-                dest = bk_offset = OFFSET(8,9);
-                LIFT_PIECE(BKING,OFFSET(6,9));
-                DROP_PIECE(BKING,OFFSET(8,9));
-                board [OFFSET(6,9)] = EMPTY;
-                board [OFFSET(8,9)] = BKING;
-                LIFT_PIECE(BROOK,OFFSET(9,9));
-                DROP_PIECE(BROOK,OFFSET(7,9));
-                board [OFFSET(9,9)] = EMPTY;
-                board [OFFSET(7,9)] = BROOK;
-                flags |= (SF_BKMOVED | SF_BKRMOVED);
-                break;
+        case SPECIAL_MOVE_KCASTLE:
+            dest = bk_offset = OFFSET(8,9);
+            LIFT_PIECE(BKING,OFFSET(6,9));
+            DROP_PIECE(BKING,OFFSET(8,9));
+            board [OFFSET(6,9)] = EMPTY;
+            board [OFFSET(8,9)] = BKING;
+            LIFT_PIECE(BROOK,OFFSET(9,9));
+            DROP_PIECE(BROOK,OFFSET(7,9));
+            board [OFFSET(9,9)] = EMPTY;
+            board [OFFSET(7,9)] = BROOK;
+            flags |= (SF_BKMOVED | SF_BKRMOVED);
+            break;
 
-            case SPECIAL_MOVE_QCASTLE:
-                dest = bk_offset = OFFSET(4,9);
-                LIFT_PIECE(BKING,OFFSET(6,9));
-                DROP_PIECE(BKING,OFFSET(4,9));
-                board [OFFSET(6,9)] = EMPTY;
-                board [OFFSET(4,9)] = BKING;
-                LIFT_PIECE(BROOK,OFFSET(2,9));
-                DROP_PIECE(BROOK,OFFSET(5,9));
-                board [OFFSET(2,9)] = EMPTY;
-                board [OFFSET(5,9)] = BROOK;
-                flags |= (SF_BKMOVED | SF_BQRMOVED);
-                break;
+        case SPECIAL_MOVE_QCASTLE:
+            dest = bk_offset = OFFSET(4,9);
+            LIFT_PIECE(BKING,OFFSET(6,9));
+            DROP_PIECE(BKING,OFFSET(4,9));
+            board [OFFSET(6,9)] = EMPTY;
+            board [OFFSET(4,9)] = BKING;
+            LIFT_PIECE(BROOK,OFFSET(2,9));
+            DROP_PIECE(BROOK,OFFSET(5,9));
+            board [OFFSET(2,9)] = EMPTY;
+            board [OFFSET(5,9)] = BROOK;
+            flags |= (SF_BKMOVED | SF_BQRMOVED);
+            break;
 
-            case SPECIAL_MOVE_EP_EAST:
-                LIFT_PIECE(piece,source);
-                board [source] = EMPTY;
-                board [dest = source + SOUTHEAST] = piece;
-                DROP_PIECE(piece,dest);
-                capture = board [source + EAST];
-                board [source + EAST] = EMPTY;
-                LIFT_PIECE(capture,source + EAST);
-                break;
+        case SPECIAL_MOVE_EP_EAST:
+            LIFT_PIECE(piece,source);
+            board [source] = EMPTY;
+            board [dest = source + SOUTHEAST] = piece;
+            DROP_PIECE(piece,dest);
+            capture = board [source + EAST];
+            board [source + EAST] = EMPTY;
+            LIFT_PIECE(capture,source + EAST);
+            break;
 
-            case SPECIAL_MOVE_EP_WEST:
-                LIFT_PIECE(piece,source);
-                board [source] = EMPTY;
-                board [dest = source + SOUTHWEST] = piece;
-                DROP_PIECE(piece,dest);
-                capture = board [source + WEST];
-                board [source + WEST] = EMPTY;
-                LIFT_PIECE(capture,source + WEST);
-                break;
+        case SPECIAL_MOVE_EP_WEST:
+            LIFT_PIECE(piece,source);
+            board [source] = EMPTY;
+            board [dest = source + SOUTHWEST] = piece;
+            DROP_PIECE(piece,dest);
+            capture = board [source + WEST];
+            board [source + WEST] = EMPTY;
+            LIFT_PIECE(capture,source + WEST);
+            break;
 
-            default:
-                ChessFatal ( "Invalid special move code in ChessBoard::MakeBlackMove" );
-                break;
+        default:
+            ChessFatal ( "Invalid special move code in ChessBoard::MakeBlackMove" );
+            break;
         }
     }
     else    // This is a "normal" move...
@@ -742,29 +742,29 @@ void ChessBoard::MakeBlackMove (
 
 
           Revision history:
-    
+
     1993 August 30 [Don Cross]
          Changing pointers to references in the interfaces where
          appropriate.
-    
+
     1993 October 17 [Don Cross]
          Splitting single 'look_for_check' parameter into
          'look_for_self_check' and 'look_for_enemy_check'.
-    
+
     1993 October 18 [Don Cross]
          Fixed bug that happened in simultateous pawn promotion
          and capture:  I was destroying the fake 'dest' value
          which contained the promoted piece before I saved it away.
-    
+
     1994 February 10 [Don Cross]
          Started implementing indexed pieces.
-    
+
     1999 January 19 [Don Cross]
          Adding board hash caching.  This is important for (finally?)
          detecting draw by repetition.
          Was not updating lastCapOrPawn during non-capture pawn promotion.
          Updated coding style.
-    
+
     1999 August 4 [Don Cross]
          Adding a little bit more debug code to try to catch some
          weird bugs that happen extremely rarely (e.g., pieces
@@ -772,6 +772,6 @@ void ChessBoard::MakeBlackMove (
          The new debug code is very fast (a single bitwise AND per move),
          so I think I will leave it in even after I fix the bug
          that inspired it.
-    
+
 */
 

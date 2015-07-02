@@ -400,21 +400,21 @@ bool ChessBoard::IsAttackedByBlack ( int offset ) const
     2. Moved old manual revision history after cvs log tag.
     3. Made sure each source file has extra blank line at end so gcc under Linux won't fuss!
 
-    
+
 
          Revision history:
-    
+
     1993 October 15 [Don Cross]
          Fixed bug where I had a 'SOUTHEAST' where I meant to have
          a 'SOUTHWEST'.
-    
+
     1994 February 10 [Don Cros]
          Modified to support piece indexes.
-    
+
     1996 July 28 [Don Cross]
          Adding optimizations based on piece inventory.
          Should help out a lot in endgame positions.
-    
+
     1999 January 19 [Don Cross]
          Updating coding style.
 */

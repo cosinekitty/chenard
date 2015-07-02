@@ -37,7 +37,7 @@ SCORE MaterialEval ( SCORE wmaterial, SCORE bmaterial )
     }
 #endif
 
-   return MaterialData[wmaterial] - MaterialData[bmaterial];
+    return MaterialData[wmaterial] - MaterialData[bmaterial];
 }
 
 

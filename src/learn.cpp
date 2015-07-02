@@ -314,7 +314,7 @@ StartOver:
 #endif DO_FIX_TREE
 
 
-void ReadLibrary ( 
+void ReadLibrary (
     const char *inFilename,
     LList<LearnBranchPtr> &library )
 {
@@ -332,9 +332,9 @@ void ReadLibrary (
 
         fclose ( in );
 
-        #if DO_FIX_TREE
-            FixTree ( library );
-        #endif
+#if DO_FIX_TREE
+        FixTree ( library );
+#endif
     }
 }
 
@@ -463,18 +463,18 @@ bool ChooseFromExperience (
             if ( Learn_Output )
             {
                 printf ( "experience:  score=%d  winloss=%ld  time=%lu\n",
-                    int (b.move.score),
-                    long (b.winsAndLosses),
-                    long (b.timeAnalyzed) );
+                         int (b.move.score),
+                         long (b.winsAndLosses),
+                         long (b.timeAnalyzed) );
             }
 
             return true;
         }
     }
-    
+
     //----------------------------------------
     // [Don Cross, 10 Apr 1995]
-    // I do not think it is possible to get 
+    // I do not think it is possible to get
     // here in the code.  However, this
     // will make the compiler happy.
     //----------------------------------------
@@ -483,15 +483,15 @@ bool ChooseFromExperience (
 
 #elif CHOICE_MODE == 2 || CHOICE_MODE == 3
 
-Move ExpMin ( 
-    const LList<LearnBranchPtr> &node, 
+Move ExpMin (
+    const LList<LearnBranchPtr> &node,
     INT32 timeLimit,
     SCORE alpha = MIN_WINDOW,
     SCORE beta = MAX_WINDOW,
     int depth = 0 );
 
-Move ExpMax ( 
-    const LList<LearnBranchPtr> &node, 
+Move ExpMax (
+    const LList<LearnBranchPtr> &node,
     INT32 timeLimit,
     SCORE alpha = MIN_WINDOW,
     SCORE beta = MAX_WINDOW,
@@ -513,22 +513,22 @@ Move ExpMax (
                 reply.score = b.move.score;
             }
 
-            #if CHOICE_MODE == 3
-                if ( depth == 0 )
+#if CHOICE_MODE == 3
+            if ( depth == 0 )
+            {
+                INT32 wal = b.winsAndLosses;
+                if ( wal < -WL_DENOM )
                 {
-                    INT32 wal = b.winsAndLosses;
-                    if ( wal < -WL_DENOM )
-                    {
-                        wal = -WL_DENOM;
-                    }
-                    else if ( wal > WL_DENOM )
-                    {
-                        wal = WL_DENOM;
-                    }
-
-                    reply.score += SCORE(wal) * WL_WEIGHT;
+                    wal = -WL_DENOM;
                 }
-            #endif
+                else if ( wal > WL_DENOM )
+                {
+                    wal = WL_DENOM;
+                }
+
+                reply.score += SCORE(wal) * WL_WEIGHT;
+            }
+#endif
 
             if ( reply.score > bestmove.score )
             {
@@ -553,8 +553,8 @@ Move ExpMax (
 }
 
 
-Move ExpMin ( 
-    const LList<LearnBranchPtr> &node, 
+Move ExpMin (
+    const LList<LearnBranchPtr> &node,
     INT32 timeLimit,
     SCORE alpha,
     SCORE beta,
@@ -576,22 +576,22 @@ Move ExpMin (
                 reply.score = b.move.score;
             }
 
-            #if CHOICE_MODE == 3
-                if ( depth == 0 )
+#if CHOICE_MODE == 3
+            if ( depth == 0 )
+            {
+                INT32 wal = b.winsAndLosses;
+                if ( wal < -WL_DENOM )
                 {
-                    INT32 wal = b.winsAndLosses;
-                    if ( wal < -WL_DENOM )
-                    {
-                        wal = -WL_DENOM;
-                    }
-                    else if ( wal > WL_DENOM )
-                    {
-                        wal = WL_DENOM;
-                    }
-
-                    reply.score += SCORE(wal) * WL_WEIGHT;
+                    wal = -WL_DENOM;
                 }
-            #endif
+                else if ( wal > WL_DENOM )
+                {
+                    wal = WL_DENOM;
+                }
+
+                reply.score += SCORE(wal) * WL_WEIGHT;
+            }
+#endif
 
             if ( reply.score < bestmove.score )
             {
@@ -630,9 +630,9 @@ bool ChooseFromExperience_MinMax (
     {
         chosenMove = ExpMin ( node, timeLimit );
     }
-    
-    bool foundGoodMove = 
-        chosenMove.score > MIN_WINDOW && 
+
+    bool foundGoodMove =
+        chosenMove.score > MIN_WINDOW &&
         chosenMove.score < MAX_WINDOW;
 
     if ( foundGoodMove && Learn_Output )
@@ -668,7 +668,7 @@ bool FamiliarPosition ( ChessBoard &board, Move &bestmove, long timeLimit )
         {
             branch = (*position)[r];
             if ( move == branch->move )
-            {               
+            {
                 position = &(branch->replies);
                 foundContinuation = true;
                 break;
@@ -873,7 +873,7 @@ static UINT32 NumNodesInTree ( const LList<LearnBranchPtr> &tree )
 }
 
 
-static UINT32 NumNodesAtDepth ( 
+static UINT32 NumNodesAtDepth (
     const LList<LearnBranchPtr> &tree,
     int targetDepth,
     int currentDepth,
@@ -928,20 +928,20 @@ static void EstimateRemainingTime ( int currentDepth, double thinkTime )
     double seconds = thinkTime * NodesAtDepthTable[currentDepth];
     double hours = seconds / 3600.0;
     if ( hours > 24.0 )
-            printf ( "(%0.2lf days)", hours/24.0 );
+        printf ( "(%0.2lf days)", hours/24.0 );
     else
-            printf ( "(%0.2lf hours)", hours );
+        printf ( "(%0.2lf hours)", hours );
 }
 
 
-static void TrainDepth ( 
+static void TrainDepth (
     LList<LearnBranchPtr> &tree,
     INT32 timeLimit,
-    ChessUI &ui, 
-    ComputerChessPlayer *whitePlayer, 
-    ComputerChessPlayer *blackPlayer, 
-    ChessBoard &board, 
-    int targetDepth, 
+    ChessUI &ui,
+    ComputerChessPlayer *whitePlayer,
+    ComputerChessPlayer *blackPlayer,
+    ChessBoard &board,
+    int targetDepth,
     int currentDepth )
 {
     unsigned numReplies = tree.numItems();
@@ -957,12 +957,12 @@ static void TrainDepth (
 
             board.MakeMove ( move, unmove );
 
-            TrainDepth ( 
-                branch->replies, 
+            TrainDepth (
+                branch->replies,
                 timeLimit,
                 ui,
-                whitePlayer, 
-                blackPlayer, 
+                whitePlayer,
+                blackPlayer,
                 board,
                 targetDepth,
                 1 + currentDepth );
@@ -972,15 +972,15 @@ static void TrainDepth (
     }
     else if ( currentDepth == targetDepth )
     {
-        // Before we spend time analyzing this position, 
+        // Before we spend time analyzing this position,
         // make sure it hasn't been done so well (or better)
         // before now.
 
         if ( Learn_Output && NodesAtDepthTable[targetDepth]>0 )
         {
             printf ( "\r###  depth=%d --- Remaining nodes at this depth: %-10lu",
-                targetDepth,
-                NodesAtDepthTable[targetDepth] );
+                     targetDepth,
+                     NodesAtDepthTable[targetDepth] );
 
             EstimateRemainingTime ( targetDepth, 0.01*timeLimit );
         }
@@ -1058,9 +1058,9 @@ static void TrainDepth (
                     printf ( ">>> Just modified an existing branch.\n" );
 
                     printf ( ">>> finished=%lu  branches=%lu  updates=%lu\n",
-                        NumPositionsFinished,
-                        NumBranches,
-                        NumUpdates );
+                             NumPositionsFinished,
+                             NumBranches,
+                             NumUpdates );
                 }
 
                 return;  // We have finished our job here
@@ -1099,18 +1099,18 @@ static void TrainDepth (
         if ( Learn_Output )
         {
             printf ( ">>> finished=%lu  branches=%lu  updates=%lu\n",
-                NumPositionsFinished,
-                NumBranches,
-                NumUpdates );
+                     NumPositionsFinished,
+                     NumBranches,
+                     NumUpdates );
         }
     }
 }
 
 
 void TreeTrainer (
-    ComputerChessPlayer *whitePlayer, 
-    ComputerChessPlayer *blackPlayer, 
-    ChessBoard &theBoard, 
+    ComputerChessPlayer *whitePlayer,
+    ComputerChessPlayer *blackPlayer,
+    ChessBoard &theBoard,
     ChessUI &theUserInterface,
     long timeLimit )
 {
@@ -1180,7 +1180,7 @@ void ConvertBranches (
     int n = replies.numItems();
     LearnBranch newBranch;
 
-    INT32 lsibling = -1;   
+    INT32 lsibling = -1;
     for ( int i=0; i<n; i++ )
     {
         const OldLearnBranch &oldBranch = *replies[i];
@@ -1193,38 +1193,44 @@ void ConvertBranches (
         }
 
         int rc = tree.write ( offset, newBranch );
-    if ( !rc ) {
-            if ( Learn_Output ) {
-        printf ( "Error writing at offset %ld (byte %ld)\n", long(offset), long(offset*LearnBranchFileSize) );
-        tree.close();
-        exit(1);
+        if ( !rc )
+        {
+            if ( Learn_Output )
+            {
+                printf ( "Error writing at offset %ld (byte %ld)\n", long(offset), long(offset*LearnBranchFileSize) );
+                tree.close();
+                exit(1);
+            }
+            return;
         }
-        return;
-    }
 
         if ( i > 0 )
         {
             // Backpatch the left sibling of this branch to point to here.
             LearnBranch leftBranch;
             rc = tree.read ( lsibling, leftBranch );
-        if ( !rc ) {
-        if ( Learn_Output ) {
+            if ( !rc )
+            {
+                if ( Learn_Output )
+                {
                     printf ( "Error reading left sibling at offset %ld (byte %ld)\n", long(lsibling), long(lsibling*LearnBranchFileSize) );
-            tree.close();
-            exit(1);
-        }
-        return;
-        }
+                    tree.close();
+                    exit(1);
+                }
+                return;
+            }
             leftBranch.sibling = offset;
             rc = tree.write ( lsibling, leftBranch );
-        if ( !rc ) {
-        if ( Learn_Output ) {
+            if ( !rc )
+            {
+                if ( Learn_Output )
+                {
                     printf ( "Error writing left sibling at offset %ld\n", long(lsibling) );
-            tree.close();
-            exit(1);
-        }
-        return;
-        }
+                    tree.close();
+                    exit(1);
+                }
+                return;
+            }
         }
 
         lsibling = offset++;
@@ -1267,7 +1273,7 @@ void ConvertLearningTree ( const char *newFilename )
     Found these on CDROM marked "14 September 1999".
     Added cvs log tag and moved old revision history after that.
 
-    
+
     Revision history:
 
 1996 August 23 [Don Cross]
@@ -1307,7 +1313,7 @@ void ConvertLearningTree ( const char *newFilename )
 1995 April 10 [Don Cross]
     Added the preprocessor symbol ALWAYS_CHOOSE_DEEPEST.
     Define this symbol to be one of the following values:
-    
+
     0
     Choose randomly between the moves with probabilities
     proportional to the max amount of time Dr. Chenard has ever
@@ -1315,7 +1321,7 @@ void ConvertLearningTree ( const char *newFilename )
     factor which should allow play that improves as max training time
     is slowly ramped through a range of say, 301 seconds to increasing
     up to some higher value, until all experience has been groomed.
-    
+
     1
     Play only the moves in familiar positions with maximum think time.
 */

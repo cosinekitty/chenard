@@ -32,11 +32,11 @@ unsigned InternetChessPlayer::QueryServerPortNumber()
 }
 
 
-InternetChessPlayer::InternetChessPlayer ( 
-    ChessUI &ui, 
-    const InternetConnectionInfo &_connectInfo ):
-        ChessPlayer (ui),
-        connectInfo ( _connectInfo )
+InternetChessPlayer::InternetChessPlayer (
+    ChessUI &ui,
+    const InternetConnectionInfo &_connectInfo )
+        : ChessPlayer (ui)
+        , connectInfo ( _connectInfo )
 {
     SetQuitReason(qgr_lostConnection);
 }
@@ -52,19 +52,21 @@ InternetChessPlayer::~InternetChessPlayer()
 }
 
 
-bool InternetChessPlayer::GetMove ( 
-    ChessBoard &board, 
-    Move &move, 
+bool InternetChessPlayer::GetMove (
+    ChessBoard &board,
+    Move &move,
     INT32 &timeSpent )
 {
     timeSpent = 0;
     const INT32 startTime = ChessTime();
 
-    if ( !send(board) ) {
+    if ( !send(board) )
+    {
         return false;
     }
 
-    if ( !receive(board,move) ) {
+    if ( !receive(board,move) )
+    {
         return false;
     }
 
@@ -137,8 +139,8 @@ bool InternetChessPlayer::send ( const ChessBoard &board )
 }
 
 
-bool InternetChessPlayer::receive ( 
-    ChessBoard &board, 
+bool InternetChessPlayer::receive (
+    ChessBoard &board,
     Move &move )
 {
     char tempString [256];
@@ -282,12 +284,12 @@ void InternetChessPlayer::InformGameOver ( const ChessBoard &board )
     2. Moved old manual revision history after cvs log tag.
     3. Made sure each source file has extra blank line at end so gcc under Linux won't fuss!
 
-    
-    
+
+
         Revision history:
-    
+
     1999 January 5 [Don Cross]
         Started writing.
-    
+
 */
 

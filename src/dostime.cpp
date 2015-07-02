@@ -16,19 +16,19 @@ static unsigned long progStartTime;
 
 INT32 ChessTime()
 {
-   INT32 t = ((*timer - progStartTime) * 1000) / 182;
+    INT32 t = ((*timer - progStartTime) * 1000) / 182;
 
-   return t;
+    return t;
 }
 
 
 class DosTimeInitializer
 {
 public:
-   DosTimeInitializer()
-   {
-      progStartTime = *timer;
-   }
+    DosTimeInitializer()
+    {
+        progStartTime = *timer;
+    }
 };
 
 

@@ -27,7 +27,7 @@
 #include "lrntree.h"
 #include "gamefile.h"
 
-// Sadly, the following must come after include of chess.h, 
+// Sadly, the following must come after include of chess.h,
 // even though this is a <conio.h> is a system header on Windows,
 // because chess.h is where I determine the value of CHENARD_LINUX.
 #if !CHENARD_LINUX
@@ -38,7 +38,7 @@
 int Learn_Output = 0;
 
 
-LearnTree::~LearnTree()    
+LearnTree::~LearnTree()
 {
     close();
 }
@@ -78,8 +78,10 @@ int LearnTree::flush()
 
 int LearnTree::close()
 {
-    if (f) {
-        if (fclose(f) == EOF) {
+    if (f)
+    {
+        if (fclose(f) == EOF)
+        {
             f = 0;
             return 0;
         }
@@ -127,7 +129,8 @@ int LearnTree::read ( INT32 offset, LearnBranch &branch )
     if (!read (branch.numAccesses))
         return 0;
 
-    for (size_t i=0; i < sizeof(branch.reserved)/sizeof(INT32); i++) {
+    for (size_t i=0; i < sizeof(branch.reserved)/sizeof(INT32); i++)
+    {
         if (!read (branch.reserved[i]))
             return 0;
     }
@@ -165,7 +168,8 @@ int LearnTree::write ( INT32 offset, const LearnBranch &branch )
     if (!write (branch.numAccesses))
         return 0;
 
-    for (size_t i=0; i < sizeof(branch.reserved)/sizeof(INT32); i++) {
+    for (size_t i=0; i < sizeof(branch.reserved)/sizeof(INT32); i++)
+    {
         if (!write (branch.reserved[i]))
             return 0;
     }
@@ -210,7 +214,8 @@ int LearnTree::read ( INT32 &x )
     int b = fgetc(f);
     int c = fgetc(f);
     int d = fgetc(f);
-    if (a==EOF || b==EOF || c==EOF || d==EOF) {
+    if (a==EOF || b==EOF || c==EOF || d==EOF)
+    {
         x = -1;
         return 0;
     }
@@ -242,7 +247,8 @@ int LearnTree::read ( Move &m )
     int c = fgetc(f);
     int d = fgetc(f);
 
-    if (a==EOF || b==EOF || c==EOF || d==EOF) {
+    if (a==EOF || b==EOF || c==EOF || d==EOF)
+    {
         m.source = 0;
         m.dest = 0;
         m.score = 0;
@@ -265,18 +271,24 @@ int LearnTree::insert (
     if (!append ( offset, branch )) return 0;
 
     LearnBranch tbranch;
-    if (parent == -1) {
-        if (offset != 0) {
+    if (parent == -1)
+    {
+        if (offset != 0)
+        {
             // Special case: link new node as sibling to node at offset 0
             if (!read ( 0, tbranch )) return 0;
             branch.sibling = tbranch.sibling;
             tbranch.sibling = offset;
             if (!write ( 0, tbranch )) return 0;
-        } else {
+        }
+        else
+        {
             // This is the first node to be written to the tree.
             // No need to do anything else.
         }
-    } else {
+    }
+    else
+    {
         // Need to backpatch parent to point at this...
         if (!read ( parent, tbranch )) return 0;
         branch.sibling = tbranch.child;
@@ -322,11 +334,13 @@ bool LearnTree::locateAndReadBranch (
     INT32 offset = 0;
 
     int i;
-    for (i=0; i<n; i++) {
+    for (i=0; i<n; i++)
+    {
         Move move = board.GetPastMove(i);
 
         bool foundContinuation = false;
-        while (offset != -1 && !foundContinuation) {
+        while (offset != -1 && !foundContinuation)
+        {
             if (!read ( offset, branch ))
                 return false;
 
@@ -344,10 +358,14 @@ bool LearnTree::locateAndReadBranch (
 
     // Search for the target move in the list of siblings
 
-    while (offset != -1) {
+    while (offset != -1)
+    {
         if (!read ( offset, branch ))
+        {
             offset = -1;
-        else {
+        }
+        else
+        {
             if (branch.move == moveToFind)
                 return true;
 
@@ -377,11 +395,13 @@ bool LearnTree::familiarPosition (
     LearnBranch branch;
 
     int i;
-    for (i=0; i<n; i++) {
+    for (i=0; i<n; i++)
+    {
         Move move = board.GetPastMove(i);
 
         bool foundContinuation = false;
-        while (offset != -1 && !foundContinuation) {
+        while (offset != -1 && !foundContinuation)
+        {
             if (!read ( offset, branch ))
                 return false;
 
@@ -406,10 +426,14 @@ bool LearnTree::familiarPosition (
     INT32 keepOffset [128];
     INT32 total = 0;
 
-    while (offset != -1) {
+    while (offset != -1)
+    {
         if (!read ( offset, branch ))
+        {
             offset = -1;
-        else {
+        }
+        else
+        {
             total += scores[numChildren] = ScoreBranch(branch,board.WhiteToMove());
             moves[numChildren] = branch.move;
             keepOffset[numChildren] = offset;
@@ -422,7 +446,8 @@ bool LearnTree::familiarPosition (
         }
     }
 
-    if (maxTime >= timeLimit && total > 0) {
+    if (maxTime >= timeLimit && total > 0)
+    {
         // Choose randomly between the moves with probabilities
         // proportional to the max amount of time Chenard has ever
         // spent deciding that move was best.  This is a kind of credibility
@@ -430,22 +455,29 @@ bool LearnTree::familiarPosition (
         // is progressively increased.
 
         INT32 r = ChessRandom(total);
-        for (i=0; i<numChildren; i++) {
+        for (i=0; i<numChildren; i++)
+        {
             r -= scores[i];
-            if (r < 0) {
+            if (r < 0)
+            {
                 bestmove = moves[i];
 
                 // Must do sanity check to make sure file has not been corrupted.
-                if (legalMoves.IsLegal(bestmove)) {
+                if (legalMoves.IsLegal(bestmove))
+                {
                     // Update access stats for this branch.
-                    if (read ( keepOffset[i], branch )) {
+                    if (read ( keepOffset[i], branch ))
+                    {
                         ++branch.numAccesses;
                         write ( keepOffset[i], branch );
                     }
 
                     return true;
-                } else
+                }
+                else
+                {
                     return false;   // If we get here, it means corrupted experience!!!
+                }
             }
         }
     }
@@ -458,17 +490,27 @@ void LearnTree::absorbFile (const char *gameFileName)
 {
     // Figure out which kind of file it is.
     const char *ext = strrchr (gameFileName, '.');
-    if (ext == NULL) {
-        if (Learn_Output) {
+    if (ext == NULL)
+    {
+        if (Learn_Output)
+        {
             printf ("The filename '%s' has no extension.\n", gameFileName);
         }
-    } else {
-        if (0 == stricmp (ext, ".pgn")) {
+    }
+    else
+    {
+        if (0 == stricmp (ext, ".pgn"))
+        {
             absorbPgnFile (gameFileName);
-        } else if (0 == stricmp (ext, ".gam")) {
+        }
+        else if (0 == stricmp (ext, ".gam"))
+        {
             absorbGameFile (gameFileName);
-        } else {
-            if (Learn_Output) {
+        }
+        else
+        {
+            if (Learn_Output)
+            {
                 printf ("Unknown game file extension in filename '%s'\n", gameFileName);
             }
         }
@@ -478,12 +520,14 @@ void LearnTree::absorbFile (const char *gameFileName)
 
 void LearnTree::absorbPgnFile (const char *pgnFileName)
 {
-    if (Learn_Output) {
+    if (Learn_Output)
+    {
         printf ("PGN file: %s ", pgnFileName);
     }
 
     FILE *infile = fopen (pgnFileName, "rt");
-    if (infile) {
+    if (infile)
+    {
         Move            move;
         UnmoveInfo      unmove;
         ChessBoard      board;
@@ -500,12 +544,17 @@ void LearnTree::absorbPgnFile (const char *pgnFileName)
         const long STRONG_PLAYER_TIME_EQUIVALENT = 120L * 100L;     // 2 minutes
         const unsigned long STRONG_PLAYER_NODES_EQUIVALENT = STRONG_PLAYER_TIME_EQUIVALENT * 4000;     // (400,000 nodes/second) * (1 second / 100 cs)
 
-        for(;;) {
-            if (GetNextPgnMove (infile, movestr, state, info)) {
-                if (state == PGN_FILE_STATE_NEWGAME) {
-                    if (info.fen[0]) {
+        for(;;)
+        {
+            if (GetNextPgnMove (infile, movestr, state, info))
+            {
+                if (state == PGN_FILE_STATE_NEWGAME)
+                {
+                    if (info.fen[0])
+                    {
                         // We can't handle edited board positions!
-                        if (Learn_Output) {
+                        if (Learn_Output)
+                        {
                             printf ("\nIgnoring file that contains edited board positions (FEN)\n");
                         }
                         break;
@@ -518,74 +567,101 @@ void LearnTree::absorbPgnFile (const char *pgnFileName)
                     // The comparison logic looks at both nodes evaluated and think time, so fake them both out.
                     // We don't care whether the players won/lost/drawed, only that they are both very strong.
                     // A game lost by a grandmaster is still invariably stronger play than Chenard is capable of!
-                    if (info.whiteElo >= MIN_ELO_FOR_TRUST && info.blackElo >= MIN_ELO_FOR_TRUST) {
+                    if (info.whiteElo >= MIN_ELO_FOR_TRUST && info.blackElo >= MIN_ELO_FOR_TRUST)
+                    {
                         timeEquivalent  = STRONG_PLAYER_TIME_EQUIVALENT;
                         nodesEquivalent = STRONG_PLAYER_NODES_EQUIVALENT;
-                    } else {
+                    }
+                    else
+                    {
                         timeEquivalent  = 0;
                         nodesEquivalent = 0;
                     }
                 }
 
                 // See if we can figure out what this move is.
-                if (ParseFancyMove (movestr, board, move)) {
-                    if (board.GetCurrentPlyNumber() <= static_cast<int>(MaxLearnDepth)) {     // stop trying to learn positions, but keep scanning moves, so we find the next game(s)
-                        if (Learn_Output) {
-                            if (board.GetCurrentPlyNumber() > 0) {
+                if (ParseFancyMove (movestr, board, move))
+                {
+                    if (board.GetCurrentPlyNumber() <= static_cast<int>(MaxLearnDepth))       // stop trying to learn positions, but keep scanning moves, so we find the next game(s)
+                    {
+                        if (Learn_Output)
+                        {
+                            if (board.GetCurrentPlyNumber() > 0)
+                            {
                                 column += printf ( ", " );
                             }
 
-                            if (column > 65) {
+                            if (column > 65)
+                            {
                                 column = 0;
                                 printf ( "\n" );
                             }
                         }
 
-                        if (Learn_Output) {
+                        if (Learn_Output)
+                        {
                             column += printf ( "%s", movestr );
                         }
                         int result = rememberPosition ( board, move, timeEquivalent, nodesEquivalent, 1, 0 );
-                        if (result == 0) {
-                            if (Learn_Output) {
+                        if (result == 0)
+                        {
+                            if (Learn_Output)
+                            {
                                 printf ( "\nWARNING:  could not add move to tree.\n" );
                             }
                             break;
-                        } else if (result == 1)
+                        }
+                        else if (result == 1)
                             ++updates;
-                        else if (result == 2) {
+                        else if (result == 2)
+                        {
                             ++branches;
-                            if (Learn_Output) {
+                            if (Learn_Output)
+                            {
                                 column += printf ( "@" );   // indicated added move
                             }
-                        } else {
-                            if (Learn_Output) {
+                        }
+                        else
+                        {
+                            if (Learn_Output)
+                            {
                                 column += printf ( "(?%d)", result );
                             }
                         }
                     }
 
                     board.MakeMove (move, unmove);
-                } else {
-                    if (Learn_Output) {
+                }
+                else
+                {
+                    if (Learn_Output)
+                    {
                         printf ("\nUnrecognized or illegal move '%s'\n", movestr);
                         break;
                     }
                 }
-            } else {
-                if (state != PGN_FILE_STATE_GAMEOVER) {
+            }
+            else
+            {
+                if (state != PGN_FILE_STATE_GAMEOVER)
+                {
                     break;      // nothing left in this PGN file, or we encountered a syntax error
                 }
             }
         }
 
-        if (Learn_Output) {
+        if (Learn_Output)
+        {
             printf ("\n");
         }
 
         fclose (infile);
         infile = NULL;
-    } else {
-        if (Learn_Output) {
+    }
+    else
+    {
+        if (Learn_Output)
+        {
             printf ("NOT opened!\n");
         }
     }
@@ -594,19 +670,23 @@ void LearnTree::absorbPgnFile (const char *pgnFileName)
 
 void LearnTree::absorbGameFile ( const char *gameFilename )
 {
-    if (Learn_Output) {
+    if (Learn_Output)
+    {
         printf ( "Game file: %s ", gameFilename );
     }
 
     FILE *gameFile = fopen ( gameFilename, "rb" );
-    if (!gameFile) {
-        if (Learn_Output) {
+    if (!gameFile)
+    {
+        if (Learn_Output)
+        {
             printf ( "NOT opened!\n" );
         }
         return;
     }
 
-    if (Learn_Output) {
+    if (Learn_Output)
+    {
         printf ( "opened...\n{ " );
     }
 
@@ -619,7 +699,8 @@ void LearnTree::absorbGameFile ( const char *gameFilename )
     char moveString [MAX_MOVE_STRLEN + 1];
     int updates=0, branches=0;
 
-    for (;;) {
+    for (;;)
+    {
         board.GenMoves (legal);
         if (legal.num == 0)
             break;
@@ -635,8 +716,10 @@ void LearnTree::absorbGameFile ( const char *gameFilename )
         move.dest   = BYTE(c2);
         move.score  = SCORE ( (c4 << 8) | c3 );
 
-        if (!legal.IsLegal(move)) {
-            if (Learn_Output) {
+        if (!legal.IsLegal(move))
+        {
+            if (Learn_Output)
+            {
                 printf (
                     "\nWARNING:  Illegal move source=%d dest=%d score=%d\n",
                     int(move.source),
@@ -647,11 +730,13 @@ void LearnTree::absorbGameFile ( const char *gameFilename )
             break;
         }
 
-        if (Learn_Output) {
+        if (Learn_Output)
+        {
             if (ply > 0)
                 column += printf ( ", " );
 
-            if (column > 65) {
+            if (column > 65)
+            {
                 column = 0;
                 printf ( "\n" );
             }
@@ -662,17 +747,24 @@ void LearnTree::absorbGameFile ( const char *gameFilename )
             column += printf ( "%s", moveString );
 
         int result = rememberPosition ( board, move, 0, 0, 1, 0 );
-        if (result == 0) {
+        if (result == 0)
+        {
             if (Learn_Output)
                 printf ( "\nWARNING:  could not add move to tree.\n" );
             break;
-        } else if (result == 1)
+        }
+        else if (result == 1)
+        {
             ++updates;
-        else if (result == 2) {
+        }
+        else if (result == 2)
+        {
             ++branches;
             if (Learn_Output)
                 column += printf ( "@" );   // indicated added move
-        } else {
+        }
+        else
+        {
             if (Learn_Output)
                 column += printf ( "(?%d)", result );
         }
@@ -707,8 +799,10 @@ int LearnTree::rememberPosition (
     if (n > static_cast<int>(MaxLearnDepth))
         return 0;
 
-    if (!f) {
-        if (!open(DEFAULT_CHENARD_TREE_FILENAME)) {
+    if (!f)
+    {
+        if (!open(DEFAULT_CHENARD_TREE_FILENAME))
+        {
             // Assume this is Chenard's maiden voyage on this computer.
             // Create a brand new, empty tree...
 
@@ -722,24 +816,32 @@ int LearnTree::rememberPosition (
     LearnBranch branch;
     INT32 offset = 0;
     INT32 parent = -1;
-    for (int i=0; i<n; i++) {
+    for (int i=0; i<n; i++)
+    {
         INT32 child = -1;
         bool foundReply = false;
         Move move = board.GetPastMove(i);
-        while (offset != -1 && !foundReply) {
-            if (read ( offset, branch )) {
-                if (branch.move == move) {
+        while (offset != -1 && !foundReply)
+        {
+            if (read ( offset, branch ))
+            {
+                if (branch.move == move)
+                {
                     foundReply = true;
                     child = branch.child;
-                } else
+                }
+                else
                     offset = branch.sibling;
-            } else {
+            }
+            else
+            {
                 assert ( offset == 0 );   // otherwise the file is corrupt
                 child = offset = -1;
             }
         }
 
-        if (!foundReply) {
+        if (!foundReply)
+        {
             // Add an intermediate branch leading toward the branch we want to insert.
             // (Assume we won't get here in the tree packer.)
             // Need to add new node now because it doesn't exist already.
@@ -760,11 +862,13 @@ int LearnTree::rememberPosition (
     // If we find it, update it if necessary.
     // Otherwise, add a new branch.
 
-    while (offset != -1) {
+    while (offset != -1)
+    {
         if (!read ( offset, branch ))
             break;
 
-        if (branch.move == bestmove) {
+        if (branch.move == bestmove)
+        {
             // We found it!  Update only if new think time is greater.
 
             bool newNodeBetter;
@@ -773,7 +877,8 @@ int LearnTree::rememberPosition (
             else
                 newNodeBetter = timeLimit > branch.timeAnalyzed;
 
-            if (newNodeBetter) {
+            if (newNodeBetter)
+            {
                 branch.timeAnalyzed     = timeLimit;
                 branch.move.score       = bestmove.score;
                 branch.nodesEvaluated   = nodesEvaluated;
@@ -806,7 +911,8 @@ void LearnTree::learnFromGame (
     ChessBoard &board,
     ChessSide winner )
 {
-    if (winner == SIDE_NEITHER) {
+    if (winner == SIDE_NEITHER)
+    {
         // Currently, we ignore draw games.
         // This might change in the future, so callers should
         // not assume this behavior.
@@ -820,23 +926,27 @@ void LearnTree::learnFromGame (
     INT32 score = (winner == SIDE_WHITE) ? 1 : -1;
     INT32 offset = 0;
     const int numPlies = board.GetCurrentPlyNumber();
-    for (int ply=0; ply < numPlies; ply++) {
+    for (int ply=0; ply < numPlies; ply++)
+    {
         Move move = board.GetPastMove(ply);
 
         // search for this move in the current location of the tree.
 
         bool foundMove = false;
-        while (offset != -1) {
+        while (offset != -1)
+        {
             if (!read(offset,branch))
                 return;
 
-            if (branch.move == move) {
+            if (branch.move == move)
+            {
                 branch.winsAndLosses += score;
                 write ( offset, branch );
                 foundMove = true;
                 offset = branch.child;
                 break;
-            } else
+            }
+            else
                 offset = branch.sibling;
         }
 
@@ -868,28 +978,34 @@ INT32 LearnTree::numNodesAtDepth (
 
     board.GenMoves(ml);
 
-    if (currentDepth < targetDepth) {
-        while (root != -1) {
+    if (currentDepth < targetDepth)
+    {
+        while (root != -1)
+        {
             if (!read(root,branch))
                 return 0;
 
-            if (branch.child != -1 && ml.IsLegal(branch.move)) {
+            if (branch.child != -1 && ml.IsLegal(branch.move))
+            {
                 board.MakeMove ( branch.move, unmove );
 
                 total += numNodesAtDepth (
-                    branch.child,
-                    targetDepth,
-                    currentDepth + 1,
-                    searchTime,
-                    board );
+                             branch.child,
+                             targetDepth,
+                             currentDepth + 1,
+                             searchTime,
+                             board );
 
                 board.UnmakeMove ( branch.move, unmove );
             }
 
             root = branch.sibling;
         }
-    } else if (targetDepth == currentDepth) {
-        while (root != -1) {
+    }
+    else if (targetDepth == currentDepth)
+    {
+        while (root != -1)
+        {
             if (!read(root,branch))
                 return 0;
 
@@ -931,22 +1047,31 @@ void LearnTree::checkForPause()
 {
 #if !CHENARD_LINUX
     char garbage [64];
-    if (_kbhit()) {
+    if (_kbhit())
+    {
         int key = _getch();
-        if (key == 'p') {
+        if (key == 'p')
+        {
             printf("**** PAUSED ****  Press Enter to continue.  Enter 'q' to quit.\n");
             fflush (stdin);
-            if (fgets (garbage, sizeof(garbage), stdin)) {
-                if (0 == strcmp(garbage,"q\n")) {
-                    if (close()) {
+            if (fgets (garbage, sizeof(garbage), stdin))
+            {
+                if (0 == strcmp(garbage,"q\n"))
+                {
+                    if (close())
+                    {
                         printf("Successfully closed file.\n");
-                    } else {
+                    }
+                    else
+                    {
                         printf("!!! ERROR CLOSING FILE !!!\n");
                     }
                     exit(0);
                 }
             }
-        } else {
+        }
+        else
+        {
             printf("**** KEY IGNORED *****  Press 'p' to pause after next move completes.\n");
         }
     }
@@ -955,15 +1080,19 @@ void LearnTree::checkForPause()
     // Look for remote signal to quit via 'lrntree.close'...
     static const char * const SignalFileName = "lrntree.close";
     FILE *signal = fopen (SignalFileName, "rb");
-    if (signal) {
+    if (signal)
+    {
         printf("**** FOUND SIGNAL FILE %s ****\n", SignalFileName);
         fclose (signal);
         signal = NULL;
-        if (close()) {
+        if (close())
+        {
             printf("Successfully closed file.\n");
             remove (SignalFileName);    // delete signal file to let signaller know that chenard.trx is closed now.
             exit(0);
-        } else {
+        }
+        else
+        {
             printf("\x07!!! ERROR CLOSING FILE !!!\x07\n");     // beeps might help get attention
         }
     }
@@ -986,14 +1115,17 @@ void LearnTree::trainDepth (
     if (ml.num == 0 || board.IsDefiniteDraw())
         return;
 
-    if (currentDepth < targetDepth) {
-        while (offset != -1) {
+    if (currentDepth < targetDepth)
+    {
+        while (offset != -1)
+        {
             if (!read(offset,branch))
                 return;
 
             UnmoveInfo unmove;
             Move move = branch.move;
-            if (ml.IsLegal(move)) {
+            if (ml.IsLegal(move))
+            {
                 board.MakeMove ( move, unmove );
 
                 trainDepth (
@@ -1011,11 +1143,14 @@ void LearnTree::trainDepth (
 
             offset = branch.sibling;
         }
-    } else if (currentDepth == targetDepth) {
-        if (Learn_Output && NodesAtDepthTable[targetDepth]>0) {
+    }
+    else if (currentDepth == targetDepth)
+    {
+        if (Learn_Output && NodesAtDepthTable[targetDepth]>0)
+        {
             printf("\r###  depth=%d --- Remaining nodes at this depth: %-10d",
-                targetDepth,
-                (int) NodesAtDepthTable[targetDepth] );
+                   targetDepth,
+                   (int) NodesAtDepthTable[targetDepth] );
 
             fflush (stdout);
             EstimateRemainingTime ( targetDepth, 0.01*timeLimit );
@@ -1025,11 +1160,13 @@ void LearnTree::trainDepth (
         // make sure it hasn't been done so well (or better)
         // before now.
 
-        while (offset != -1) {
+        while (offset != -1)
+        {
             if (!read(offset,branch))
                 return;
 
-            if (branch.timeAnalyzed >= timeLimit) {
+            if (branch.timeAnalyzed >= timeLimit)
+            {
                 // Don't bother...it's already been done as well or better.
                 return;
             }
@@ -1037,7 +1174,8 @@ void LearnTree::trainDepth (
             offset = branch.sibling;
         }
 
-        if (Learn_Output) {
+        if (Learn_Output)
+        {
             printf ( "\n" );
             fflush (stdout);
             checkForPause();
@@ -1050,19 +1188,23 @@ void LearnTree::trainDepth (
         Move bestmove;
         UINT32 nodesEvaluated = 0;
 
-        if (board.WhiteToMove()) {
+        if (board.WhiteToMove())
+        {
             whitePlayer->GetMove ( board, bestmove, timeSpent );
             nodesEvaluated = whitePlayer->queryNodesEvaluated();
-        } else {
+        }
+        else
+        {
             blackPlayer->GetMove ( board, bestmove, timeSpent );
             nodesEvaluated = blackPlayer->queryNodesEvaluated();
         }
 
         char moveString [MAX_MOVE_STRLEN + 1];
         FormatChessMove ( board, bestmove, moveString );
-        if (Learn_Output) {
-            printf ( ">>> Best move = [%s]    score = %d\n", 
-                moveString, int(bestmove.score) );
+        if (Learn_Output)
+        {
+            printf ( ">>> Best move = [%s]    score = %d\n",
+                     moveString, int(bestmove.score) );
             fflush (stdout);
         }
 
@@ -1074,26 +1216,32 @@ void LearnTree::trainDepth (
         int rc = rememberPosition (board, bestmove, timeLimit, nodesEvaluated, 1, 0);
 
         ++NumPositionsFinished;
-        if (rc == 1) {
+        if (rc == 1)
+        {
             ++NumUpdates;
-            if (Learn_Output) {
+            if (Learn_Output)
+            {
                 printf ( ">>> Just modified an existing branch.\n" );
                 fflush (stdout);
             }
-        } else if (rc == 2) {
+        }
+        else if (rc == 2)
+        {
             ++NumBranches;
             ++NodesAtDepthTable [targetDepth + 1];
-            if (Learn_Output) {
+            if (Learn_Output)
+            {
                 printf ( ">>> Just added a new branch!\n" );
                 fflush (stdout);
             }
         }
 
-        if (Learn_Output) {
+        if (Learn_Output)
+        {
             printf ( ">>> finished=%lu  branches=%lu  updates=%lu\n",
-                NumPositionsFinished,
-                NumBranches,
-                NumUpdates );
+                     NumPositionsFinished,
+                     NumBranches,
+                     NumUpdates );
 
             fflush (stdout);
         }
@@ -1110,7 +1258,8 @@ void LearnTree::trainer (
 {
     printf ( "Entering tree trainer!\n\n" );
     fflush (stdout);
-    if (!open(DEFAULT_CHENARD_TREE_FILENAME)) {
+    if (!open(DEFAULT_CHENARD_TREE_FILENAME))
+    {
         printf ( "Cannot open training file '%s'\n", DEFAULT_CHENARD_TREE_FILENAME );
         fflush (stdout);
         return;
@@ -1121,7 +1270,8 @@ void LearnTree::trainer (
 
     printf ( "[ " );
     unsigned d;
-    for (d=0; d <= MaxLearnDepth+1; d++) {
+    for (d=0; d <= MaxLearnDepth+1; d++)
+    {
         NodesAtDepthTable[d] = numNodesAtDepth ( 0, d, 0, timeLimit, theBoard );
         printf ( "%lu ", (unsigned long)(NodesAtDepthTable[d]) );
         fflush (stdout);
@@ -1133,16 +1283,21 @@ void LearnTree::trainer (
     // Set thread priority to IDLE...
 
     HANDLE hProcess = GetCurrentProcess();
-    if (SetPriorityClass(hProcess,IDLE_PRIORITY_CLASS)) {
+    if (SetPriorityClass(hProcess,IDLE_PRIORITY_CLASS))
+    {
         printf ( "***  Set process priority class to IDLE\n" );
-    } else {
+    }
+    else
+    {
         printf ( "***  Error %ld setting process priority class to IDLE.\n",
-            long(GetLastError()) );
+                 long(GetLastError()) );
     }
 #endif
 
-    for (d=0; d <= MaxLearnDepth; d++) {
-        if (NodesAtDepthTable[d] > 0) {
+    for (d=0; d <= MaxLearnDepth; d++)
+    {
+        if (NodesAtDepthTable[d] > 0)
+        {
             printf ( "###  Examining depth %u\n", d );
             fflush (stdout);
 
@@ -1173,63 +1328,74 @@ int LearnTree::packer (
 
     INT32 prev_offset = -1;
 
-    while (rc && offset != -1) {
+    while (rc && offset != -1)
+    {
         LearnBranch branch;
-        if (!read(offset,branch)) {
+        if (!read(offset,branch))
+        {
             printf ( "LearnTree::packer:  cannot read branch at offset %ld (prev=%ld)\n", long(offset), long(prev_offset) );
             //rc = 0;   // WRONG!  Need to return success, so that we keep recovering as much of the tree as possible!
             break;
-        } else {
+        }
+        else
+        {
             Move move = branch.move;
-            if (ml.IsLegal(move)) {
+            if (ml.IsLegal(move))
+            {
                 outTree.rememberPosition (
                     board,
                     branch.move,
                     branch.timeAnalyzed,
                     branch.nodesEvaluated,
                     branch.numAccesses,
-                    branch.winsAndLosses 
+                    branch.winsAndLosses
                 );
 
-                #if 0   /* turn on to enable debugging */
-                    LearnBranch branchWritten;
-                    if (outTree.locateAndReadBranch(board,branch.move,branchWritten)) {
-                        if (branch.move != branchWritten.move)
-                            printf ( "Warning:  Read-back branch move different!!!  offset=%ld\n", long(offset) );
-    
-                        if (branch.nodesEvaluated != branchWritten.nodesEvaluated)
-                            printf ( "Warning:  Read-back branch nodesEvaluated different!  offset=%ld\n", long(offset) );
-    
-                        if (branch.numAccesses != branchWritten.numAccesses)
-                            printf ( "Warning:  Read-back branch numAccesses different!  offset=%ld\n", long(offset) );
-    
-                        if (branch.timeAnalyzed != branchWritten.timeAnalyzed)
-                            printf ( "Warning:  Read-back branch timeAnalyzed different!  offset=%ld\n", long(offset) );
-    
-                        if (branch.winsAndLosses != branchWritten.winsAndLosses)
-                            printf ( "Warning:  Read-back branch winsAndLosses different!  offset=%ld\n", long(offset) );
-                    } else {
-                        printf ( "Warning:  Could not read back branch %ld\n", long(offset) );
-                    }
-                #endif
+#if 0   /* turn on to enable debugging */
+                LearnBranch branchWritten;
+                if (outTree.locateAndReadBranch(board,branch.move,branchWritten))
+                {
+                    if (branch.move != branchWritten.move)
+                        printf ( "Warning:  Read-back branch move different!!!  offset=%ld\n", long(offset) );
+
+                    if (branch.nodesEvaluated != branchWritten.nodesEvaluated)
+                        printf ( "Warning:  Read-back branch nodesEvaluated different!  offset=%ld\n", long(offset) );
+
+                    if (branch.numAccesses != branchWritten.numAccesses)
+                        printf ( "Warning:  Read-back branch numAccesses different!  offset=%ld\n", long(offset) );
+
+                    if (branch.timeAnalyzed != branchWritten.timeAnalyzed)
+                        printf ( "Warning:  Read-back branch timeAnalyzed different!  offset=%ld\n", long(offset) );
+
+                    if (branch.winsAndLosses != branchWritten.winsAndLosses)
+                        printf ( "Warning:  Read-back branch winsAndLosses different!  offset=%ld\n", long(offset) );
+                }
+                else
+                {
+                    printf ( "Warning:  Could not read back branch %ld\n", long(offset) );
+                }
+#endif
 
                 UnmoveInfo unmove;
                 board.MakeMove ( move, unmove );
 
-                if (branch.child != -1 && 
-                    (branch.nodesEvaluated==0 || 
-                    (branch.move.score >= -window && branch.move.score <= window))) {
+                if (branch.child != -1 &&
+                        (branch.nodesEvaluated==0 ||
+                         (branch.move.score >= -window && branch.move.score <= window)))
+                {
                     rc = packer (
-                        branch.child,
-                        outTree,
-                        1 + depth,
-                        board,
-                        window 
-                    );
+                             branch.child,
+                             outTree,
+                             1 + depth,
+                             board,
+                             window
+                         );
                 }
 
                 board.UnmakeMove ( move, unmove );
-            } else {
+            }
+            else
+            {
                 printf("LearnTree::packer:  Illegal move (%d,%d) at offset %ld\n", move.source, move.dest, long(offset));
             }
 
@@ -1249,19 +1415,25 @@ int LearnTree::Pack (
 {
     LearnTree inTree;
     int rc = inTree.open (inTreeFilename);
-    if (rc) {
+    if (rc)
+    {
         LearnTree outTree;
         rc = outTree.create (outTreeFilename);
-        if (rc) {
+        if (rc)
+        {
             ChessBoard board;
             rc = inTree.packer ( 0, outTree, 0, board, window );
             outTree.close();
-        } else {
+        }
+        else
+        {
             printf ( "LearnTree::Pack:  cannot open output file '%s'\n", outTreeFilename );
         }
 
         inTree.close();
-    } else {
+    }
+    else
+    {
         printf ( "LearnTree::Pack: cannot open input file '%s'\n", inTreeFilename );
     }
 
@@ -1368,15 +1540,15 @@ int LearnTree::Pack (
 
 
         Revision history:
-    
+
     2001 January 12 [Don Cross]
          Adding support for tree file packing... LearnTree::Pack().
-    
+
     2001 January 9 [Don Cross]
          Adding a 'ChessBoard &' parameter to LearnTree::numNodesAtDepth(),
          so that it can tell whether moves are legal or not.  That way it
          can exclude the illegal moves just like the real trainer does.
-    
+
     1999 March 4 [Don Cross]
          Adding code to make sure that moves are legal before being traversed
          in the tree trainer.  This is because I found some illegal moves in
@@ -1385,14 +1557,14 @@ int LearnTree::Pack (
          bug.  Also, this change is important because it will ignore nodes
          marked as deleted.  This is accomplished by setting branch.move to
          source=0 and dest=0.
-    
-    
+
+
     1999 February 9 [Don Cross]
          Adding the fields 'nodesEvaluated' and 'numAccesses' to LearnBranch.
          'nodesEvaluated' holds the number of nodes evaluated in the search
          to come up with the move, unless it was a non-computer move, in which
          case it is zero.  'numAccesses' is a counter that is incremented
-         every time the computer player retrieves a given move from the 
+         every time the computer player retrieves a given move from the
          experience tree.
          Made the decision on whether to replace an existing node with a new
          node depend on the number of nodes evaluated being greater, but only
@@ -1400,45 +1572,45 @@ int LearnTree::Pack (
          When the existing value is zero, revert to the old behavior of replacing
          entries based on think time.  This is an attempt to make the tree code
          scale itself based on processor speed.
-    
+
     1999 January 18 [Don Cross]
          New member function LearnTree::absorbGameFile() allows caller
          to add the continuation in a game file to the experience tree.
-    
+
     1999 January 1 [Don Cross]
          Added calls to fflush(stdout) after every printf() call, so that
          output will be seen immediately on operating systems with buffered
          stdout (e.g. Linux).
-    
+
     1998 December 25 [Don Cross]
          Made NodesAtDepthTable bigger, because it looks like I was going
          past the end of the array!  (Maybe this explains mysterious crashes
          in trainer every now and then.)
-    
+
     1996 September 29 [Don Cross]
          Fixed bug in LearnTree::familiarPosition() which allowed ChessRandom
          to be called with an argument of 0.  Now, if total==0, we know that
          there is no move which is good enough to be trusted from experience,
          so we return false, causing the move to be thought about.
-    
+
     1996 September 9 [Don Cross]
          Making LearnTree::trainDepth() call LearnTree::rememberPosition(), so
          as to fix a bug in the former.
          Making rememberPosition() return an integer code indicating whether
          it updated an existing branch or added a new one.
-    
+
     1996 September 8 [Don Cross]
          Fixed a bug in LearnTree::rememberPosition().  It was not writing
          to the tree file when an existing branch was confirmed at a higher
          search time limit.
-    
+
     1996 September 5 [Don Cross]
          Fixed a bug in LearnTree::familiarPosition().  It was using the
          variable 'n' instead of 'numChildren' in the loop where the random
          number 'r' is used to pick the move.
-    
+
     1996 August 22 [Don Cross]
          Started writing this code.
-    
+
 */
 

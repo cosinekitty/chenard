@@ -159,8 +159,17 @@ public:
     void calcRegion ( RECT & ) const;
     void reposition();
     void invalidate();
-    void toggleHighlight()  { highlight = !highlight; invalidate(); }
-    void setColorOverride(COLORREF color) {highlight = 2; colorOverride = color; invalidate();}
+    void toggleHighlight()
+    {
+        highlight = !highlight;
+        invalidate();
+    }
+    void setColorOverride(COLORREF color)
+    {
+        highlight = 2;
+        colorOverride = color;
+        invalidate();
+    }
 
     static void SetText ( int _id, const char *newText );
     static ChessDisplayTextBuffer *Find ( int _id );
@@ -221,119 +230,117 @@ inline bool DisplayCoordsValid (int x, int y)
 class BoardDisplayBuffer
 {
 public:
-   BoardDisplayBuffer();
-   ~BoardDisplayBuffer();
+    BoardDisplayBuffer();
+    ~BoardDisplayBuffer();
 
-   void freshenSquare ( int x, int y );
-   void freshenBoard();
+    void freshenSquare ( int x, int y );
+    void freshenBoard();
 
-   //------------------- display stuff ---------------------
+    //------------------- display stuff ---------------------
 
-   void loadBitmaps ( HINSTANCE );
-   void unloadBitmaps();
-   void changePieceFont ( int newPieceFont );
-   int  queryPieceFont() const { return pieceFont; }
+    void loadBitmaps ( HINSTANCE );
+    void unloadBitmaps();
+    void changePieceFont ( int newPieceFont );
+    int  queryPieceFont() const { return pieceFont; }
 
-   void draw ( HDC,
-               int minx = 0, int maxx = 7,
-               int miny = 0, int maxy = 7 );
+    void draw ( HDC,
+                int minx = 0, int maxx = 7,
+                int miny = 0, int maxy = 7 );
 
-   void drawSquare ( HDC, SQUARE, int x, int y );
+    void drawSquare ( HDC, SQUARE, int x, int y );
 
-   void update ( const ChessBoard & );
-   void setSquareContents ( int x, int y, SQUARE );
+    void update ( const ChessBoard & );
+    void setSquareContents ( int x, int y, SQUARE );
 
-   void setView ( bool newWhiteView );
-   void toggleView()   {whiteViewFlag = !whiteViewFlag;}
-   bool queryWhiteView() const  {return whiteViewFlag;}
-   void updateAlgebraicCoords();
+    void setView ( bool newWhiteView );
+    void toggleView() { whiteViewFlag = !whiteViewFlag; }
+    bool queryWhiteView() const { return whiteViewFlag; }
+    void updateAlgebraicCoords();
 
-   bool isChanged ( int x, int y ) const
-   {
-       return DisplayCoordsValid(x,y) && changed[x][y];
-   }
+    bool isChanged ( int x, int y ) const
+    {
+        return DisplayCoordsValid(x,y) && changed[x][y];
+    }
 
-   //------------------- read move stuff ---------------------
+    //------------------- read move stuff ---------------------
 
-   //Things called by chess thread...
+    //Things called by chess thread...
 
-   void   startReadingMove ( bool whiteIsMoving );
-   bool   isReadingMove() const;
-   void   copyMove ( int &source, int &dest );
+    void   startReadingMove ( bool whiteIsMoving );
+    bool   isReadingMove() const;
+    void   copyMove ( int &source, int &dest );
 
-   //Things called by main thread...
-   void squareSelectedNotify ( int x, int y );
+    //Things called by main thread...
+    void squareSelectedNotify ( int x, int y );
 
-   // Called by chess thread's UI to select/deselect squares
-   void selectSquare ( int x, int y );
-   void deselectSquare()   {selectSquare(-1,-1);}
+    // Called by chess thread's UI to select/deselect squares
+    void selectSquare ( int x, int y );
+    void deselectSquare()
+    {
+        selectSquare(-1,-1);
+    }
 
-   // The following is used for highlighting...
-   void informMoveCoords ( int sourceX, int sourceY, int destX, int destY );
+    // The following is used for highlighting...
+    void informMoveCoords ( int sourceX, int sourceY, int destX, int destY );
 
-   void showVector ( int x1, int y1, int x2, int y2 )
-   {
-       vx1 = x1;
-       vx2 = x2;
-       vy1 = y1;
-       vy2 = y2;
-   }
+    void showVector ( int x1, int y1, int x2, int y2 )
+    {
+        vx1 = x1;
+        vx2 = x2;
+        vy1 = y1;
+        vy2 = y2;
+    }
 
-   void hideVector() { vx1 = vx2 = vy1 = vy2 = -1; }
+    void hideVector()
+    {
+        vx1 = vx2 = vy1 = vy2 = -1;
+    }
 
-   void drawVector ( HDC );
+    void drawVector ( HDC );
 
-   void keyMove (int dx, int dy);
-   int  getKeySelectX() const
-   {
-       return hiliteKeyX;
-   }
+    void keyMove (int dx, int dy);
+    int getKeySelectX() const { return hiliteKeyX; }
+    int getKeySelectY() const { return hiliteKeyY; }
 
-   int  getKeySelectY() const
-   {
-       return hiliteKeyY;
-   }
-
-   void sendAlgebraicChar(char letterOrNumber);
-
-private:
-   void keySelectSquare ( int x, int y );
-   void touchSquare (int x, int y);
+    void sendAlgebraicChar(char letterOrNumber);
 
 private:
-   int vx1, vx2, vy1, vy2;
+    void keySelectSquare ( int x, int y );
+    void touchSquare (int x, int y);
 
-   SQUARE    board [8] [8];
-   bool  changed [8] [8];
+private:
+    int vx1, vx2, vy1, vy2;
 
-   int  selX, selY;   // square currently selected
+    SQUARE    board [8] [8];
+    bool  changed [8] [8];
 
-   // bool hiliteFlag;
-   int  hiliteSourceX,  hiliteSourceY;
-   int  hiliteDestX,    hiliteDestY;
-   int  hiliteKeyX,     hiliteKeyY;     // coords for allowing user to make moves using the keyboard
+    int  selX, selY;   // square currently selected
 
-   HBITMAP  wpw, wnw, wbw, wrw, wqw, wkw;
-   HBITMAP  wpb, wnb, wbb, wrb, wqb, wkb;
-   HBITMAP  bpw, bnw, bbw, brw, bqw, bkw;
-   HBITMAP  bpb, bnb, bbb, brb, bqb, bkb;
-   HBITMAP  eb, ew, qmb, qmw;
+    int  hiliteSourceX,  hiliteSourceY;
+    int  hiliteDestX,    hiliteDestY;
+    int  hiliteKeyX,     hiliteKeyY;     // coords for allowing user to make moves using the keyboard
 
-   int  bitmapsLoadedFlag;
-   bool whiteViewFlag;
-   bool algebraicCoordWhiteViewFlag;
+    HBITMAP  wpw, wnw, wbw, wrw, wqw, wkw;
+    HBITMAP  wpb, wnb, wbb, wrb, wqb, wkb;
+    HBITMAP  bpw, bnw, bbw, brw, bqw, bkw;
+    HBITMAP  bpb, bnb, bbb, brb, bqb, bkb;
+    HBITMAP  eb, ew, qmb, qmw;
 
-   bool  readingMoveFlag;
-   bool  gotSource;
-   bool  moverIsWhite;
-   int   moveSource;
-   int   moveDest;
+    int  bitmapsLoadedFlag;
+    bool whiteViewFlag;
+    bool algebraicCoordWhiteViewFlag;
 
-   int   pieceFont;   // piece font index, 0 .. NUM_PIECE_FONTS-1
+    bool  readingMoveFlag;
+    bool  gotSource;
+    bool  moverIsWhite;
+    int   moveSource;
+    int   moveDest;
 
-   char algebraicRank;          // 'a'..'h' if keyboard rank character pressed, '\0' otherwise
+    int   pieceFont;   // piece font index, 0 .. NUM_PIECE_FONTS-1
 
-   HDC *tempHDC;
+    char algebraicRank;          // 'a'..'h' if keyboard rank character pressed, '\0' otherwise
+
+    HDC *tempHDC;
 };
 
 
@@ -465,68 +472,68 @@ struct BlunderAlertParms
 class ChessUI_win32_gui: public ChessUI
 {
 public:
-   ChessUI_win32_gui ( HWND );
-   ~ChessUI_win32_gui();
+    ChessUI_win32_gui ( HWND );
+    ~ChessUI_win32_gui();
 
-   void ResetPlayers();     // call to forget any previous player definitions.
-   ChessPlayer *CreatePlayer ( ChessSide );
-   bool ReadMove ( ChessBoard &, int &source, int &dest, SQUARE &promIndex );
-   SQUARE PromotePawn ( int PawnDest, ChessSide );
-   void DisplayMove ( ChessBoard &, Move );
-   void RecordMove ( ChessBoard &, Move, INT32 thinkTime );
-   void DrawBoard ( const ChessBoard & );
-   void ReportEndOfGame ( ChessSide winner );
-   void Resign ( ChessSide iGiveUp, QuitGameReason );
+    void ResetPlayers();     // call to forget any previous player definitions.
+    ChessPlayer *CreatePlayer ( ChessSide );
+    bool ReadMove ( ChessBoard &, int &source, int &dest, SQUARE &promIndex );
+    SQUARE PromotePawn ( int PawnDest, ChessSide );
+    void DisplayMove ( ChessBoard &, Move );
+    void RecordMove ( ChessBoard &, Move, INT32 thinkTime );
+    void DrawBoard ( const ChessBoard & );
+    void ReportEndOfGame ( ChessSide winner );
+    void Resign ( ChessSide iGiveUp, QuitGameReason );
 
-   void DisplayBestMoveSoFar ( const ChessBoard &, Move, int level );
-   void DisplayCurrentMove ( const ChessBoard &, Move, int level );
-   void DisplayBestPath ( const ChessBoard &, const BestPath & );
-   void PredictMate ( int numMovesFromNow );
-   void ReportSpecial ( const char *msg );
-   void ComputerIsThinking ( bool entering, ComputerChessPlayer & );
-   void NotifyUser ( const char *message );
+    void DisplayBestMoveSoFar ( const ChessBoard &, Move, int level );
+    void DisplayCurrentMove ( const ChessBoard &, Move, int level );
+    void DisplayBestPath ( const ChessBoard &, const BestPath & );
+    void PredictMate ( int numMovesFromNow );
+    void ReportSpecial ( const char *msg );
+    void ComputerIsThinking ( bool entering, ComputerChessPlayer & );
+    void NotifyUser ( const char *message );
 
-   void ReportComputerStats ( INT32   thinkTime,
-                              UINT32  nodesVisited,
-                              UINT32  nodesEvaluated,
-                              UINT32  nodesGenerated,
-                              int     fwSearchDepth,
-                              UINT32  visnodes [NODES_ARRAY_SIZE],
-                              UINT32  gennodes [NODES_ARRAY_SIZE] );
+    void ReportComputerStats ( INT32   thinkTime,
+                               UINT32  nodesVisited,
+                               UINT32  nodesEvaluated,
+                               UINT32  nodesGenerated,
+                               int     fwSearchDepth,
+                               UINT32  visnodes [NODES_ARRAY_SIZE],
+                               UINT32  gennodes [NODES_ARRAY_SIZE] );
 
-   // Force the computer to make a move NOW!
-   void forceMove();
+    // Force the computer to make a move NOW!
+    void forceMove();
 
-   struct gameReport
-   {
+    struct gameReport
+    {
         ChessSide       winner;
         bool            resignation;
         QuitGameReason  quitReason;
-   };
+    };
 
-   double runTacticalBenchmark();   //returns elapsed time in seconds
+    double runTacticalBenchmark();   //returns elapsed time in seconds
 
-   DefPlayerInfo::Type queryWhitePlayerType() const { return whitePlayerType; }
-   DefPlayerInfo::Type queryBlackPlayerType() const { return blackPlayerType; }
+    DefPlayerInfo::Type queryWhitePlayerType() const { return whitePlayerType; }
+    DefPlayerInfo::Type queryBlackPlayerType() const { return blackPlayerType; }
 
-   void setWhiteThinkTime ( INT32 hundredthsOfSeconds );
-   void setBlackThinkTime ( INT32 hundredthsOfSeconds );
-   INT32 queryWhiteThinkTime() const;
-   INT32 queryBlackThinkTime() const;
+    void setWhiteThinkTime ( INT32 hundredthsOfSeconds );
+    void setBlackThinkTime ( INT32 hundredthsOfSeconds );
+    INT32 queryWhiteThinkTime() const;
+    INT32 queryBlackThinkTime() const;
 
-   virtual void DebugPly ( int depth, ChessBoard &, Move );
-   virtual void DebugExit ( int depth, ChessBoard &, SCORE );
-   bool allowMateAnnounce ( bool allow )  
-   {
-       bool prev = enableMateAnnounce;
-       enableMateAnnounce = allow;
-       return prev;
-   }
-   void allowOppTime ( bool allow ) { enableOppTime = allow; }
+    virtual void DebugPly ( int depth, ChessBoard &, Move );
+    virtual void DebugExit ( int depth, ChessBoard &, SCORE );
+    bool allowMateAnnounce ( bool allow )
+    {
+        bool prev = enableMateAnnounce;
+        enableMateAnnounce = allow;
+        return prev;
+    }
+    void allowOppTime ( bool allow ) { enableOppTime = allow; }
 
-   ChessPlayer *queryWhitePlayer() const { return whitePlayer; }
-   ChessPlayer *queryBlackPlayer() const { return blackPlayer; }
-   virtual void SetAdHocText ( int index, const char *, ... );
+    ChessPlayer *queryWhitePlayer() const { return whitePlayer; }
+    ChessPlayer *queryBlackPlayer() const { return blackPlayer; }
+    virtual void SetAdHocText ( int index, const char *, ... );
 
 #if ENABLE_OPP_TIME
     //----------------- thinking on opponent's time ------------------------
@@ -555,7 +562,7 @@ public:
     bool blunderAlert_LooksLikeBlunder(BlunderAlertParms* parms, ChessBoard& board, int source, int dest);
     void blunderAlert_WarnUser(BlunderAlertParms* parms, ChessBoard& board, int humanMoveIndex, int bestMoveIndex);
     void blunderAlert_ClearWarning();
-    
+
     void blunderAlert_FormatContinuation(
         const BlunderAlertParms* parms,
         ChessBoard& board,
@@ -569,7 +576,7 @@ public:
     {
         // A little tricky: blunder alert flag can be true even though the player isn't human.
         // We need to make sure the flag is actually relevant to the player type.
-        return 
+        return
             ((whitePlayerType == DefPlayerInfo::humanPlayer) && blunderAlertEnabled_White) ||
             ((blackPlayerType == DefPlayerInfo::humanPlayer) && blunderAlertEnabled_Black);
     }
@@ -610,7 +617,8 @@ private:
 };
 
 
-enum BOARD_EDIT_REQUEST_STATE {
+enum BOARD_EDIT_REQUEST_STATE
+{
     BER_NOTHING,
     BER_FEN,
     BER_SQUARE
@@ -626,11 +634,11 @@ private:
     char       fen [500];    // Forsyth Edwards Notation
 
 public:
-    BoardEditRequest():  
-        state (BER_NOTHING), 
-        x(0), 
-        y(0), 
-        square(EMPTY) 
+    BoardEditRequest():
+        state (BER_NOTHING),
+        x(0),
+        y(0),
+        square(EMPTY)
     {
         fen[0] = '\0';
     }
@@ -649,14 +657,14 @@ public:
         state = BER_SQUARE;
     }
 
-    void sendFen (const char *_fen) 
+    void sendFen (const char *_fen)
     {
         strncpy (fen, _fen, sizeof(fen)-1);
         fen[sizeof(fen)-1] = '\0';
 
         state = BER_FEN;
     }
-    
+
     void getSingleSquareEdit (int &_x, int &_y, SQUARE &_square)
     {
         _x = x;
@@ -684,7 +692,7 @@ public:
 class MoveUndoPath
 {
 public:
-    MoveUndoPath (): 
+    MoveUndoPath ():
         moveList(0),
         size(0),
         current(0),
@@ -784,43 +792,43 @@ void Speak (const char *moveString);
     2. Moved old manual revision history after cvs log tag.
     3. Made sure each source file has extra blank line at end so gcc under Linux won't fuss!
 
-    
-    
+
+
     Revision history:
-    
+
     2001 January 13 [Don Cross]
          Adding support for thinking on opponent's time.
-    
+
     1999 February 19 [Don Cross]
         Adding new STATIC_ID_xxx fields for special things
         (e.g. Genetic Algorithm stuff).
-    
+
     1999 February 12 [Don Cross]
         Adding ChessDisplayTextBuffer::queryText(), so that
         we can put visited node counts after best path moves.
-    
+
     1999 January 3 [Don Cross]
         Displaying algebraic coordinates around board.
         Adding code to display "thinking" at bottom margin
         when a ComputerChessPlayer is deciding upon a move.
-    
+
     1998 November 15 [Don Cross]
         Changing the meaning of 'whiteThinkTime' and 'blackThinkTime' to
         be centi-seconds in DefPlayerInfo.  (Was seconds before version 1.030).
-    
+
     1997 March 3 [Don Cross]
         Changed bool Global_ViewDebugFlag into int Global_AnalysisType.
         Now the allowed values are 0=none, 1=bestpath, 2=currentpath.
-    
+
     1997 January 30 [Don Cross]
         Adding the class MoveUndoPath, which tracks moves made in the game.
         When the user does an Undo, this program backs up in the game two plies
         so that the user can play a different move in a previous position, but
         still remembers the moves already in the path until the user chooses a new
         move, in which case all "futures" are forgotten.
-    
+
     1996 July ?? [Don Cross]
         Started writing.
-    
+
 */
 

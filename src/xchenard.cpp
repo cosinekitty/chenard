@@ -1,6 +1,6 @@
 /*
     xchenard.cpp  -  Don Cross  -  http://cosinekitty.com/chenard
-    
+
     An adaptation of Chenard for WinBoard/xboard protocol version 2.
     For full functionality, use WinBoard
     See:   http://www.open-aurec.com/wbforum/WinBoard/engine-intf.html
@@ -55,7 +55,8 @@ int  MemoryAllotmentInMegabytes = 0;    // remains 0 unless overridden by "memor
 
 void dprintf (const char *format, ...)
 {
-    if (DebugPrintAllowed) {
+    if (DebugPrintAllowed)
+    {
         va_list args;
         va_start (args, format);
         double absoluteTime = 0.01 * ChessTime();
@@ -69,7 +70,8 @@ void dprintf (const char *format, ...)
 
 
 const int MAX_MOVE_UNDO = 4000;
-struct MoveUndo {
+struct MoveUndo
+{
     Move        move;
     UnmoveInfo  unmove;
 };
@@ -101,26 +103,31 @@ int PlyCounter()
 
 void UndoMove()
 {
-    if (MoveUndoStack && MoveUndoIndex > 0 && MoveUndoIndex <= MAX_MOVE_UNDO) {
+    if (MoveUndoStack && MoveUndoIndex > 0 && MoveUndoIndex <= MAX_MOVE_UNDO)
+    {
         --MoveUndoIndex;
         TheChessBoard.UnmakeMove (MoveUndoStack[MoveUndoIndex].move, MoveUndoStack[MoveUndoIndex].unmove);
-    } else {
+    }
+    else
+    {
         ChessFatal ("UndoMove:  cannot undo half-move");
     }
 }
 
 const char *ParseVerb (const char *line, char *verb)
 {
-    while (*line && !isspace(*line)) {
+    while (*line && !isspace(*line))
+    {
         *verb++ = *line++;
     }
-    
+
     *verb = '\0';
-    
-    while (*line && isspace(*line)) {
+
+    while (*line && isspace(*line))
+    {
         ++line;
     }
-    
+
     return line;    // return a pointer to the first non-whitespace character after the verb
 }
 
@@ -129,11 +136,15 @@ void TrimString (char *s)
     // This function corrects for an annoying "feature" of fgets().
     // That function may (or may not) leave a '\n' at the end of the string it returns.
     // This function finds the first '\n', if any, and truncates the string there.
-    while (*s) {
-        if (*s == '\n') {
+    while (*s)
+    {
+        if (*s == '\n')
+        {
             *s = '\0';
             break;
-        } else {
+        }
+        else
+        {
             ++s;
         }
     }
@@ -146,7 +157,8 @@ void TrimString (char *s)
 // That way the main chess engine thread can instantly enquire about I/O being ready.
 
 
-struct tLineNode {
+struct tLineNode
+{
     tLineNode (const char *_line)
     {
         line = new char [1 + strlen(_line)];
@@ -175,24 +187,32 @@ void InputThreadFunc (void *)
 {
     char line [MAX_XBOARD_LINE];
 
-    while (!GlobalAbortFlag) {
-        if (fgets (line, sizeof(line), stdin)) {
+    while (!GlobalAbortFlag)
+    {
+        if (fgets (line, sizeof(line), stdin))
+        {
             TrimString (line);
             tLineNode *node = new tLineNode (line);     // get a new line node ready for the queue
 
             EnterCriticalSection (&LineQueueCriticalSection);   // grab exclusive access to the queue
-            if (LineQueueBack == NULL) {
+            if (LineQueueBack == NULL)
+            {
                 LineQueueFront = LineQueueBack = node;          // this is the only node in the queue
-            } else {
+            }
+            else
+            {
                 LineQueueBack = LineQueueBack->next = node;     // add to the end of the list of node(s) already there
             }
             LeaveCriticalSection (&LineQueueCriticalSection);
 
-            if (0 == memcmp(line,"quit",4)) {
+            if (0 == memcmp(line,"quit",4))
+            {
                 // Special case: avoid calling fgets again because we aren't going to get any more lines of input!
                 break;
             }
-        } else {
+        }
+        else
+        {
             // For some reason there was an error reading from stdin (maybe EOF???)
             GlobalAbortFlag = true;     // go ahead and let this whole process end
         }
@@ -205,19 +225,23 @@ const char *ReadCommandFromXboard (char *verb)
 {
     static char line [MAX_XBOARD_LINE];
 
-    while (!GlobalAbortFlag) {
+    while (!GlobalAbortFlag)
+    {
         // See if anything is waiting in the line queue...
         EnterCriticalSection (&LineQueueCriticalSection);
         tLineNode *node = LineQueueFront;
-        if (node) {
+        if (node)
+        {
             LineQueueFront = LineQueueFront->next;      // remove the front node from the list
-            if (LineQueueFront == NULL) {
+            if (LineQueueFront == NULL)
+            {
                 LineQueueBack = NULL;
             }
         }
         LeaveCriticalSection (&LineQueueCriticalSection);
 
-        if (node) {
+        if (node)
+        {
             strcpy (line, node->line);
             delete node;
             return ParseVerb (line, verb);
@@ -243,13 +267,16 @@ bool InitializeInput()
 
 bool IsInputReady()
 {
-    if (InputThreadHasStarted) {
+    if (InputThreadHasStarted)
+    {
         // Check here to see if the I/O thread has an an input line ready from stdin.
         EnterCriticalSection (&LineQueueCriticalSection);
         bool ready = (LineQueueFront != NULL);
         LeaveCriticalSection (&LineQueueCriticalSection);
         return ready;
-    } else {
+    }
+    else
+    {
         return false;
     }
 }
@@ -265,10 +292,13 @@ bool InitializeInput()
 const char *ReadCommandFromXboard (char *verb)
 {
     static char line [MAX_XBOARD_LINE];
-    if (fgets (line, sizeof(line), stdin)) {
+    if (fgets (line, sizeof(line), stdin))
+    {
         TrimString (line);
         return ParseVerb (line, verb);
-    } else {
+    }
+    else
+    {
         return NULL;
     }
 }
@@ -277,15 +307,16 @@ bool IsInputReady()
 {
     const int STANDARD_INPUT = 0;
     fd_set fd;
-    timeval noblock;      
-    
+    timeval noblock;
+
     memset(&noblock, 0, sizeof(noblock));   // zero-valued timeout will prevent select() from blocking
-    
+
     FD_ZERO (&fd);      // initialize fd so that all file descriptor bits are zero
     FD_SET (STANDARD_INPUT, &fd);       // specify that we are interested in stdin
-    
+
     int rc = select (1, &fd, NULL, NULL, &noblock);
-    if (rc < 0) {
+    if (rc < 0)
+    {
         ChessFatal ("IsInputReady:  Error returned in select()");
     }
     return (rc > 0);
@@ -298,13 +329,15 @@ bool IsInputReady()
 
 void XChenardCleanup()
 {
-    if (MoveUndoStack) {
+    if (MoveUndoStack)
+    {
         delete[] MoveUndoStack;
         MoveUndoStack = NULL;
     }
 
 #if defined(WIN32)
-    while (InputThreadHasStarted && !InputThreadHasExited) {
+    while (InputThreadHasStarted && !InputThreadHasExited)
+    {
         Sleep (10);
     }
 
@@ -338,32 +371,39 @@ bool LooksLikeMove (const char *verb, int &source, int &dest, int &prom)
     prom = 0;       // initialize output parameter to invalid value
 
     int length = (int) strlen(verb);
-    if (length == 4 || length == 5) {
-        if (verb[0] >= 'a' && verb[0] <= 'h') {
-            if (verb[1] >= '1' && verb[1] <= '8') {
-                if (verb[2] >= 'a' && verb[2] <= 'h') {
-                    if (verb[3] >= '1' && verb[3] <= '8') {
-                        if (length == 5) {
+    if (length == 4 || length == 5)
+    {
+        if (verb[0] >= 'a' && verb[0] <= 'h')
+        {
+            if (verb[1] >= '1' && verb[1] <= '8')
+            {
+                if (verb[2] >= 'a' && verb[2] <= 'h')
+                {
+                    if (verb[3] >= '1' && verb[3] <= '8')
+                    {
+                        if (length == 5)
+                        {
                             // Must be a pawn promotion
-                            switch (verb[4]) {
-                                case 'q':
-                                    prom = Q_INDEX;
-                                    break;
-                                    
-                                case 'r':
-                                    prom = R_INDEX;
-                                    break;
-                                    
-                                case 'n':
-                                    prom = N_INDEX;
-                                    break;
-                                    
-                                case 'b':
-                                    prom = B_INDEX;
-                                    break;
-                                    
-                                default:
-                                    return false;   // NOT A VALID PAWN PROMOTION PIECE!!!
+                            switch (verb[4])
+                            {
+                            case 'q':
+                                prom = Q_INDEX;
+                                break;
+
+                            case 'r':
+                                prom = R_INDEX;
+                                break;
+
+                            case 'n':
+                                prom = N_INDEX;
+                                break;
+
+                            case 'b':
+                                prom = B_INDEX;
+                                break;
+
+                            default:
+                                return false;   // NOT A VALID PAWN PROMOTION PIECE!!!
                             }
                         }
                         source = OFFSET (verb[0] - 'a' + 2, verb[1] - '1' + 2);
@@ -374,7 +414,7 @@ bool LooksLikeMove (const char *verb, int &source, int &dest, int &prom)
             }
         }
     }
-    
+
     return false;   // this does not look like a valid move
 }
 
@@ -387,31 +427,44 @@ void MakeMove (Move move)
 {
     UnmoveInfo unmove;
     TheChessBoard.MakeMove (move, unmove);
-    if (MoveUndoStack && MoveUndoIndex >= 0 && MoveUndoIndex < MAX_MOVE_UNDO) {
+    if (MoveUndoStack && MoveUndoIndex >= 0 && MoveUndoIndex < MAX_MOVE_UNDO)
+    {
         MoveUndoStack[MoveUndoIndex].move   = move;
         MoveUndoStack[MoveUndoIndex].unmove = unmove;
         ++MoveUndoIndex;
-    } else {
+    }
+    else
+    {
         ChessFatal ("Unable to push move onto undo stack.");
     }
 
-    if (TheChessBoard.GameIsOver()) {
+    if (TheChessBoard.GameIsOver())
+    {
         bool canMove = TheChessBoard.CurrentPlayerCanMove();
         bool inCheck = TheChessBoard.CurrentPlayerInCheck();
-        if (canMove) {
+        if (canMove)
+        {
             // This must be a draw by material, 50-move rule, or repetition (can't tell which!)
             // FIXFIXFIX:  Figure out how to disambiguate the draw cases.
             printf ("1/2-1/2 {Draw}\n");
-        } else {
+        }
+        else
+        {
             // This is either checkmate or stalemate...
-            if (inCheck) {
+            if (inCheck)
+            {
                 // Checkmate...
-                if (TheChessBoard.WhiteToMove()) {
+                if (TheChessBoard.WhiteToMove())
+                {
                     printf ("0-1 {Black mates}\n");
-                } else {
+                }
+                else
+                {
                     printf ("1-0 {White mates}\n");
                 }
-            } else {
+            }
+            else
+            {
                 printf ("1/2-1/2 {Stalemate}\n");
             }
         }
@@ -422,10 +475,12 @@ void MakeMove (const char *original)
 {
     MoveList ml;
     TheChessBoard.GenMoves (ml);
-    for (int i=0; i < ml.num; ++i) {
+    for (int i=0; i < ml.num; ++i)
+    {
         char compare[6];
         ChenardMoveToAlgebraic (TheChessBoard, ml.m[i], compare);
-        if (0 == strcmp (compare, original)) {
+        if (0 == strcmp (compare, original))
+        {
             MakeMove (ml.m[i]);
             return;     // the move is legal, so avoid sending rejection below
         }
@@ -436,39 +491,52 @@ void MakeMove (const char *original)
 
 void ReceiveMove (const char *original, int source, int dest, int prom)
 {
-    if (BoardIsCorrupt) {
+    if (BoardIsCorrupt)
+    {
         SendMoveRejection (original);
-    } else {
+    }
+    else
+    {
         MoveList ml;
         TheChessBoard.GenMoves (ml);
-        
+
         int found = 0;      // count of how many moves match what was fed to us
         int msource;
         int mdest;
         int matchIndex = -1;
-        
-        for (int i=0; i < ml.num; ++i) {
+
+        for (int i=0; i < ml.num; ++i)
+        {
             SQUARE mp = ml.m[i].actualOffsets (TheChessBoard, msource, mdest);
-            if (msource==source && mdest==dest) {
-                if (mp == EMPTY) {
+            if (msource==source && mdest==dest)
+            {
+                if (mp == EMPTY)
+                {
                     // ml[i] is not a pawn promotion
-                    if (prom == 0) {
+                    if (prom == 0)
+                    {
                         ++found;
                         matchIndex = i;
                     }
-                } else {
+                }
+                else
+                {
                     // ml[i] is a pawn promotion
-                    if (prom == (int)UPIECE_INDEX(mp)) {
+                    if (prom == (int)UPIECE_INDEX(mp))
+                    {
                         ++found;
                         matchIndex = i;
                     }
                 }
             }
         }
-        
-        if (found == 1) {
+
+        if (found == 1)
+        {
             MakeMove (ml.m[matchIndex]);
-        } else {
+        }
+        else
+        {
             SendMoveRejection (original);
         }
     }
@@ -487,43 +555,46 @@ void ChenardMoveToAlgebraic (bool whiteToMove, const Move &move, char str[6])
     str[3] = YPART(dest)   - 2 + '1';
     str[4] = '\0';
     str[5] = '\0';
-    
-    switch (prom) {
-        case EMPTY:
-            break;
-        
-        case WQUEEN:
-        case BQUEEN:
-            str[4] = 'q';
-            break;
-        
-        case WROOK:
-        case BROOK:
-            str[4] = 'r';
-            break;
-        
-        case WBISHOP:
-        case BBISHOP:
-            str[4] = 'b';
-            break;
-        
-        case WKNIGHT:
-        case BKNIGHT:
-            str[4] = 'n';
-            break;        
-        
-        default:
-            ChessFatal ("Invalid promotion piece in ChenardMoveToAlgebraic");
+
+    switch (prom)
+    {
+    case EMPTY:
+        break;
+
+    case WQUEEN:
+    case BQUEEN:
+        str[4] = 'q';
+        break;
+
+    case WROOK:
+    case BROOK:
+        str[4] = 'r';
+        break;
+
+    case WBISHOP:
+    case BBISHOP:
+        str[4] = 'b';
+        break;
+
+    case WKNIGHT:
+    case BKNIGHT:
+        str[4] = 'n';
+        break;
+
+    default:
+        ChessFatal ("Invalid promotion piece in ChenardMoveToAlgebraic");
     }
 }
 
 bool IsComputersTurn()
 {
     bool chenardsTurn = false;
-    if (ComputerIsPlayingBlack) {
+    if (ComputerIsPlayingBlack)
+    {
         chenardsTurn = TheChessBoard.BlackToMove();
     }
-    if (ComputerIsPlayingWhite) {
+    if (ComputerIsPlayingWhite)
+    {
         chenardsTurn = TheChessBoard.WhiteToMove();
     }
     return chenardsTurn;
@@ -557,8 +628,10 @@ void Breathe()      // yield a little bit of CPU time before pondering, so WinBo
 void ThinkIfChenardsTurn()
 {
 think_again:
-    if (!BoardIsCorrupt && IsComputersTurn() && !TheChessBoard.GameIsOver()) {
-        if (MyRemainingTime > 0) {     // do we have a pending time amount?  (we clear it after using it)
+    if (!BoardIsCorrupt && IsComputersTurn() && !TheChessBoard.GameIsOver())
+    {
+        if (MyRemainingTime > 0)       // do we have a pending time amount?  (we clear it after using it)
+        {
             ReceiveMyRemainingTime (MyRemainingTime, true);     // we just confirmed that it is the comptuer's turn, so pass 'true'
             MyRemainingTime = 0;        // prevent from using this a second time; pondering logic below will take care of the rest.
         }
@@ -566,23 +639,30 @@ think_again:
         Move move;
         INT32 timeSpent;
         TheUserInterface.OnStartSearch();
-        if (TheComputerPlayer.GetMove (TheChessBoard, move, timeSpent)) {
+        if (TheComputerPlayer.GetMove (TheChessBoard, move, timeSpent))
+        {
             // This is a little weird: we may have received and processed a 'force' command.
             // If this happens, it means it is no longer our turn!
-            if (IsComputersTurn()) {
+            if (IsComputersTurn())
+            {
 ponder_again:
                 char moveString [6];
                 ChenardMoveToAlgebraic (TheChessBoard, move, moveString);
                 printf ("move %s\n", moveString);
                 MakeMove (move);    // must do this *AFTER* transmitting 'move' command, in case it is end of game!
-                if (PonderingAllowed && !TheChessBoard.GameIsOver()) {
+                if (PonderingAllowed && !TheChessBoard.GameIsOver())
+                {
                     Move predictedOppMove = TheComputerPlayer.getPredictedOpponentMove();
-                    if (predictedOppMove.dest == 0) {
+                    if (predictedOppMove.dest == 0)
+                    {
                         dprintf ("No prediction of opponent's move is available.\n");
-                    } else {
+                    }
+                    else
+                    {
                         // It looks like we now have a prediction about what the opponent will do.
                         // Make darn sure it is a legal move, otherwise bad things could happen.
-                        if (TheChessBoard.isLegal (predictedOppMove)) {
+                        if (TheChessBoard.isLegal (predictedOppMove))
+                        {
                             // Let's do some pondering!
                             UnmoveInfo  predictionUnmove;
                             Move        myHypotheticalReply;
@@ -605,51 +685,72 @@ ponder_again:
                             TheChessBoard.UnmakeMove (predictedOppMove, predictionUnmove);
                             TheUserInterface.FinishPondering (actualOpponentAlgebraic);
 
-                            if (actualOpponentAlgebraic[0] == '\0') {
+                            if (actualOpponentAlgebraic[0] == '\0')
+                            {
                                 // We probably received some kind of command that aborted the search, other than an opponent's move.
                                 // Another, less likely possibility is that we really did think for 24 hours without the opponent ever moving.
                                 const char *verb = TheUserInterface.PendingVerb();
-                                if (verb[0] != '\0') {
+                                if (verb[0] != '\0')
+                                {
                                     // The UI stashed away exactly one command, aborted the search, and stopped reading commands.
                                     const char *rest = TheUserInterface.PendingRest();
-                                    if (ExecuteCommand (verb, rest)) {
+                                    if (ExecuteCommand (verb, rest))
+                                    {
                                         GlobalAbortFlag = true;     // We received a "quit" command... cause main task loop to bail out immediately!
                                     }
                                 }
-                            } else {
+                            }
+                            else
+                            {
                                 MakeMove (actualOpponentAlgebraic);
-                                if (foundHypotheticalReply) {
-                                    if (TheChessBoard.GameIsOver()) {
+                                if (foundHypotheticalReply)
+                                {
+                                    if (TheChessBoard.GameIsOver())
+                                    {
                                         dprintf ("Game is over after opponent's actual move.\n");
-                                    } else {
-                                        if (IsComputersTurn()) {    // check again: game might have been aborted while we were pondering
+                                    }
+                                    else
+                                    {
+                                        if (IsComputersTurn())      // check again: game might have been aborted while we were pondering
+                                        {
                                             // Did we correctly guess the opponent's move?
-                                            if (0 == strcmp (actualOpponentAlgebraic, predictedAlgebraic)) {
+                                            if (0 == strcmp (actualOpponentAlgebraic, predictedAlgebraic))
+                                            {
                                                 // Yes, we did predict correctly, so the pondering we did was useful.
                                                 move = myHypotheticalReply;
                                                 goto ponder_again;
-                                            } else {
+                                            }
+                                            else
+                                            {
                                                 // No, we guessed wrong, so we must start over and think normally.
                                                 const int remainingTime = TheUserInterface.MyPonderClock();   // the full amount of time is still in effect since we guessed wrong
                                                 dprintf ("Guessed wrong... starting over with ponder clock = %d.\n", remainingTime);
                                                 ReceiveMyRemainingTime (remainingTime, true);           // we just checked to make sure it is our turn
                                                 goto think_again;
                                             }
-                                        } else {
+                                        }
+                                        else
+                                        {
                                             dprintf ("Finished pondering, but not my turn.\n");
                                         }
                                     }
-                                } else {
+                                }
+                                else
+                                {
                                     dprintf ("Pondering returned false - resignation?\n");
                                 }
                             }
-                        } else {
+                        }
+                        else
+                        {
                             dprintf ("IGNORING ILLEGAL PREDICTED MOVE!  s=%d d=%d\n", predictedOppMove.source, predictedOppMove.dest);
                         }
                     }
                 }
             }
-        } else {
+        }
+        else
+        {
             // failure to get a move... ?????
             // FIXFIXFIX:  Make sure GetMove returning false is abnormal.
             // (I can't remember how the ComputerChessPlayer indicates resignation.)
@@ -662,7 +763,8 @@ ponder_again:
 void SetDepthCommand (const char *rest)
 {
     int depth = atoi(rest);
-    if (depth > 0) {
+    if (depth > 0)
+    {
         TheComputerPlayer.SetSearchDepth (depth);
     }
     TimeManagement = false;
@@ -672,7 +774,8 @@ void SetDepthCommand (const char *rest)
 void SetTimeCommand (const char *rest)
 {
     int numberOfSeconds = atoi(rest);
-    if (numberOfSeconds > 0) {
+    if (numberOfSeconds > 0)
+    {
         TheComputerPlayer.SetTimeLimit (100 * numberOfSeconds);
     }
     TimeManagement = false;
@@ -681,30 +784,35 @@ void SetTimeCommand (const char *rest)
 
 void SetLevelCommand (const char *rest)
 {
-    if (rest == NULL) {
+    if (rest == NULL)
+    {
         ChessFatal ("SetLevelCommand:  rest == NULL");
     }
-    
-    if (strlen(rest) >= MAX_XBOARD_LINE) {
+
+    if (strlen(rest) >= MAX_XBOARD_LINE)
+    {
         ChessFatal ("SetLevelCommand:  input string is too long to be valid");
     }
-    
+
     int  moves = 0;
     int  increment = 0;
     int  minutes = 0;
     int  seconds = 0;
 
     bool valid = true;
-    
-    if (4 != sscanf (rest, "%d %d:%d %d", &moves, &minutes, &seconds, &increment)) {
+
+    if (4 != sscanf (rest, "%d %d:%d %d", &moves, &minutes, &seconds, &increment))
+    {
         seconds = 0;
-        if (3 != sscanf (rest, "%d %d %d", &moves, &minutes, &increment)) {
+        if (3 != sscanf (rest, "%d %d %d", &moves, &minutes, &increment))
+        {
             valid = false;
             printf ("Error (cannot parse '%s'): level\n", rest);
         }
     }
 
-    if (valid) {
+    if (valid)
+    {
         TotalSecondsPerPeriod   = (60 * minutes) + seconds;
         TotalMovesPerPeriod     = moves;
         IncrementSecondsPerMove = increment;
@@ -716,13 +824,16 @@ void SetLevelCommand (const char *rest)
 int TimeBudgetForNextMove (int centiseconds, bool computersTurn)
 {
     double denominator;
-    
+
     // Here is an interesting problem: figure out how much time to think on each move.
     // We don't know how many moves are left in the game, but we may know how many are left in the time period.
     // Special case:  TotalMovesPerPeriod can be zero, which means the entire game is all one time period.
-    if (TotalMovesPerPeriod <= 0) {     // include negative values, just in case xboard did something wacky
+    if (TotalMovesPerPeriod <= 0)       // include negative values, just in case xboard did something wacky
+    {
         denominator = 80.0;        // Always assume there are a certain number of moves left... Dude, I just made this up.
-    } else {
+    }
+    else
+    {
         // One tricky bit: this function is sometimes called before we have received the opponent's move, sometimes after.
         // [7 December 2009] Bug fix: we no longer call IsComputersTurn() because when called from pondering,
         // TheChessBoard is in a random state because we are calling from an arbitrary point in the search!
@@ -733,19 +844,21 @@ int TimeBudgetForNextMove (int centiseconds, bool computersTurn)
         const int myRemainingMoves = TotalMovesPerPeriod - (plyWithinPeriod/2);
 
         dprintf (
-            "TotalMovesPerPeriod=%d, centiseconds=%d, computersTurn=%d, plyCounter=%d, plyWithinPeriod=%d, myRemainingMoves=%d\n", 
+            "TotalMovesPerPeriod=%d, centiseconds=%d, computersTurn=%d, plyCounter=%d, plyWithinPeriod=%d, myRemainingMoves=%d\n",
             TotalMovesPerPeriod,     centiseconds,  (int)computersTurn, plyCounter,    plyWithinPeriod,    myRemainingMoves
         );
 
         denominator = double (myRemainingMoves + 0.5);              // use less of our remaining time as we approach 1 remaining move
     }
 
-    if (PonderingAllowed) {
+    if (PonderingAllowed)
+    {
         // Because we are pondering, if there are more than a few moves remaining in the time period,
-        // let's give ourselves a bit longer to think, based on the idea that we will correctly predict 
+        // let's give ourselves a bit longer to think, based on the idea that we will correctly predict
         // the opponent's move often enough to relieve time pressure.
         // But we don't play risky with our time budget if only a few moves remain.
-        if (denominator >= 8) {
+        if (denominator >= 8)
+        {
             denominator *= 0.75;     // making the denominator smaller makes the ratio (think time) bigger
         }
     }
@@ -762,20 +875,29 @@ int TimeBudgetForNextMove (int centiseconds, bool computersTurn)
     // Also adjust for time cushion, which is a small amount of safety overhead for communications, etc.
 
     // Avoid leaving less than 1 second on the clock if possible...
-    if (remainingSeconds - thinkTimeInSeconds < 1.0) {
-        if (remainingSeconds >= 2.0) {
+    if (remainingSeconds - thinkTimeInSeconds < 1.0)
+    {
+        if (remainingSeconds >= 2.0)
+        {
             thinkTimeInSeconds = remainingSeconds - 1.0;
-        } else {
+        }
+        else
+        {
             thinkTimeInSeconds = remainingSeconds / 2.0;
         }
     }
 
-    if (thinkTimeInSeconds <= 2.0 * TIME_CUSHION_IN_SECONDS) {
+    if (thinkTimeInSeconds <= 2.0 * TIME_CUSHION_IN_SECONDS)
+    {
         thinkTimeInSeconds = TIME_CUSHION_IN_SECONDS;       // we are in deep trouble!
-    } else if (thinkTimeInSeconds <= MAX_THINK_TIME + TIME_CUSHION_IN_SECONDS) {        
+    }
+    else if (thinkTimeInSeconds <= MAX_THINK_TIME + TIME_CUSHION_IN_SECONDS)
+    {
         thinkTimeInSeconds -= TIME_CUSHION_IN_SECONDS;
-    } else {
-        thinkTimeInSeconds = MAX_THINK_TIME;    
+    }
+    else
+    {
+        thinkTimeInSeconds = MAX_THINK_TIME;
     }
 
     dprintf ("Time budget = %0.2lf seconds\n", thinkTimeInSeconds);
@@ -793,7 +915,8 @@ void AcceptMyRemainingTime (int centiseconds)
 
 void ReceiveMyRemainingTime (int centiseconds, bool computersTurn)
 {
-    if (TimeManagement) {
+    if (TimeManagement)
+    {
         int thinkTimeInCentiSeconds = TimeBudgetForNextMove (centiseconds, computersTurn);
         TheComputerPlayer.SetTimeLimit (thinkTimeInCentiSeconds);   // this locks in the target time: any time spent after this is covered by the time limit!
     }
@@ -810,11 +933,12 @@ void SetBoard (const char *fen)
     // Likewise, if the board was corrupt, setboard to a valid position should clear it.
     // See:  "setboard FEN" in  http://www.tim-mann.org/xboard/engine-intf.html
     BoardIsCorrupt = !TheChessBoard.SetForsythEdwardsNotation (fen);
-    if (BoardIsCorrupt) {
+    if (BoardIsCorrupt)
+    {
         // Timm Man also recommends responding this way to a bad setboard command:
         printf ("tellusererror Illegal position\n");
     }
-    
+
     // In either case, we want to start over with a new undo-move stack...
     ResetUndoMoveStack (TheChessBoard.WhiteToMove());
 
@@ -826,8 +950,10 @@ void SetBoard (const char *fen)
 void SendHint()
 {
     Move hint = TheComputerPlayer.getPredictedOpponentMove();
-    if (hint.dest != 0) {
-        if (TheChessBoard.isLegal (hint)) {
+    if (hint.dest != 0)
+    {
+        if (TheChessBoard.isLegal (hint))
+        {
             char algebraic[6];
             ChenardMoveToAlgebraic (TheChessBoard, hint, algebraic);
             printf ("Hint: %s\n", algebraic);
@@ -838,7 +964,8 @@ void SendHint()
 
 bool CommandMayBeIgnored (const char *verb)
 {
-    static const char * const Ignorables[] = {
+    static const char * const Ignorables[] =
+    {
         "draw",         // we ignore offers of a draw, which is equivalent to declining them in the xboard protocol.
         "random",
         "otim",         // some day we may care about how much time there is on the opponent's clock, but not yet
@@ -850,8 +977,10 @@ bool CommandMayBeIgnored (const char *verb)
         NULL
     };
 
-    for (int i=0; Ignorables[i] != NULL; ++i) {
-        if (0 == strcmp(verb,Ignorables[i])) {
+    for (int i=0; Ignorables[i] != NULL; ++i)
+    {
+        if (0 == strcmp(verb,Ignorables[i]))
+        {
             return true;
         }
     }
@@ -875,26 +1004,34 @@ void ParseOption (const char *text)
     char value [MAX_XBOARD_LINE];
 
     const char *equal = strchr (text, '=');
-    if (equal != NULL) {
+    if (equal != NULL)
+    {
         size_t nameLength = equal - text;
         memcpy (name, text, nameLength);
         name[nameLength] = '\0';
         strcpy (value, equal+1);
         int valueInt = atoi(value);
 
-        if (0 == strcmp (name, OPTION_OPENING_BOOK)) {
+        if (0 == strcmp (name, OPTION_OPENING_BOOK))
+        {
             OpeningBookEnableDisable (valueInt != 0);
-        } else if (0 == strcmp (name, "memory")) {
+        }
+        else if (0 == strcmp (name, "memory"))
+        {
             // This is a little bit squirrelly, because it is not an advertised XChenard option.
             // Normally memory is configured not by an "option" command, but by the older "memory" command.
             // I am just providing a back door for someone to send a memory command via xchenard.ini if needed.
             MemoryAllotmentInMegabytes = valueInt;
-        } else {
+        }
+        else
+        {
             goto unknown_option;
         }
-    } else {
+    }
+    else
+    {
         // Some option types ('-button' and '-save') have no '=VALUE' part after the option name.
-        // Put any such options here in the future.        
+        // Put any such options here in the future.
 
 unknown_option:
         dprintf ("Ignoring unknown option name in '%s'\n", text);
@@ -906,25 +1043,33 @@ bool ExecuteCommand (const char *verb, const char *rest)        // returns true 
 {
     int moveSource, moveDest, promotionPiece;
 
-    if (CommandMayBeIgnored(verb)) {
+    if (CommandMayBeIgnored(verb))
+    {
         return false;   // do not end the program
     }
 
-    if (0 == strcmp(verb,"quit")) {
+    if (0 == strcmp(verb,"quit"))
+    {
         return true;    // end the program
-    } else if (0 == strcmp(verb,"xboard")) {
-        if (XboardVersion < 1) {
+    }
+    else if (0 == strcmp(verb,"xboard"))
+    {
+        if (XboardVersion < 1)
+        {
             XboardVersion = 1;      // now we know we are talking to at least xboard version 1
         }
-    } else if (0 == strcmp(verb,"protover")) {
+    }
+    else if (0 == strcmp(verb,"protover"))
+    {
         XboardVersion = atoi(rest);
-        if (XboardVersion < 2) {
+        if (XboardVersion < 2)
+        {
             ChessFatal ("Failure to read protover properly.");
         }
-        
+
         // Now is a good time for Chenard to say 'hi' to xboard and introduce himself...
         printf ("feature myname=\"Chenard %s\"\n", CHENARD_VERSION);
-        
+
         // Send feature requests...
         printf ("feature sigint=0\n");
         printf ("feature sigterm=0\n");
@@ -938,102 +1083,157 @@ bool ExecuteCommand (const char *verb, const char *rest)        // returns true 
         printf ("feature memory=1\n");      // [16 September 2009]:  Adding support for the new "memory" command.
         printf ("feature option=\"%s -check %d\"\n", OPTION_OPENING_BOOK, (OpeningBookEnableState ? 1 : 0));      // [17 September 2009]:  Allow user to enable/disable internal opening book and external training file chenard.trx.
         printf ("feature done=1\n");        // ***** This must be the final feature sent (ends xboard timeout) *****
-    } else if (0 == strcmp(verb,"accepted")) {
-        if (0 == strcmp(rest,"debug")) {
+    }
+    else if (0 == strcmp(verb,"accepted"))
+    {
+        if (0 == strcmp(rest,"debug"))
+        {
             DebugPrintAllowed = true;
             dprintf ("Debug enabled.  This is a %d-bit build.\n", (int)(8*sizeof(void*)));
-        } else if (0 == strcmp(verb,"usermove")) {
+        }
+        else if (0 == strcmp(verb,"usermove"))
+        {
             UserMoveOptionGranted = true;
         }
-    } else if (0 == strcmp(verb,"new")) {
+    }
+    else if (0 == strcmp(verb,"new"))
+    {
         StartNewGame();
-    } else if (0 == strcmp(verb, "variant")) {
+    }
+    else if (0 == strcmp(verb, "variant"))
+    {
         // No variants are currently accepted... say nite nite
         printf ("Error (variants not implemented): %s\n", verb);
         return true;
-    } else if (0 == strcmp(verb,"usermove")) {
-        if (LooksLikeMove(rest, moveSource, moveDest, promotionPiece)) {
+    }
+    else if (0 == strcmp(verb,"usermove"))
+    {
+        if (LooksLikeMove(rest, moveSource, moveDest, promotionPiece))
+        {
             // This looks like a move, but we can't depend on it being legal.
             ReceiveMove (rest, moveSource, moveDest, promotionPiece);
-        } else {
+        }
+        else
+        {
             // I don't think we can ever get here, unless there is a bug either in xboard or this code.
             SendMoveRejection (rest);
         }
-    } else if (0 == strcmp(verb,"go")) {
+    }
+    else if (0 == strcmp(verb,"go"))
+    {
         // xboard is telling us to play whoever's turn it is to move.
         // Note that a single xchenard process never plays both sides simultaneously.
         // To play xchenard against itself, xboard will launch two xchenard.exe processes.
         // This constraint simplifies our pondering algorithm and allows certain assumptions to be made.
         ComputerIsPlayingWhite = TheChessBoard.WhiteToMove();
         ComputerIsPlayingBlack = TheChessBoard.BlackToMove();
-    } else if (0 == strcmp(verb,"force")) {
+    }
+    else if (0 == strcmp(verb,"force"))
+    {
         // xboard is telling us to stop thinking, and play neither side.
         ReceiveForceCommand();
-    } else if (0 == strcmp(verb,"st")) {
+    }
+    else if (0 == strcmp(verb,"st"))
+    {
         SetTimeCommand (rest);
-    } else if (0 == strcmp(verb,"sd")) {
+    }
+    else if (0 == strcmp(verb,"sd"))
+    {
         SetDepthCommand (rest);
-    } else if (0 == strcmp(verb,"time")) {
+    }
+    else if (0 == strcmp(verb,"time"))
+    {
         AcceptMyRemainingTime (atoi(rest));
-    } else if (0 == strcmp(verb,"level")) {
+    }
+    else if (0 == strcmp(verb,"level"))
+    {
         SetLevelCommand (rest);
-    } else if (0 == strcmp(verb,"ping")) {
+    }
+    else if (0 == strcmp(verb,"ping"))
+    {
         printf ("pong %s\n", rest);
-    } else if (0 == strcmp(verb,"undo")) {
+    }
+    else if (0 == strcmp(verb,"undo"))
+    {
         UndoMove();
-    } else if (0 == strcmp(verb,"remove")) {
+    }
+    else if (0 == strcmp(verb,"remove"))
+    {
         UndoMove();
         UndoMove();
-    } else if (0 == strcmp(verb,"setboard")) {
+    }
+    else if (0 == strcmp(verb,"setboard"))
+    {
         SetBoard (rest);
-    } else if (0 == strcmp(verb,"post")) {
+    }
+    else if (0 == strcmp(verb,"post"))
+    {
         TheUserInterface.EnableThinkingDisplay (true);
-    } else if (0 == strcmp(verb,"nopost")) {
+    }
+    else if (0 == strcmp(verb,"nopost"))
+    {
         TheUserInterface.EnableThinkingDisplay (true);
-    } else if (0 == strcmp(verb,"hard")) {
+    }
+    else if (0 == strcmp(verb,"hard"))
+    {
         PonderingAllowed = true;
-    } else if (0 == strcmp(verb,"easy")) {
+    }
+    else if (0 == strcmp(verb,"easy"))
+    {
         PonderingAllowed = false;
-    } else if (0 == strcmp(verb,"result")) {
-        // The game is over.  
+    }
+    else if (0 == strcmp(verb,"result"))
+    {
+        // The game is over.
         // This is not an "ignorable" command, so that it has the side effect of stopping pondering.
-    } else if (0 == strcmp(verb,"hint")) {
+    }
+    else if (0 == strcmp(verb,"hint"))
+    {
         // I am not sure we can ever get here, based on the way pondering works.
         // But just in case...
         SendHint();
-    } else if (0 == strcmp(verb,"memory")) {
+    }
+    else if (0 == strcmp(verb,"memory"))
+    {
         // [16 September 2009]
         // http://www.open-aurec.com/wbforum/WinBoard/engine-intf.html  says:
         //      memory N
-        //      This command informs the engine on how much memory it is allowed to use maximally, in MegaBytes. 
-        //      On receipt of this command, the engine should adapt the size of its hash tables accordingly. 
-        //      This command does only fix the total memory use, the engine has to decide for itself 
-        //      (or be configured by the user by other means) how to divide up the available memory between 
-        //      the various tables it wants to use (e.g. main hash, pawn hash, tablebase cache, bitbases). 
-        //      This command will only be sent to engines that have requested it through the memory feature, 
-        //      and only at the start of a game, as the first of the commands to relay engine option 
-        //      settings just before each "new" command. 
+        //      This command informs the engine on how much memory it is allowed to use maximally, in MegaBytes.
+        //      On receipt of this command, the engine should adapt the size of its hash tables accordingly.
+        //      This command does only fix the total memory use, the engine has to decide for itself
+        //      (or be configured by the user by other means) how to divide up the available memory between
+        //      the various tables it wants to use (e.g. main hash, pawn hash, tablebase cache, bitbases).
+        //      This command will only be sent to engines that have requested it through the memory feature,
+        //      and only at the start of a game, as the first of the commands to relay engine option
+        //      settings just before each "new" command.
         MemoryAllotmentInMegabytes = atoi (rest);   // it is OK if atoi() results in 0 (invalid integer): we will use defaults then
-    } else if (0 == strcmp(verb,"option")) {
+    }
+    else if (0 == strcmp(verb,"option"))
+    {
         // [17 September 2009]
         // WinBoard 4.4.xx allows Chenard to request custom options from it, and it will then reply
         // with values chosen by the user.  This is where we receive the choices.
         // Currently the only custom option we support is whether to enable/disable the opening book (and training file).
         // rest ==> "Use opening book=0"
         ParseOption (rest);
-    } else {
+    }
+    else
+    {
         bool processed = false;
-        if (!UserMoveOptionGranted) {
+        if (!UserMoveOptionGranted)
+        {
             // Not tested, but best effort at good behavior.
             // Since we could not specify the usermove feature, we have to expect
             // moves unprefaced with 'usermove' as a verb.
-            if (LooksLikeMove (verb, moveSource, moveDest, promotionPiece)) {
+            if (LooksLikeMove (verb, moveSource, moveDest, promotionPiece))
+            {
                 ReceiveMove (verb, moveSource, moveDest, promotionPiece);
                 processed = true;
             }
         }
-        
-        if (!processed) {
+
+        if (!processed)
+        {
             // Getting here means we have received a command we don't know about.
             // I have made every effort to include a proper response for every command we can receive.
             // It is a good idea to reject any commands we don't know about at this time.
@@ -1054,16 +1254,17 @@ void PlaySelf()
 
     TheComputerPlayer.SetTimeLimit (1500);
     while (
-        !TheChessBoard.GameIsOver() && 
-        (TheChessBoard.GetCurrentPlyNumber() < 80) && 
+        !TheChessBoard.GameIsOver() &&
+        (TheChessBoard.GetCurrentPlyNumber() < 80) &&
         TheComputerPlayer.GetMove (TheChessBoard, move, timeSpent)
-    ) {
+    )
+    {
         FormatChessMove (TheChessBoard, move, moveString);
-        printf ("%s:  [%6d]  %s\n", 
-            (TheChessBoard.WhiteToMove() ? "White" : "Black"),
-            move.score,
-            moveString
-        );
+        printf ("%s:  [%6d]  %s\n",
+                (TheChessBoard.WhiteToMove() ? "White" : "Black"),
+                move.score,
+                moveString
+               );
         TheChessBoard.MakeMove (move, unmove);
     }
 }
@@ -1080,12 +1281,16 @@ int main (int argc, const char *argv[])
     setbuf (stdout, NULL);      // xboard requires unbuffered I/O
     setbuf (stdin, NULL);       // xboard requires unbuffered I/O
 
-    if (argc == 2) {
+    if (argc == 2)
+    {
         printf ("xchenard - by Don Cross - http://cosinekitty.com/chenard\n");
-        if (0 == strcmp(argv[1],"-eg")) {
+        if (0 == strcmp(argv[1],"-eg"))
+        {
             TheUserInterface.EnableAdHocText();     // so we can see progress of the database generation
             GenerateEndgameDatabases (TheChessBoard, TheUserInterface);
-        } else if (0 == strcmp(argv[1],"-constants")) {
+        }
+        else if (0 == strcmp(argv[1],"-constants"))
+        {
             printf ("WPAWN    %9u  0x%08x      BPAWN    %9u  0x%08x\n", unsigned(WPAWN), unsigned(WPAWN), unsigned(BPAWN), unsigned(BPAWN));
             printf ("WKNIGHT  %9u  0x%08x      BKNIGHT  %9u  0x%08x\n", unsigned(WKNIGHT), unsigned(WKNIGHT), unsigned(BKNIGHT), unsigned(BKNIGHT));
             printf ("WBISHOP  %9u  0x%08x      BBISHOP  %9u  0x%08x\n", unsigned(WBISHOP), unsigned(WBISHOP), unsigned(BBISHOP), unsigned(BBISHOP));
@@ -1093,9 +1298,13 @@ int main (int argc, const char *argv[])
             printf ("WQUEEN   %9u  0x%08x      BQUEEN   %9u  0x%08x\n", unsigned(WQUEEN), unsigned(WQUEEN), unsigned(BQUEEN), unsigned(BQUEEN));
             printf ("WKING    %9u  0x%08x      BKING    %9u  0x%08x\n", unsigned(WKING), unsigned(WKING), unsigned(BKING), unsigned(BKING));
             printf ("\n");
-        } else if (0 == strcmp(argv[1],"-self")) {
+        }
+        else if (0 == strcmp(argv[1],"-self"))
+        {
             PlaySelf();     // I use this for Profile Guided Optimization
-        } else {
+        }
+        else
+        {
             printf ("Unknown option on command line.");
         }
         return 0;
@@ -1103,15 +1312,17 @@ int main (int argc, const char *argv[])
 
     // UnitTest_IsInputReady();
 
-    if (!InitializeInput()) {
+    if (!InitializeInput())
+    {
         // error initializing input
         return 1;
     }
 
     MoveUndoStack = new MoveUndo [MAX_MOVE_UNDO];
-    if (MoveUndoStack) {
+    if (MoveUndoStack)
+    {
         memset (MoveUndoStack, 0, MAX_MOVE_UNDO * sizeof(MoveUndo));
-    }    
+    }
 
     // Look for an optional configuration file called xchenard.ini.
     // If it exists, load and execute xboard options from it.
@@ -1119,27 +1330,34 @@ int main (int argc, const char *argv[])
     // that do not support the "option" command.
     const char * const iniFileName = "xchenard.ini";
     FILE *iniFile = fopen (iniFileName, "rt");
-    if (iniFile) {
+    if (iniFile)
+    {
         dprintf ("Reading options from configuration file '%s' ...\n", iniFileName);
-        while (fgets (verb, sizeof(verb), iniFile)) {
+        while (fgets (verb, sizeof(verb), iniFile))
+        {
             TrimString (verb);
             ParseOption (verb);
         }
         fclose (iniFile);
         iniFile = NULL;
-    } else {
+    }
+    else
+    {
         dprintf ("Configuration file '%s' does not exist.", iniFileName);
     }
-    
+
     // Enter the main task loop where we interact with WinBoard/xboard
     const char *rest;
-    while (!GlobalAbortFlag && (NULL != (rest = ReadCommandFromXboard (verb)))) {
-        if (ExecuteCommand (verb, rest)) {
+    while (!GlobalAbortFlag && (NULL != (rest = ReadCommandFromXboard (verb))))
+    {
+        if (ExecuteCommand (verb, rest))
+        {
             break;
         }
 
         // At this point, if input is quiet, check to see if it is our turn to move...
-        if (!IsInputReady()) {
+        if (!IsInputReady())
+        {
             ThinkIfChenardsTurn();
         }
     }

@@ -1,12 +1,13 @@
 /*
     npchess.h  -  Copyright (C) 2006 Don Cross.  All Rights Reserved.
-    
+
     class NamedPipeChessPlayer.
 */
 
 #if SUPPORT_NAMED_PIPE
 
-class NamedPipeChessPlayer: public ChessPlayer {
+class NamedPipeChessPlayer: public ChessPlayer
+{
 public:
     NamedPipeChessPlayer (ChessUI &_ui, const char *_MachineName);
     virtual ~NamedPipeChessPlayer();
@@ -40,7 +41,7 @@ private:
     char    MachineName [256];    // name of server, e.g. "\\computer"
     HANDLE  NamedPipe;
 };
- 
+
 
 #endif // SUPPORT_NAMED_PIPE
 

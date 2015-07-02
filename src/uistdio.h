@@ -30,7 +30,7 @@ enum PLAYER_TYPE
     PT_HUMAN,
     PT_COMPUTER,
     PT_INTERNET
-}; 
+};
 
 
 BoardDisplayType Next ( BoardDisplayType );   // allows to cycle through all
@@ -39,64 +39,64 @@ BoardDisplayType Next ( BoardDisplayType );   // allows to cycle through all
 class ChessUI_stdio: public ChessUI
 {
 public:
-   ChessUI_stdio();
-   ~ChessUI_stdio();
+    ChessUI_stdio();
+    ~ChessUI_stdio();
 
-   ChessPlayer *CreatePlayer ( ChessSide );
-   bool ReadMove ( ChessBoard &, int &source, int &dest, SQUARE &promIndex );
-   SQUARE PromotePawn ( int PawnDest, ChessSide );
-   void DisplayMove ( ChessBoard &, Move );
-   void RecordMove ( ChessBoard &, Move, INT32 thinkTime );
-   void DrawBoard ( const ChessBoard & );
-   void ReportEndOfGame ( ChessSide winner );
-   void DisplayBestMoveSoFar ( const ChessBoard &, Move, int level );
-   void DisplayCurrentMove ( const ChessBoard &, Move, int level );
-   void DisplayBestPath ( const ChessBoard &, const BestPath & );
-   void PredictMate ( int numMoves );
+    ChessPlayer *CreatePlayer ( ChessSide );
+    bool ReadMove ( ChessBoard &, int &source, int &dest, SQUARE &promIndex );
+    SQUARE PromotePawn ( int PawnDest, ChessSide );
+    void DisplayMove ( ChessBoard &, Move );
+    void RecordMove ( ChessBoard &, Move, INT32 thinkTime );
+    void DrawBoard ( const ChessBoard & );
+    void ReportEndOfGame ( ChessSide winner );
+    void DisplayBestMoveSoFar ( const ChessBoard &, Move, int level );
+    void DisplayCurrentMove ( const ChessBoard &, Move, int level );
+    void DisplayBestPath ( const ChessBoard &, const BestPath & );
+    void PredictMate ( int numMoves );
 
-   void Resign ( ChessSide, QuitGameReason )  {}
-   void NotifyUser ( const char *message );
+    void Resign ( ChessSide, QuitGameReason )  {}
+    void NotifyUser ( const char *message );
 
-   void ReportComputerStats ( INT32   thinkTime,
-                              UINT32  nodesVisited,
-                              UINT32  nodesEvaluated,
-                              UINT32  nodesGenerated,
-                              int     fwSearchDepth,
-                              UINT32  vis [NODES_ARRAY_SIZE],
-                              UINT32  gen [NODES_ARRAY_SIZE] );
+    void ReportComputerStats ( INT32   thinkTime,
+                               UINT32  nodesVisited,
+                               UINT32  nodesEvaluated,
+                               UINT32  nodesGenerated,
+                               int     fwSearchDepth,
+                               UINT32  vis [NODES_ARRAY_SIZE],
+                               UINT32  gen [NODES_ARRAY_SIZE] );
 
-   virtual void ReportSpecial ( const char *msg );
-   void SetScoreDisplay ( bool _showScores )
-   {
-       showScores = _showScores;
-   }
+    virtual void ReportSpecial ( const char *msg );
+    void SetScoreDisplay ( bool _showScores )
+    {
+        showScores = _showScores;
+    }
 
-   bool QueryScoreDisplay () const
-   {
-       return showScores;
-   }
-   
-   void EnableCombatMode();
+    bool QueryScoreDisplay () const
+    {
+        return showScores;
+    }
+
+    void EnableCombatMode();
 
 private:
-   void ClearScreen();
-   void DrawBoard_Standard ( const ChessBoard & );
-   void DrawBoard_LargeColor ( const ChessBoard & );
-   Move ConvertStringToMove ( const ChessBoard &,
-                              const char from_to [4] );
+    void ClearScreen();
+    void DrawBoard_Standard ( const ChessBoard & );
+    void DrawBoard_LargeColor ( const ChessBoard & );
+    Move ConvertStringToMove ( const ChessBoard &,
+                               const char from_to [4] );
 
-   PLAYER_TYPE whitePlayerType;
-   PLAYER_TYPE blackPlayerType;
+    PLAYER_TYPE whitePlayerType;
+    PLAYER_TYPE blackPlayerType;
 
-   bool showScores;   // should UI show moves' min-max scores?
-   bool rotateBoard;  // should board be shown opposite of "sensible" way?
-   bool beepFlag;     // should beep when it is human's turn?
+    bool showScores;   // should UI show moves' min-max scores?
+    bool rotateBoard;  // should board be shown opposite of "sensible" way?
+    bool beepFlag;     // should beep when it is human's turn?
 
-   int numPlayersCreated;
+    int numPlayersCreated;
 
-   ChessPlayer *whitePlayer;
-   ChessPlayer *blackPlayer;
-   BoardDisplayType  boardDisplayType;
+    ChessPlayer *whitePlayer;
+    ChessPlayer *blackPlayer;
+    BoardDisplayType  boardDisplayType;
 };
 
 
@@ -153,20 +153,20 @@ extern MoveUndoPath Global_MoveUndoPath;
     2. Moved old manual revision history after cvs log tag.
     3. Made sure each source file has extra blank line at end so gcc under Linux won't fuss!
 
-    
-    
+
+
           Revision history:
-    
+
     1999 January 23 [Don Cross]
          Adding support for InternetChessPlayer.
-    
+
     1999 January 16 [Don Cross]
          Cloning Win32 GUI Chenard's MoveUndoPath data structure so
          that text-mode version of Chenard can also undo moves.
-    
+
     1999 January 15 [Don Cross]
          Modified prototype for ChessUI_stdio::Resign member function
          due to changes in chess.h
-    
+
 */
 

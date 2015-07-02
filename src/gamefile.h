@@ -1,22 +1,24 @@
 /*
     gamefile.h  -  Don Cross, January 2006.
-    
+
     C++ classes to abstract the process to load chess moves from
-    various kinds of files:  old chenard GAM, PGN, or 
+    various kinds of files:  old chenard GAM, PGN, or
     Yahoo game listing email text.
 */
 
 
 bool ReadFromFile ( FILE *, Move & );   // recycled old function
 
-enum PGNRESULT {
+enum PGNRESULT
+{
     PGNRESULT_UNKNOWN = 0,
     PGNRESULT_WHITE_WON,
     PGNRESULT_BLACK_WON,
     PGNRESULT_DRAW
 };
 
-struct PgnExtraInfo {
+struct PgnExtraInfo
+{
     char        fen [256];      // set to "" if game started normally.
     PGNRESULT   result;
     int         whiteElo;       // set to 0 if White's ELO is not specified in the PGN file
@@ -25,13 +27,14 @@ struct PgnExtraInfo {
 
 bool GetNextPgnMove (
     FILE            *file,
-    char             movestr[1+MAX_MOVE_STRLEN], 
+    char             movestr[1+MAX_MOVE_STRLEN],
     PGN_FILE_STATE  &state,
     PgnExtraInfo    &info       // will be zeroed out, then members will be set if new game is found.  may be set with EOF return as special case, if game has no moves.
 );
 
 
-class tChessMoveStream {
+class tChessMoveStream
+{
 public:
     static tChessMoveStream *OpenFileForRead (const char *filename);    // factory function for auto-detecting file format
 
@@ -43,7 +46,8 @@ public:
 };
 
 
-class tChessMoveFile: public tChessMoveStream {
+class tChessMoveFile: public tChessMoveStream
+{
 public:
     tChessMoveFile (FILE *_infile):
         infile (_infile)
@@ -52,7 +56,8 @@ public:
 
     virtual ~tChessMoveFile()
     {
-        if (infile) {
+        if (infile)
+        {
             fclose (infile);
             infile = NULL;
         }
@@ -64,7 +69,8 @@ protected:
 };
 
 
-class tChessMoveFile_GAM: public tChessMoveFile {
+class tChessMoveFile_GAM: public tChessMoveFile
+{
 public:
     tChessMoveFile_GAM (FILE *_infile):
         tChessMoveFile (_infile)
@@ -75,7 +81,8 @@ public:
 };
 
 
-class tChessMoveFile_PGN: public tChessMoveFile {
+class tChessMoveFile_PGN: public tChessMoveFile
+{
 public:
     tChessMoveFile_PGN (FILE *_infile):
         tChessMoveFile (_infile)
@@ -86,7 +93,8 @@ public:
 };
 
 
-class tChessMoveFile_Yahoo: public tChessMoveFile {
+class tChessMoveFile_Yahoo: public tChessMoveFile
+{
 public:
     tChessMoveFile_Yahoo(FILE *_infile)
         : tChessMoveFile(_infile)
@@ -107,7 +115,7 @@ private:
 
 
 void SavePortableGameNotation (
-    FILE        *outfile, 
+    FILE        *outfile,
     ChessBoard  &refboard,
     const char  *whiteName,
     const char  *blackName
@@ -121,16 +129,16 @@ const char *GetBlackPlayerString();     // defined on per-project basis
 inline void SavePortableGameNotation (FILE *outfile, ChessBoard &board)
 {
     SavePortableGameNotation (
-        outfile, 
-        board, 
-        GetWhitePlayerString(), 
+        outfile,
+        board,
+        GetWhitePlayerString(),
         GetBlackPlayerString()
     );
 }
 
 
 bool SaveGamePGN (
-    ChessBoard  &board, 
+    ChessBoard  &board,
     const char  *filename,
     const char  *whiteName,
     const char  *blackName

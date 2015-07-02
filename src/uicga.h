@@ -17,38 +17,38 @@
 class ChessUI_dos_cga: public ChessUI
 {
 public:
-   ChessUI_dos_cga();
-   ~ChessUI_dos_cga();
+    ChessUI_dos_cga();
+    ~ChessUI_dos_cga();
 
 #ifdef NO_SEARCH
-   bool Activate();
+    bool Activate();
 #endif
 
-   ChessPlayer *CreatePlayer ( ChessSide );
-   bool ReadMove ( ChessBoard &, int &source, int &dest );
-   SQUARE PromotePawn ( int PawnDest, ChessSide );
-   void DisplayMove ( ChessBoard &, Move );
-   void RecordMove ( ChessBoard &, Move, INT32 thinkTime );
-   void DrawBoard ( const ChessBoard & );
-   void ReportEndOfGame ( ChessSide winner );
-   void DisplayBestMoveSoFar ( const ChessBoard &, Move bestSoFar, int level );
-   void DisplayCurrentMove   ( const ChessBoard &, Move move, int  level );
-   void PredictMate ( int numMoves );
+    ChessPlayer *CreatePlayer ( ChessSide );
+    bool ReadMove ( ChessBoard &, int &source, int &dest );
+    SQUARE PromotePawn ( int PawnDest, ChessSide );
+    void DisplayMove ( ChessBoard &, Move );
+    void RecordMove ( ChessBoard &, Move, INT32 thinkTime );
+    void DrawBoard ( const ChessBoard & );
+    void ReportEndOfGame ( ChessSide winner );
+    void DisplayBestMoveSoFar ( const ChessBoard &, Move bestSoFar, int level );
+    void DisplayCurrentMove   ( const ChessBoard &, Move move, int  level );
+    void PredictMate ( int numMoves );
 
-   void ReportComputerStats ( INT32    thinkTime,
-                              UINT32   nodesVisited,
-                              UINT32   nodesEvaluated,
-                              UINT32   nodesGenerated,
-                              int      fwSearchDepth,
-                              UINT32   vis [NODES_ARRAY_SIZE],
-                              UINT32   gen [NODES_ARRAY_SIZE] );
+    void ReportComputerStats ( INT32    thinkTime,
+                               UINT32   nodesVisited,
+                               UINT32   nodesEvaluated,
+                               UINT32   nodesGenerated,
+                               int      fwSearchDepth,
+                               UINT32   vis [NODES_ARRAY_SIZE],
+                               UINT32   gen [NODES_ARRAY_SIZE] );
 
-   void Resign ( ChessSide )  {}
+    void Resign ( ChessSide )  {}
 
 private:
-   bool  graphics_initialized;
+    bool  graphics_initialized;
 
-   Move FixMove ( const ChessBoard &, int source, int dest );
+    Move FixMove ( const ChessBoard &, int source, int dest );
 };
 
 

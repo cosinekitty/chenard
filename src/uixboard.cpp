@@ -1,9 +1,9 @@
 /*
     uixboard.cpp  -  Don Cross  -  http://cosinekitty.com/chenard
-    
+
     An adaptation of Chenard for xboard version 2.
     See:   http://www.tim-mann.org/xboard.html
-    
+
     This source file contains a stubbed out implementation of ChessUI_xboard.
     This class exists just to get the code to compile.
     Because xboard has a very specific way of interacting with a chess engine,
@@ -39,12 +39,13 @@ ChessUI_xboard::~ChessUI_xboard()
 
 void ChessUI_xboard::SetAdHocText (int /*index*/, const char *format, ...)
 {
-    if (adHocTextEnabled) {
+    if (adHocTextEnabled)
+    {
         va_list argptr;
         va_start (argptr, format);
         vprintf (format, argptr);
         va_end (argptr);
-        
+
         printf ("\n");
     }
 }
@@ -79,26 +80,35 @@ void ChessUI_xboard::FinishPondering (char opponentMoveWhilePonderingAlgebraic [
 void ChessUI_xboard::OnIncomingUserMove (const char *actualAlgebraic)
 {
     strcpy (oppMoveWhilePondering, actualAlgebraic);
-    if (0 == strcmp (actualAlgebraic, predictedAlgebraic)) {
+    if (0 == strcmp (actualAlgebraic, predictedAlgebraic))
+    {
         // We predicted correctly!  Finish up with a reasonable amount of time.
         const int now = ChessTime();
         int timeAlreadySpent = now - searchStartTime;
-        if (myPonderClock > 0) {
+        if (myPonderClock > 0)
+        {
             int budget = TimeBudgetForNextMove (myPonderClock, false);  // not computer's turn yet - we are still pondering from it being opponent's turn
             int excess = budget - timeAlreadySpent;
-            if (excess > 25) {     // avoid fatal error for search times less than 0.01 seconds
+            if (excess > 25)       // avoid fatal error for search times less than 0.01 seconds
+            {
                 dprintf ("Pondering an extra %0.2lf seconds.\n", 0.01 * (double)excess);
                 player->SetTimeLimit (excess);
-            } else {
+            }
+            else
+            {
                 dprintf ("Under time budget - aborting pondering now.\n");
                 player->AbortSearch();
             }
-        } else {
+        }
+        else
+        {
             // WEIRD EMERGENCY - We don't know how much time is on our clock: end thinking NOW!
             dprintf ("EMERGENCY - No idea how much time is on clock!\n");
             player->AbortSearch();
         }
-    } else {
+    }
+    else
+    {
         // We were wrong!  GIVE UP NOW!
         player->AbortSearch();
     }
@@ -119,60 +129,93 @@ void ChessUI_xboard::DebugPly (int /*depth*/, ChessBoard &, Move)
     // This function gets called a LOT during the search, so we have to be careful about performance.
     // For efficiency, we check for input (by calling IsInputReady) only every now and then.
 
-    if (++checkInputCounter >= CHECK_INPUT_INTERVAL) {
+    if (++checkInputCounter >= CHECK_INPUT_INTERVAL)
+    {
         checkInputCounter = 0;
 
         // If we receive an xboard command that we are not ready to execute now,
         // we save the command away in pendingVerb and pendingRest and abort the search.
         // Once this happens, we still could get more calls here to DebugPly.
         // Therefore we must check to make sure the search has not yet been aborted
-        // before looking for any xboard commands, lest we skip over a command, 
+        // before looking for any xboard commands, lest we skip over a command,
         // causing it to be ignored.
-        if (!GlobalAbortFlag && !player->IsSearchAborted()) {
-            if (IsInputReady()) {
+        if (!GlobalAbortFlag && !player->IsSearchAborted())
+        {
+            if (IsInputReady())
+            {
                 // xboard is trying to talk to us, even though we are thinking!
                 // See if it is the "?" command, meaning "move now", or something else important like "quit"...
                 char verb [MAX_XBOARD_LINE];
                 const char *rest = ReadCommandFromXboard (verb);
-                if (rest) {
-                    if (CommandMayBeIgnored(verb)) {     // There are some commands we can safely ignore, so as to avoid disturbing an active search.
+                if (rest)
+                {
+                    if (CommandMayBeIgnored(verb))       // There are some commands we can safely ignore, so as to avoid disturbing an active search.
+                    {
                         dprintf ("Ignoring command while thinking: %s %s\n", verb, rest);
-                    } else {
-                        if (0 == strcmp(verb,"?")) {
+                    }
+                    else
+                    {
+                        if (0 == strcmp(verb,"?"))
+                        {
                             player->AbortSearch();
-                        } else if (0 == strcmp(verb,"force")) {
+                        }
+                        else if (0 == strcmp(verb,"force"))
+                        {
                             ReceiveForceCommand();
                             player->AbortSearch();
-                        } else if (0 == strcmp(verb,"quit")) {
+                        }
+                        else if (0 == strcmp(verb,"quit"))
+                        {
                             GlobalAbortFlag = true;
                             ReceiveForceCommand();
                             player->AbortSearch();
-                        } else if (0 == strcmp(verb,"post")) {
+                        }
+                        else if (0 == strcmp(verb,"post"))
+                        {
                             EnableThinkingDisplay (true);
-                        } else if (0 == strcmp(verb,"nopost")) {
+                        }
+                        else if (0 == strcmp(verb,"nopost"))
+                        {
                             EnableThinkingDisplay (false);
-                        } else {
+                        }
+                        else
+                        {
                             // If we are pondering, we may get commands like "time", "otim", "usermove".
-                            // Make note of "time" and "otim", and respond conditionally to "usermove", 
+                            // Make note of "time" and "otim", and respond conditionally to "usermove",
                             // based on whether we predicted the opponent correctly.
-                            if (pondering) {
-                                if (0 == strcmp(verb,"time")) {
+                            if (pondering)
+                            {
+                                if (0 == strcmp(verb,"time"))
+                                {
                                     myPonderClock = atoi(rest);
-                                } else if (0 == strcmp(verb,"usermove")) {
-                                    if (LooksLikeMove(rest)) {
+                                }
+                                else if (0 == strcmp(verb,"usermove"))
+                                {
+                                    if (LooksLikeMove(rest))
+                                    {
                                         OnIncomingUserMove (rest);
                                     }
-                                } else if (0 == strcmp(verb,"hint")) {
+                                }
+                                else if (0 == strcmp(verb,"hint"))
+                                {
                                     printf ("Hint: %s\n", predictedAlgebraic);
-                                } else if (0 == strcmp(verb,"ping")) {
+                                }
+                                else if (0 == strcmp(verb,"ping"))
+                                {
                                     // The xboard spec says we must reply to ping commands immediately while pondering.
                                     printf ("pong %s\n", rest);
-                                } else if (LooksLikeMove(verb)) {           // needed in case usermove feature was not available
+                                }
+                                else if (LooksLikeMove(verb))               // needed in case usermove feature was not available
+                                {
                                     OnIncomingUserMove (verb);
-                                } else {
+                                }
+                                else
+                                {
                                     AbortSearch (verb, rest);
                                 }
-                            } else {
+                            }
+                            else
+                            {
                                 AbortSearch (verb, rest);
                             }
                         }
@@ -182,7 +225,8 @@ void ChessUI_xboard::DebugPly (int /*depth*/, ChessBoard &, Move)
         }
     }
 
-    if (GlobalAbortFlag) {
+    if (GlobalAbortFlag)
+    {
         player->AbortSearch();        // GlobalAbortFlag can be set by itself if an error occurs reading from stdin
     }
 }
@@ -241,14 +285,16 @@ void ChessUI_xboard::DisplayCurrentMove ( const ChessBoard &, Move, int /*level*
 void ChessUI_xboard::DisplayBestPath (const ChessBoard &_board, const BestPath &path)
 {
 
-    if (thinkingDisplayEnabled) {
+    if (thinkingDisplayEnabled)
+    {
         static const int MAX_PATH = 20;
         UnmoveInfo unmove [MAX_PATH];
         char string [MAX_MOVE_STRLEN + 1];
 
         int i;
         int n = path.depth;
-        if (n > MAX_PATH) {
+        if (n > MAX_PATH)
+        {
             n = MAX_PATH;   // truncate thinking display to a reasonable number
         }
 
@@ -256,8 +302,9 @@ void ChessUI_xboard::DisplayBestPath (const ChessBoard &_board, const BestPath &
         unsigned nodesEvaluated = player ? player->queryNodesEvaluated() : 0;
         INT32 elapsedTime = ChessTime() - searchStartTime;
         int relativeScore = path.m[0].score;
-        if (_board.BlackToMove()) {
-            // Chenard scores are always expressed in terms of positive values 
+        if (_board.BlackToMove())
+        {
+            // Chenard scores are always expressed in terms of positive values
             // being good for White, and negative values being good for Black.
             // WinBoard/xboard expect positive values being good for the computer,
             // regardless of what side it is playing.
@@ -268,23 +315,29 @@ void ChessUI_xboard::DisplayBestPath (const ChessBoard &_board, const BestPath &
 
         // Weird special case: if we are pondering, the xboard spec says we must
         // print the move we assume the opponent is going to make...
-        if (pondering) {
-            if (oppMoveWhilePondering[0] == '\0') {     // if we received the opponent move and we are still pondering, the prediction is no longer hypothetical.
+        if (pondering)
+        {
+            if (oppMoveWhilePondering[0] == '\0')       // if we received the opponent move and we are still pondering, the prediction is no longer hypothetical.
+            {
                 col += printf (" %s", predictedPgn);
             }
         }
 
         // We change the board here, but we put it back the way we find it!
         ChessBoard &board = (ChessBoard &) _board;
-        for (i=0; i < path.depth; ++i) {
+        for (i=0; i < path.depth; ++i)
+        {
             Move move = path.m[i];
             FormatChessMove (board, move, string);
-            if (col >= 70) {
+            if (col >= 70)
+            {
                 // xboard allows us to break up long lines in the principal variation (best path),
                 // so long as there are at least 4 spaces at the beginning of the continuation line.
                 col = 4;
                 printf ("\n    ");
-            } else {
+            }
+            else
+            {
                 col += printf (" ");
             }
             col += printf ("%s", string);
@@ -293,7 +346,8 @@ void ChessUI_xboard::DisplayBestPath (const ChessBoard &_board, const BestPath &
         }
 
         // Undo the changes we made to the board...
-        while (i-- > 0) {
+        while (i-- > 0)
+        {
             board.UnmakeMove (path.m[i], unmove[i]);
         }
 
@@ -310,7 +364,7 @@ void ChessUI_xboard::NotifyUser ( const char * /*message*/ )
 {
 }
 
-void ChessUI_xboard::ReportComputerStats ( 
+void ChessUI_xboard::ReportComputerStats (
     INT32   /*thinkTime*/,
     UINT32  /*nodesVisited*/,
     UINT32  /*nodesEvaluated*/,

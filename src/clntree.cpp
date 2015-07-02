@@ -76,14 +76,14 @@ void CleanTree (
         if ( !ml.IsLegal (branch.move) )
         {
             cerr << "Found illegal move:  [" <<
-                    int(branch.move.source) << ", " <<
-                    int(branch.move.dest) << "]" <<
-                    " at offset " << offset << endl;
+                 int(branch.move.source) << ", " <<
+                 int(branch.move.dest) << "]" <<
+                 " at offset " << offset << endl;
             ++NumIllegalMoves;
         }
         else if ( parent &&
                   (parent->move.score < -KeepThreshold ||
-                  parent->move.score > KeepThreshold) )
+                   parent->move.score > KeepThreshold) )
         {
             ++NumPrunedSubtrees;
         }
@@ -91,13 +91,13 @@ void CleanTree (
         {
             ++MessedUpLinks;
             cerr << "Messed up sibling=" << branch.sibling <<
-                    " at offset " << offset << endl;
+                 " at offset " << offset << endl;
         }
         else if ( branch.child < -1 || branch.child >= NumNodesInTree )
         {
             ++MessedUpLinks;
             cerr << "Messed up child=" << branch.child <<
-                    " at offset " << offset << endl;
+                 " at offset " << offset << endl;
         }
         else  // This branch looks sane
         {
@@ -120,7 +120,7 @@ void CleanTree (
                     if ( !newTree.read (parentOffset, temp) )
                     {
                         cerr << "Error reading parent (" << parentOffset <<
-                                ") of offset " << offset << endl;
+                             ") of offset " << offset << endl;
                         Abort ( oldTree, newTree );
                     }
 
@@ -129,7 +129,7 @@ void CleanTree (
                     if ( !newTree.write (parentOffset, temp) )
                     {
                         cerr << "Error writing parent (" << parentOffset <<
-                                ") of offset " << offset << endl;
+                             ") of offset " << offset << endl;
                         Abort ( oldTree, newTree );
                     }
                 }
@@ -139,7 +139,7 @@ void CleanTree (
                 if ( !newTree.read (prev, temp) )
                 {
                     cerr << "Error reading left sibling (" << prev <<
-                            ") of offset " << newOffset << endl;
+                         ") of offset " << newOffset << endl;
                     Abort ( oldTree, newTree );
                 }
 
@@ -148,7 +148,7 @@ void CleanTree (
                 if ( !newTree.write (prev, temp) )
                 {
                     cerr << "Error write left sibling (" << prev <<
-                            ") of offset " << newOffset << endl;
+                         ") of offset " << newOffset << endl;
                     Abort ( oldTree, newTree );
                 }
             }
@@ -225,14 +225,16 @@ long ReportOrphans ( LearnTree &tree )
 
 int main ( int argc, char *argv[] )
 {
-    if ( argc > 2 ) {
+    if ( argc > 2 )
+    {
         cerr << "Use:  clntree [<filename>]\n";
         cerr << "Default filename is '" << DEFAULT_CHENARD_TREE_FILENAME << "'\n" << flush;
         return 1;
     }
 
     const char *treeFilename = DEFAULT_CHENARD_TREE_FILENAME;
-    if ( argc > 1 ) {
+    if ( argc > 1 )
+    {
         treeFilename = argv[1];
     }
 
@@ -312,8 +314,8 @@ int main ( int argc, char *argv[] )
     Found these on CDROM marked "14 September 1999".
     Added cvs log tag and moved old revision history after that.
 
-    
-    
+
+
 
     Revision history:
 

@@ -116,23 +116,17 @@ BOOL CALLBACK About_DlgProc (
 
     switch ( msg )
     {
-        case WM_INITDIALOG:
-        {
-            SetFocus ( GetDlgItem(hwnd,IDOK) );
-        }
+    case WM_INITDIALOG:
+        SetFocus ( GetDlgItem(hwnd,IDOK) );
         break;
 
-        case WM_COMMAND:
+    case WM_COMMAND:
+        switch ( wparam )
         {
-            switch ( wparam )
-            {
-                case IDOK:
-                {
-                    EndDialog ( hwnd, IDOK );
-                    result = TRUE;
-                }
-                break;
-            }
+        case IDOK:
+            EndDialog ( hwnd, IDOK );
+            result = TRUE;
+            break;
         }
         break;
     }
@@ -150,27 +144,30 @@ BOOL CALLBACK EnterFen_DlgProc (
     BOOL    result = FALSE;
     char    buffer [500];
 
-    switch (msg) {
-        case WM_INITDIALOG:
-            SetFocus ( GetDlgItem(hwnd,TB_EDIT_FEN) );
-            break;
+    switch (msg)
+    {
+    case WM_INITDIALOG:
+        SetFocus ( GetDlgItem(hwnd,TB_EDIT_FEN) );
+        break;
 
-        case WM_COMMAND:
-            switch (wparam) {
-                case IDOK:
-                    if (GetWindowText (GetDlgItem (hwnd,TB_EDIT_FEN), buffer, sizeof(buffer))) {
-                        Global_BoardEditRequest.sendFen (buffer);
-                    }
-                    EndDialog (hwnd, wparam);
-                    result = TRUE;
-                    break;
-
-                case IDCANCEL:
-                    EndDialog (hwnd, wparam);
-                    result = TRUE;
-                    break;
+    case WM_COMMAND:
+        switch (wparam)
+        {
+        case IDOK:
+            if (GetWindowText (GetDlgItem (hwnd,TB_EDIT_FEN), buffer, sizeof(buffer)))
+            {
+                Global_BoardEditRequest.sendFen (buffer);
             }
+            EndDialog (hwnd, wparam);
+            result = TRUE;
             break;
+
+        case IDCANCEL:
+            EndDialog (hwnd, wparam);
+            result = TRUE;
+            break;
+        }
+        break;
     }
     return result;
 }
@@ -189,60 +186,60 @@ BOOL CALLBACK EditBlunderAlertThreshold_DlgProc(
 
     switch (msg)
     {
-        case WM_INITDIALOG:
-        {
-            sprintf(buffer, "%d", static_cast<int>(Global_BlunderAlertThreshold));
-            SetWindowText (GetDlgItem(hwnd,IDC_EDIT_BLUNDER_THRESHOLD), buffer);
-            SetFocus(GetDlgItem(hwnd,IDC_EDIT_BLUNDER_THRESHOLD));
-            SendDlgItemMessage(hwnd, IDC_EDIT_BLUNDER_THRESHOLD, EM_SETSEL, 0, -1);     // select the text
-        }
-        break;
+    case WM_INITDIALOG:
+    {
+        sprintf(buffer, "%d", static_cast<int>(Global_BlunderAlertThreshold));
+        SetWindowText (GetDlgItem(hwnd,IDC_EDIT_BLUNDER_THRESHOLD), buffer);
+        SetFocus(GetDlgItem(hwnd,IDC_EDIT_BLUNDER_THRESHOLD));
+        SendDlgItemMessage(hwnd, IDC_EDIT_BLUNDER_THRESHOLD, EM_SETSEL, 0, -1);     // select the text
+    }
+    break;
 
-        case WM_COMMAND:
+    case WM_COMMAND:
+    {
+        switch ( wparam )
         {
-            switch ( wparam )
+        case IDOK:
+        {
+            result = TRUE;  // If we return FALSE after refusing to end the dialog, a weird state ensues where user can't type text!
+            if (Global_UI)
             {
-                case IDOK:
+                if (GetWindowText(GetDlgItem(hwnd,IDC_EDIT_BLUNDER_THRESHOLD), buffer, sizeof(buffer)))
                 {
-                    result = TRUE;  // If we return FALSE after refusing to end the dialog, a weird state ensues where user can't type text!
-                    if (Global_UI)
+                    // Parse and validate blunder alert threshold.
+                    // Tacitly ignore the user's input if it is out of range.
+                    const int thresh = atoi(buffer);
+                    if ((thresh >= MIN_BLUNDER_ALERT_THRESHOLD) && (thresh <= MAX_BLUNDER_ALERT_THRESHOLD))
                     {
-                        if (GetWindowText(GetDlgItem(hwnd,IDC_EDIT_BLUNDER_THRESHOLD), buffer, sizeof(buffer)))
-                        {
-                            // Parse and validate blunder alert threshold.
-                            // Tacitly ignore the user's input if it is out of range.
-                            const int thresh = atoi(buffer);
-                            if ((thresh >= MIN_BLUNDER_ALERT_THRESHOLD) && (thresh <= MAX_BLUNDER_ALERT_THRESHOLD))
-                            {
-                                Global_BlunderAlertThreshold = static_cast<SCORE> (thresh);
-                                EndDialog ( hwnd, IDOK );
-                            }
-                            else
-                            {
-                                // The value is outside the allowed range, so bark and balk.
+                        Global_BlunderAlertThreshold = static_cast<SCORE> (thresh);
+                        EndDialog ( hwnd, IDOK );
+                    }
+                    else
+                    {
+                        // The value is outside the allowed range, so bark and balk.
 
-                                // Play an exclamation sound.
-                                PlaySound((LPCSTR)SND_ALIAS_SYSTEMEXCLAMATION, NULL, SND_ALIAS_ID | SND_ASYNC);
+                        // Play an exclamation sound.
+                        PlaySound((LPCSTR)SND_ALIAS_SYSTEMEXCLAMATION, NULL, SND_ALIAS_ID | SND_ASYNC);
 
-                                // For some reason, we are not supposed to use SetFocus here (only in WM_INITDIALOG).
-                                // http://forums.codeguru.com/showthread.php?303711-Set-Focus-to-Edit-Box
-                                SendDlgItemMessage(hwnd, IDC_EDIT_BLUNDER_THRESHOLD, WM_SETFOCUS, 0, 0);    // set focus on edit box
-                                SendDlgItemMessage(hwnd, IDC_EDIT_BLUNDER_THRESHOLD, EM_SETSEL, 0, -1);     // select the text in the edit box
-                            }
-                        }
+                        // For some reason, we are not supposed to use SetFocus here (only in WM_INITDIALOG).
+                        // http://forums.codeguru.com/showthread.php?303711-Set-Focus-to-Edit-Box
+                        SendDlgItemMessage(hwnd, IDC_EDIT_BLUNDER_THRESHOLD, WM_SETFOCUS, 0, 0);    // set focus on edit box
+                        SendDlgItemMessage(hwnd, IDC_EDIT_BLUNDER_THRESHOLD, EM_SETSEL, 0, -1);     // select the text in the edit box
                     }
                 }
-                break;
-
-                case IDCANCEL:
-                {
-                    EndDialog ( hwnd, IDCANCEL );
-                    result = TRUE;
-                }
-                break;
             }
         }
         break;
+
+        case IDCANCEL:
+        {
+            EndDialog ( hwnd, IDCANCEL );
+            result = TRUE;
+        }
+        break;
+        }
+    }
+    break;
     }
 
     return result;
@@ -260,72 +257,72 @@ BOOL CALLBACK EditThinkTimes_DlgProc (
 
     switch ( msg )
     {
-        case WM_INITDIALOG:
+    case WM_INITDIALOG:
+    {
+        // Figure out which players are computer players.
+        // Disable think time edit boxes for non-computer players.
+        if ( Global_UI->queryWhitePlayerType() == DefPlayerInfo::computerPlayer )
         {
-            // Figure out which players are computer players.
-            // Disable think time edit boxes for non-computer players.
-            if ( Global_UI->queryWhitePlayerType() == DefPlayerInfo::computerPlayer )
-            {
-                INT32 timeLimit = Global_UI->queryWhiteThinkTime();
-                sprintf ( buffer, "%0.1lf", double(timeLimit) / 100.0 );
-                SetWindowText ( GetDlgItem(hwnd,IDC_EDIT_WHITE_TIME), buffer );
-            }
-            else
-            {
-                SetWindowText ( GetDlgItem(hwnd,IDC_EDIT_WHITE_TIME), "n/a" );
-                EnableWindow ( GetDlgItem(hwnd,IDC_EDIT_WHITE_TIME), FALSE );
-            }
+            INT32 timeLimit = Global_UI->queryWhiteThinkTime();
+            sprintf ( buffer, "%0.1lf", double(timeLimit) / 100.0 );
+            SetWindowText ( GetDlgItem(hwnd,IDC_EDIT_WHITE_TIME), buffer );
+        }
+        else
+        {
+            SetWindowText ( GetDlgItem(hwnd,IDC_EDIT_WHITE_TIME), "n/a" );
+            EnableWindow ( GetDlgItem(hwnd,IDC_EDIT_WHITE_TIME), FALSE );
+        }
 
-            if ( Global_UI->queryBlackPlayerType() == DefPlayerInfo::computerPlayer )
+        if ( Global_UI->queryBlackPlayerType() == DefPlayerInfo::computerPlayer )
+        {
+            INT32 timeLimit = Global_UI->queryBlackThinkTime();
+            sprintf ( buffer, "%0.1lf", double(timeLimit) / 100.0 );
+            SetWindowText ( GetDlgItem(hwnd,IDC_EDIT_BLACK_TIME), buffer );
+        }
+        else
+        {
+            SetWindowText ( GetDlgItem(hwnd,IDC_EDIT_BLACK_TIME), "n/a" );
+            EnableWindow ( GetDlgItem(hwnd,IDC_EDIT_BLACK_TIME), FALSE );
+        }
+    }
+    break;
+
+    case WM_COMMAND:
+    {
+        switch ( wparam )
+        {
+        case IDOK:
+        {
+            if ( Global_UI )
             {
-                INT32 timeLimit = Global_UI->queryBlackThinkTime();
-                sprintf ( buffer, "%0.1lf", double(timeLimit) / 100.0 );
-                SetWindowText ( GetDlgItem(hwnd,IDC_EDIT_BLACK_TIME), buffer );
-            }
-            else
-            {
-                SetWindowText ( GetDlgItem(hwnd,IDC_EDIT_BLACK_TIME), "n/a" );
-                EnableWindow ( GetDlgItem(hwnd,IDC_EDIT_BLACK_TIME), FALSE );
+                double timeLimit = 0;
+                if ( GetWindowText ( GetDlgItem(hwnd,IDC_EDIT_WHITE_TIME), buffer, sizeof(buffer) ) &&
+                        (timeLimit = atof(buffer)) >= 0.1 )
+                {
+                    Global_UI->setWhiteThinkTime ( INT32(timeLimit * 100) );
+                }
+
+                if ( GetWindowText ( GetDlgItem(hwnd,IDC_EDIT_BLACK_TIME), buffer, sizeof(buffer) ) &&
+                        (timeLimit = atof(buffer)) >= 0.1 )
+                {
+                    Global_UI->setBlackThinkTime ( INT32(timeLimit * 100) );
+                }
+
+                EndDialog ( hwnd, IDOK );
+                result = TRUE;
             }
         }
         break;
 
-        case WM_COMMAND:
+        case IDCANCEL:
         {
-            switch ( wparam )
-            {
-                case IDOK:
-                {
-                    if ( Global_UI )
-                    {
-                        double timeLimit = 0;
-                        if ( GetWindowText ( GetDlgItem(hwnd,IDC_EDIT_WHITE_TIME), buffer, sizeof(buffer) ) &&
-                            (timeLimit = atof(buffer)) >= 0.1 )
-                        {
-                            Global_UI->setWhiteThinkTime ( INT32(timeLimit * 100) );
-                        }
-
-                        if ( GetWindowText ( GetDlgItem(hwnd,IDC_EDIT_BLACK_TIME), buffer, sizeof(buffer) ) &&
-                            (timeLimit = atof(buffer)) >= 0.1 )
-                        {
-                            Global_UI->setBlackThinkTime ( INT32(timeLimit * 100) );
-                        }
-
-                        EndDialog ( hwnd, IDOK );
-                        result = TRUE;
-                    }
-                }
-                break;
-
-                case IDCANCEL:
-                {
-                    EndDialog ( hwnd, IDCANCEL );
-                    result = TRUE;
-                }
-                break;
-            }
+            EndDialog ( hwnd, IDCANCEL );
+            result = TRUE;
         }
         break;
+        }
+    }
+    break;
     }
 
     return result;
@@ -347,76 +344,76 @@ BOOL CALLBACK EditSquare_DlgProc (
 
     switch ( msg )
     {
-        case WM_INITDIALOG:
-        {
-            squarePtr = (SQUARE *) (lparam);
-            CheckRadioButton ( hwnd, IDC_EDIT_PAWN, IDC_EDIT_KING, (int)lastPiece );
-            CheckRadioButton ( hwnd, IDC_EDIT_EMPTY, IDC_EDIT_BLACK, (int)lastSide );
-            EnableEditPieces ( hwnd, lastSide != IDC_EDIT_EMPTY );
-        }
-        break;
+    case WM_INITDIALOG:
+    {
+        squarePtr = (SQUARE *) (lparam);
+        CheckRadioButton ( hwnd, IDC_EDIT_PAWN, IDC_EDIT_KING, (int)lastPiece );
+        CheckRadioButton ( hwnd, IDC_EDIT_EMPTY, IDC_EDIT_BLACK, (int)lastSide );
+        EnableEditPieces ( hwnd, lastSide != IDC_EDIT_EMPTY );
+    }
+    break;
 
-        case WM_COMMAND:
+    case WM_COMMAND:
+    {
+        switch ( wparam )
         {
-            switch ( wparam )
+        case IDOK:
+        {
+            if ( squarePtr )
             {
-                case IDOK:
-                {
-                    if ( squarePtr )
-                    {
-                        if ( side == EMPTY )
-                            *squarePtr = EMPTY;
-                        else
-                            *squarePtr = PieceLookupTable.sval [ piece | side ];
-                    }
-
-                    EndDialog ( hwnd, IDOK );           
-                }
-                break;
-
-                case IDCANCEL:
-                {
-                    EndDialog ( hwnd, IDCANCEL );           
-                }
-                break;
-
-                case IDC_EDIT_PAWN:    piece = P_INDEX;   lastPiece = wparam;   break;
-                case IDC_EDIT_KNIGHT:  piece = N_INDEX;   lastPiece = wparam;   break;
-                case IDC_EDIT_BISHOP:  piece = B_INDEX;   lastPiece = wparam;   break;
-                case IDC_EDIT_ROOK:    piece = R_INDEX;   lastPiece = wparam;   break;
-                case IDC_EDIT_QUEEN:   piece = Q_INDEX;   lastPiece = wparam;   break;
-                case IDC_EDIT_KING:    piece = K_INDEX;   lastPiece = wparam;   break;
-
-                case IDC_EDIT_EMPTY:
-                {
-                    side = EMPTY;
-                    lastSide = wparam;
-                    EnableEditPieces ( hwnd, FALSE );            
-                }
-                break;
-
-                case IDC_EDIT_WHITE:
-                {
-                    side = WHITE_IND;
-                    lastSide = wparam;
-                    EnableEditPieces ( hwnd, TRUE );         
-                }
-                break;
-
-                case IDC_EDIT_BLACK:
-                {
-                    side = BLACK_IND;
-                    lastSide = wparam;
-                    EnableEditPieces ( hwnd, TRUE );         
-                }
-                break;
+                if ( side == EMPTY )
+                    *squarePtr = EMPTY;
+                else
+                    *squarePtr = PieceLookupTable.sval [ piece | side ];
             }
+
+            EndDialog ( hwnd, IDOK );
         }
         break;
 
-        default:
-            result = FALSE;
-            break;
+        case IDCANCEL:
+        {
+            EndDialog ( hwnd, IDCANCEL );
+        }
+        break;
+
+        case IDC_EDIT_PAWN:    piece = P_INDEX;   lastPiece = wparam;   break;
+        case IDC_EDIT_KNIGHT:  piece = N_INDEX;   lastPiece = wparam;   break;
+        case IDC_EDIT_BISHOP:  piece = B_INDEX;   lastPiece = wparam;   break;
+        case IDC_EDIT_ROOK:    piece = R_INDEX;   lastPiece = wparam;   break;
+        case IDC_EDIT_QUEEN:   piece = Q_INDEX;   lastPiece = wparam;   break;
+        case IDC_EDIT_KING:    piece = K_INDEX;   lastPiece = wparam;   break;
+
+        case IDC_EDIT_EMPTY:
+        {
+            side = EMPTY;
+            lastSide = wparam;
+            EnableEditPieces ( hwnd, FALSE );
+        }
+        break;
+
+        case IDC_EDIT_WHITE:
+        {
+            side = WHITE_IND;
+            lastSide = wparam;
+            EnableEditPieces ( hwnd, TRUE );
+        }
+        break;
+
+        case IDC_EDIT_BLACK:
+        {
+            side = BLACK_IND;
+            lastSide = wparam;
+            EnableEditPieces ( hwnd, TRUE );
+        }
+        break;
+        }
+    }
+    break;
+
+    default:
+        result = FALSE;
+        break;
     }
 
     return result;
@@ -425,20 +422,20 @@ BOOL CALLBACK EditSquare_DlgProc (
 
 static bool EditSquareDialog ( HWND hwnd, SQUARE &square )
 {
-    INT_PTR result = DialogBoxParam ( 
-        global_hInstance,
-        MAKEINTRESOURCE(IDD_EDIT_SQUARE),
-        hwnd,
-        DLGPROC(EditSquare_DlgProc),
-        LPARAM(&square) );
+    INT_PTR result = DialogBoxParam (
+                         global_hInstance,
+                         MAKEINTRESOURCE(IDD_EDIT_SQUARE),
+                         hwnd,
+                         DLGPROC(EditSquare_DlgProc),
+                         LPARAM(&square) );
 
     bool choseSomething = false;
 
     switch ( result )
     {
-        case IDOK:
-            choseSomething = true;
-            break;
+    case IDOK:
+        choseSomething = true;
+        break;
     }
 
     return choseSomething;
@@ -457,42 +454,42 @@ BOOL CALLBACK PromotePawn_DlgProc (
 
     switch ( msg )
     {
-        case WM_INITDIALOG:
-        {
-            // Turn on the 'queen' radio button...
-            CheckRadioButton ( hwnd, RB_QUEEN, RB_KNIGHT, RB_QUEEN );
+    case WM_INITDIALOG:
+    {
+        // Turn on the 'queen' radio button...
+        CheckRadioButton ( hwnd, RB_QUEEN, RB_KNIGHT, RB_QUEEN );
 
-            // Place to put promoted pawn data...
-            promPtr = (SQUARE *) lparam;
-            result = TRUE;
+        // Place to put promoted pawn data...
+        promPtr = (SQUARE *) lparam;
+        result = TRUE;
+    }
+    break;
+
+    case WM_COMMAND:
+    {
+        switch ( wparam )
+        {
+        case IDOK:
+        {
+            rook_rb   = IsDlgButtonChecked ( hwnd, RB_ROOK );
+            bishop_rb = IsDlgButtonChecked ( hwnd, RB_BISHOP );
+            knight_rb = IsDlgButtonChecked ( hwnd, RB_KNIGHT );
+
+            if ( rook_rb )
+                *promPtr = R_INDEX;
+            else if ( bishop_rb )
+                *promPtr = B_INDEX;
+            else if ( knight_rb )
+                *promPtr = N_INDEX;
+            else // assume the queen radio button is selected
+                *promPtr = Q_INDEX;
+
+            EndDialog ( hwnd, IDOK );
         }
         break;
-
-        case WM_COMMAND:
-        {
-            switch ( wparam )
-            {
-                case IDOK:
-                {
-                    rook_rb   = IsDlgButtonChecked ( hwnd, RB_ROOK );
-                    bishop_rb = IsDlgButtonChecked ( hwnd, RB_BISHOP );
-                    knight_rb = IsDlgButtonChecked ( hwnd, RB_KNIGHT );
-
-                    if ( rook_rb )
-                        *promPtr = R_INDEX;
-                    else if ( bishop_rb )
-                        *promPtr = B_INDEX;
-                    else if ( knight_rb )
-                        *promPtr = N_INDEX;
-                    else // assume the queen radio button is selected
-                        *promPtr = Q_INDEX;
-
-                    EndDialog ( hwnd, IDOK );
-                }
-                break;
-            }
         }
-        break;
+    }
+    break;
     }
 
     return result;
@@ -540,21 +537,21 @@ BOOL InitializeNetwork ( HWND hwnd )
             const char *errorString = "Unknown network error";
             switch ( startRet )
             {
-                case WSASYSNOTREADY:
-                    errorString = "Network subsystem not ready";
-                    break;
+            case WSASYSNOTREADY:
+                errorString = "Network subsystem not ready";
+                break;
 
-                case WSAVERNOTSUPPORTED:
-                    errorString = "Unsupported version of WinSock";
-                    break;
+            case WSAVERNOTSUPPORTED:
+                errorString = "Unsupported version of WinSock";
+                break;
 
-                case WSAEINPROGRESS:
-                    errorString = "A blocking WinSock 1.1 operation is in progress";
-                    break;
+            case WSAEINPROGRESS:
+                errorString = "A blocking WinSock 1.1 operation is in progress";
+                break;
 
-                case WSAEPROCLIM:
-                    errorString = "Too many WinSock tasks!";
-                    break;
+            case WSAEPROCLIM:
+                errorString = "Too many WinSock tasks!";
+                break;
             }
 
             MessageBox ( hwnd, errorString, "Network Error", MB_OK | MB_ICONERROR );
@@ -566,9 +563,9 @@ BOOL InitializeNetwork ( HWND hwnd )
 }
 
 
-BOOL ConnectToChenardServer ( 
+BOOL ConnectToChenardServer (
     HWND defPlayerHwnd,
-    DefPlayerInfo &playerInfo, 
+    DefPlayerInfo &playerInfo,
     const char *remoteIpAddressString )
 {
     char tempString [256];
@@ -577,13 +574,13 @@ BOOL ConnectToChenardServer (
         return FALSE;
 
     unsigned remoteIp[4] = { 0, 0, 0, 0 };
-    int numScanned = sscanf ( 
-        remoteIpAddressString, 
-        "%u.%u.%u.%u", 
-        &remoteIp[0], &remoteIp[1], &remoteIp[2], &remoteIp[3] );
+    int numScanned = sscanf (
+                         remoteIpAddressString,
+                         "%u.%u.%u.%u",
+                         &remoteIp[0], &remoteIp[1], &remoteIp[2], &remoteIp[3] );
 
-    if ( numScanned != 4 || 
-        remoteIp[0] > 0xff || remoteIp[1] > 0xff || remoteIp[2] > 0xff || remoteIp[3] > 0xff )
+    if ( numScanned != 4 ||
+            remoteIp[0] > 0xff || remoteIp[1] > 0xff || remoteIp[2] > 0xff || remoteIp[3] > 0xff )
     {
         MessageBox ( defPlayerHwnd, "Invalid IP address entered!", "Error", MB_OK | MB_ICONERROR );
         SetFocus ( GetDlgItem(defPlayerHwnd,IDC_REMOTE_IP) );
@@ -608,7 +605,7 @@ BOOL ConnectToChenardServer (
         return FALSE;
     }
 
-    // Now that we are connected to the remote Chenard, 
+    // Now that we are connected to the remote Chenard,
     // receive from it our player definition:
 
     UINT32 packetSize = 0;
@@ -616,9 +613,9 @@ BOOL ConnectToChenardServer (
     if ( bytesReceived != 4 )
     {
         MessageBox ( defPlayerHwnd,
-            "Error receiving player definition packet size!",
-            "Network Error",
-            MB_OK | MB_ICONERROR );
+                     "Error receiving player definition packet size!",
+                     "Network Error",
+                     MB_OK | MB_ICONERROR );
 
         return FALSE;
     }
@@ -628,10 +625,10 @@ BOOL ConnectToChenardServer (
     bytesReceived = recv ( Global_MySocket, inMessageType, 8, 0 );
     if ( bytesReceived != 8 || strncmp(inMessageType,"players ",8) != 0 )
     {
-        MessageBox ( defPlayerHwnd, 
-            "Error receiving player definition header!",
-            "Network Error",
-            MB_OK | MB_ICONERROR );
+        MessageBox ( defPlayerHwnd,
+                     "Error receiving player definition header!",
+                     "Network Error",
+                     MB_OK | MB_ICONERROR );
 
         return FALSE;
     }
@@ -642,9 +639,9 @@ BOOL ConnectToChenardServer (
     if ( bytesReceived != 2 )
     {
         MessageBox ( defPlayerHwnd,
-            "Error receiving player definition structure!",
-            "Network Error",
-            MB_OK | MB_ICONERROR );
+                     "Error receiving player definition structure!",
+                     "Network Error",
+                     MB_OK | MB_ICONERROR );
 
         return FALSE;
     }
@@ -704,7 +701,7 @@ void ServerConnectThreadFunc ( void * )
             connectInfo = &DefPlayer.whiteInternetConnect;
         }
         else if ( DefPlayer.blackInternetConnect.waitForClient )
-            connectInfo = &DefPlayer.blackInternetConnect;      
+            connectInfo = &DefPlayer.blackInternetConnect;
 
         if ( connectInfo )
         {
@@ -732,8 +729,8 @@ void ServerConnectThreadFunc ( void * )
                 break;
         }
 
-        Global_InternetPlayersReady = 
-            !DefPlayer.whiteInternetConnect.waitForClient && 
+        Global_InternetPlayersReady =
+            !DefPlayer.whiteInternetConnect.waitForClient &&
             !DefPlayer.blackInternetConnect.waitForClient;
     }
 
@@ -749,303 +746,326 @@ BOOL CALLBACK DefineChessPlayers_DlgProc (
     WPARAM wparam,      // first message parameter
     LPARAM lparam )     // second message parameter
 {
-   BOOL result = TRUE;
-   const char *defaultTimeLimit = "2";
+    BOOL result = TRUE;
+    const char *defaultTimeLimit = "2";
 
-   switch ( msg )
-   {
-      case WM_INITDIALOG:
-      {
+    switch ( msg )
+    {
+    case WM_INITDIALOG:
+    {
 #if SUPPORT_INTERNET
-          Global_ServerMode = TRUE;
-          DefPlayer.whiteInternetConnect.waitForClient = 0;
-          DefPlayer.blackInternetConnect.waitForClient = 0;
-          SetWindowText ( GetDlgItem(hwnd,IDC_REMOTE_IP), DefaultServerIpAddress );
+        Global_ServerMode = TRUE;
+        DefPlayer.whiteInternetConnect.waitForClient = 0;
+        DefPlayer.blackInternetConnect.waitForClient = 0;
+        SetWindowText ( GetDlgItem(hwnd,IDC_REMOTE_IP), DefaultServerIpAddress );
 #endif
 
-          SetWindowText ( GetDlgItem(hwnd,TB_WTIME), WhiteTimeLimit );
-          SetWindowText ( GetDlgItem(hwnd,TB_BTIME), BlackTimeLimit );
+        SetWindowText ( GetDlgItem(hwnd,TB_WTIME), WhiteTimeLimit );
+        SetWindowText ( GetDlgItem(hwnd,TB_BTIME), BlackTimeLimit );
 
-          EnableWindow ( GetDlgItem(hwnd,TB_W_PIPE_NAME), FALSE );
-          EnableWindow ( GetDlgItem(hwnd,TB_B_PIPE_NAME), FALSE );
+        EnableWindow ( GetDlgItem(hwnd,TB_W_PIPE_NAME), FALSE );
+        EnableWindow ( GetDlgItem(hwnd,TB_B_PIPE_NAME), FALSE );
 
-          bool whiteHuman = true;
-          bool blackHuman = true;
+        bool whiteHuman = true;
+        bool blackHuman = true;
 
-          if (PreDefinedPlayerSides) {
-              // We already know what the probable chess player settings should be.
-              // This can be because we have loaded a PGN file and found the player settings from it,
-              // or because the user has told us to start a new game via File|New.
-              // We will still show the dialog box so the user can override the settings.
-              whiteHuman = PreDefinedWhiteHuman;
-              blackHuman = PreDefinedBlackHuman;
-          } else {
-              // Choose randomly for the human player to play White or Black, 
-              // and the computer to play the opposite side.
-              whiteHuman = (ChessRandom(2) != 0);
-              blackHuman = !whiteHuman;
-          }
+        if (PreDefinedPlayerSides)
+        {
+            // We already know what the probable chess player settings should be.
+            // This can be because we have loaded a PGN file and found the player settings from it,
+            // or because the user has told us to start a new game via File|New.
+            // We will still show the dialog box so the user can override the settings.
+            whiteHuman = PreDefinedWhiteHuman;
+            blackHuman = PreDefinedBlackHuman;
+        }
+        else
+        {
+            // Choose randomly for the human player to play White or Black,
+            // and the computer to play the opposite side.
+            whiteHuman = (ChessRandom(2) != 0);
+            blackHuman = !whiteHuman;
+        }
 
-          if (whiteHuman) {
-                // Turn on the 'human' radio button for white player...
-                CheckRadioButton ( hwnd, RB_WHUMAN, RB_WCOMPUTER, RB_WHUMAN );
+        if (whiteHuman)
+        {
+            // Turn on the 'human' radio button for white player...
+            CheckRadioButton ( hwnd, RB_WHUMAN, RB_WCOMPUTER, RB_WHUMAN );
 
-                // Disable think time for White computer player:
-                EnableWindow ( GetDlgItem(hwnd,TB_WTIME), FALSE );
-          } else {
-                // Turn on the 'computer' radio button for white player...
-                CheckRadioButton ( hwnd, RB_WHUMAN, RB_WCOMPUTER, RB_WCOMPUTER );
-                SetFocus ( GetDlgItem(hwnd,TB_WTIME) );
+            // Disable think time for White computer player:
+            EnableWindow ( GetDlgItem(hwnd,TB_WTIME), FALSE );
+        }
+        else
+        {
+            // Turn on the 'computer' radio button for white player...
+            CheckRadioButton ( hwnd, RB_WHUMAN, RB_WCOMPUTER, RB_WCOMPUTER );
+            SetFocus ( GetDlgItem(hwnd,TB_WTIME) );
 
-                // Disable blunder alert checkbox for white player...
-                EnableWindow ( GetDlgItem(hwnd,IDC_CHECK_BLUNDER_ALERT_WHITE), FALSE );          
-          }
+            // Disable blunder alert checkbox for white player...
+            EnableWindow ( GetDlgItem(hwnd,IDC_CHECK_BLUNDER_ALERT_WHITE), FALSE );
+        }
 
-          if (blackHuman) {
-                // Turn on the 'human' radio button for black player...
-                CheckRadioButton ( hwnd, RB_BHUMAN, RB_BCOMPUTER, RB_BHUMAN );
+        if (blackHuman)
+        {
+            // Turn on the 'human' radio button for black player...
+            CheckRadioButton ( hwnd, RB_BHUMAN, RB_BCOMPUTER, RB_BHUMAN );
 
-                // Disable think time for Black computer player:
-                EnableWindow ( GetDlgItem(hwnd,TB_BTIME), FALSE );
-          } else {
-                // Turn on the 'computer' radio button for black player...
-                CheckRadioButton ( hwnd, RB_BHUMAN, RB_BCOMPUTER, RB_BCOMPUTER );
-                SetFocus ( GetDlgItem(hwnd,TB_BTIME) );
+            // Disable think time for Black computer player:
+            EnableWindow ( GetDlgItem(hwnd,TB_BTIME), FALSE );
+        }
+        else
+        {
+            // Turn on the 'computer' radio button for black player...
+            CheckRadioButton ( hwnd, RB_BHUMAN, RB_BCOMPUTER, RB_BCOMPUTER );
+            SetFocus ( GetDlgItem(hwnd,TB_BTIME) );
 
-                // Disable blunder alert checkbox for black player...
-                EnableWindow ( GetDlgItem(hwnd,IDC_CHECK_BLUNDER_ALERT_BLACK), FALSE );
-          }
-      }
-      break;
+            // Disable blunder alert checkbox for black player...
+            EnableWindow ( GetDlgItem(hwnd,IDC_CHECK_BLUNDER_ALERT_BLACK), FALSE );
+        }
+    }
+    break;
 
-      case WM_COMMAND:
-      {
-         switch ( wparam )
-         {
-             case RB_WHUMAN:
-                 // Disable white's pipe name box
-                 EnableWindow ( GetDlgItem(hwnd,TB_W_PIPE_NAME), FALSE);
+    case WM_COMMAND:
+    {
+        switch ( wparam )
+        {
+        case RB_WHUMAN:
+            // Disable white's pipe name box
+            EnableWindow ( GetDlgItem(hwnd,TB_W_PIPE_NAME), FALSE);
 
-                 // Disable the white computer player's think time box
-                 EnableWindow ( GetDlgItem(hwnd,TB_WTIME), FALSE );
+            // Disable the white computer player's think time box
+            EnableWindow ( GetDlgItem(hwnd,TB_WTIME), FALSE );
 
-                 // Enable blunder alert checkbox for white player.
-                 EnableWindow ( GetDlgItem(hwnd,IDC_CHECK_BLUNDER_ALERT_WHITE), TRUE );
-                 break;
+            // Enable blunder alert checkbox for white player.
+            EnableWindow ( GetDlgItem(hwnd,IDC_CHECK_BLUNDER_ALERT_WHITE), TRUE );
+            break;
 
-             case RB_WINTERNET:
-                 // Disable white's pipe name box
-                 EnableWindow ( GetDlgItem(hwnd,TB_W_PIPE_NAME), FALSE);
+        case RB_WINTERNET:
+            // Disable white's pipe name box
+            EnableWindow ( GetDlgItem(hwnd,TB_W_PIPE_NAME), FALSE);
 
-                 // Disable the white computer player's think time box
-                 EnableWindow ( GetDlgItem(hwnd,TB_WTIME), FALSE );
+            // Disable the white computer player's think time box
+            EnableWindow ( GetDlgItem(hwnd,TB_WTIME), FALSE );
 
-                 // Disable blunder alert checkbox for white player.
-                 EnableWindow ( GetDlgItem(hwnd,IDC_CHECK_BLUNDER_ALERT_WHITE), FALSE );
-                 break;
+            // Disable blunder alert checkbox for white player.
+            EnableWindow ( GetDlgItem(hwnd,IDC_CHECK_BLUNDER_ALERT_WHITE), FALSE );
+            break;
 
-             case RB_W_NAMEDPIPE:
-                 // Enable white's pipe name box
-                 EnableWindow ( GetDlgItem(hwnd,TB_W_PIPE_NAME), TRUE);
+        case RB_W_NAMEDPIPE:
+            // Enable white's pipe name box
+            EnableWindow ( GetDlgItem(hwnd,TB_W_PIPE_NAME), TRUE);
 
-                 // Disable the white computer player's think time box
-                 EnableWindow ( GetDlgItem(hwnd,TB_WTIME), FALSE );
+            // Disable the white computer player's think time box
+            EnableWindow ( GetDlgItem(hwnd,TB_WTIME), FALSE );
 
-                 // Disable blunder alert checkbox for white player.
-                 EnableWindow ( GetDlgItem(hwnd,IDC_CHECK_BLUNDER_ALERT_WHITE), FALSE );
-                 break;
+            // Disable blunder alert checkbox for white player.
+            EnableWindow ( GetDlgItem(hwnd,IDC_CHECK_BLUNDER_ALERT_WHITE), FALSE );
+            break;
 
-             case RB_WCOMPUTER:
-                 // Disable white's pipe name box
-                 EnableWindow ( GetDlgItem(hwnd,TB_W_PIPE_NAME), FALSE);
+        case RB_WCOMPUTER:
+            // Disable white's pipe name box
+            EnableWindow ( GetDlgItem(hwnd,TB_W_PIPE_NAME), FALSE);
 
-                 // Enable the white computer player's think time box
-                 EnableWindow ( GetDlgItem(hwnd,TB_WTIME), TRUE );
-                 SetFocus ( GetDlgItem(hwnd,TB_WTIME) );
+            // Enable the white computer player's think time box
+            EnableWindow ( GetDlgItem(hwnd,TB_WTIME), TRUE );
+            SetFocus ( GetDlgItem(hwnd,TB_WTIME) );
 
-                 // Disable blunder alert checkbox for white player.
-                 EnableWindow ( GetDlgItem(hwnd,IDC_CHECK_BLUNDER_ALERT_WHITE), FALSE );
-                 break;
+            // Disable blunder alert checkbox for white player.
+            EnableWindow ( GetDlgItem(hwnd,IDC_CHECK_BLUNDER_ALERT_WHITE), FALSE );
+            break;
 
-            case RB_BHUMAN:
-                 // Disable black's pipe name box
-                 EnableWindow ( GetDlgItem(hwnd,TB_B_PIPE_NAME), FALSE);
+        case RB_BHUMAN:
+            // Disable black's pipe name box
+            EnableWindow ( GetDlgItem(hwnd,TB_B_PIPE_NAME), FALSE);
 
-                 // Disable the black computer player's think time box
-                 EnableWindow ( GetDlgItem(hwnd,TB_BTIME), FALSE );
+            // Disable the black computer player's think time box
+            EnableWindow ( GetDlgItem(hwnd,TB_BTIME), FALSE );
 
-                 // Enable blunder alert checkbox for black player.
-                 EnableWindow ( GetDlgItem(hwnd,IDC_CHECK_BLUNDER_ALERT_BLACK), TRUE );
-                 break;
+            // Enable blunder alert checkbox for black player.
+            EnableWindow ( GetDlgItem(hwnd,IDC_CHECK_BLUNDER_ALERT_BLACK), TRUE );
+            break;
 
-            case RB_BINTERNET:
-                 // Disable black's pipe name box
-                 EnableWindow ( GetDlgItem(hwnd,TB_B_PIPE_NAME), FALSE);
+        case RB_BINTERNET:
+            // Disable black's pipe name box
+            EnableWindow ( GetDlgItem(hwnd,TB_B_PIPE_NAME), FALSE);
 
-                 // Disable the black computer player's think time box
-                 EnableWindow ( GetDlgItem(hwnd,TB_BTIME), FALSE );
+            // Disable the black computer player's think time box
+            EnableWindow ( GetDlgItem(hwnd,TB_BTIME), FALSE );
 
-                 // Disable blunder alert checkbox for black player.
-                 EnableWindow ( GetDlgItem(hwnd,IDC_CHECK_BLUNDER_ALERT_BLACK), FALSE );
-                 break;
+            // Disable blunder alert checkbox for black player.
+            EnableWindow ( GetDlgItem(hwnd,IDC_CHECK_BLUNDER_ALERT_BLACK), FALSE );
+            break;
 
-            case RB_B_NAMEDPIPE:
-                 // Enable black's pipe name box
-                 EnableWindow ( GetDlgItem(hwnd,TB_B_PIPE_NAME), TRUE);
+        case RB_B_NAMEDPIPE:
+            // Enable black's pipe name box
+            EnableWindow ( GetDlgItem(hwnd,TB_B_PIPE_NAME), TRUE);
 
-                 // Disable the black computer player's think time box
-                 EnableWindow ( GetDlgItem(hwnd,TB_BTIME), FALSE );
+            // Disable the black computer player's think time box
+            EnableWindow ( GetDlgItem(hwnd,TB_BTIME), FALSE );
 
-                 // Disable blunder alert checkbox for black player.
-                 EnableWindow ( GetDlgItem(hwnd,IDC_CHECK_BLUNDER_ALERT_BLACK), FALSE );
-                 break;
+            // Disable blunder alert checkbox for black player.
+            EnableWindow ( GetDlgItem(hwnd,IDC_CHECK_BLUNDER_ALERT_BLACK), FALSE );
+            break;
 
-            case RB_BCOMPUTER:
-                 // Disable black's pipe name box
-                 EnableWindow ( GetDlgItem(hwnd,TB_B_PIPE_NAME), FALSE);
+        case RB_BCOMPUTER:
+            // Disable black's pipe name box
+            EnableWindow ( GetDlgItem(hwnd,TB_B_PIPE_NAME), FALSE);
 
-                 // Enable the black computer player's think time box
-                 EnableWindow ( GetDlgItem(hwnd,TB_BTIME), TRUE );
-                 SetFocus ( GetDlgItem(hwnd,TB_BTIME) );
+            // Enable the black computer player's think time box
+            EnableWindow ( GetDlgItem(hwnd,TB_BTIME), TRUE );
+            SetFocus ( GetDlgItem(hwnd,TB_BTIME) );
 
-                 // Disable blunder alert checkbox for black player.
-                 EnableWindow ( GetDlgItem(hwnd,IDC_CHECK_BLUNDER_ALERT_BLACK), FALSE );
-                 break;
+            // Disable blunder alert checkbox for black player.
+            EnableWindow ( GetDlgItem(hwnd,IDC_CHECK_BLUNDER_ALERT_BLACK), FALSE );
+            break;
 
 #if SUPPORT_INTERNET
-            case IDC_CHESS_CLIENT:
-            {
-                BOOL remoteFlag = IsDlgButtonChecked ( hwnd, IDC_CHESS_CLIENT );
-                Global_ServerMode = !remoteFlag;
+        case IDC_CHESS_CLIENT:
+        {
+            BOOL remoteFlag = IsDlgButtonChecked ( hwnd, IDC_CHESS_CLIENT );
+            Global_ServerMode = !remoteFlag;
 
-                EnableWindow ( GetDlgItem(hwnd,RB_WHUMAN),      !remoteFlag );
-                EnableWindow ( GetDlgItem(hwnd,RB_WCOMPUTER),   !remoteFlag );
-                EnableWindow ( GetDlgItem(hwnd,RB_WINTERNET),   !remoteFlag );
-                EnableWindow ( GetDlgItem(hwnd,RB_BHUMAN),      !remoteFlag );
-                EnableWindow ( GetDlgItem(hwnd,RB_BCOMPUTER),   !remoteFlag );
-                EnableWindow ( GetDlgItem(hwnd,RB_BINTERNET),   !remoteFlag );
-                EnableWindow ( GetDlgItem(hwnd,RB_W_NAMEDPIPE), !remoteFlag );
-                EnableWindow ( GetDlgItem(hwnd,RB_B_NAMEDPIPE), !remoteFlag );
-                EnableWindow ( GetDlgItem(hwnd,IDC_CHECK_BLUNDER_ALERT_WHITE), !remoteFlag );
-                EnableWindow ( GetDlgItem(hwnd,IDC_CHECK_BLUNDER_ALERT_BLACK), !remoteFlag );
+            EnableWindow ( GetDlgItem(hwnd,RB_WHUMAN),      !remoteFlag );
+            EnableWindow ( GetDlgItem(hwnd,RB_WCOMPUTER),   !remoteFlag );
+            EnableWindow ( GetDlgItem(hwnd,RB_WINTERNET),   !remoteFlag );
+            EnableWindow ( GetDlgItem(hwnd,RB_BHUMAN),      !remoteFlag );
+            EnableWindow ( GetDlgItem(hwnd,RB_BCOMPUTER),   !remoteFlag );
+            EnableWindow ( GetDlgItem(hwnd,RB_BINTERNET),   !remoteFlag );
+            EnableWindow ( GetDlgItem(hwnd,RB_W_NAMEDPIPE), !remoteFlag );
+            EnableWindow ( GetDlgItem(hwnd,RB_B_NAMEDPIPE), !remoteFlag );
+            EnableWindow ( GetDlgItem(hwnd,IDC_CHECK_BLUNDER_ALERT_WHITE), !remoteFlag );
+            EnableWindow ( GetDlgItem(hwnd,IDC_CHECK_BLUNDER_ALERT_BLACK), !remoteFlag );
 
-                EnableWindow ( GetDlgItem(hwnd,IDC_REMOTE_IP), remoteFlag );
-                if ( remoteFlag )
-                    SetFocus ( GetDlgItem(hwnd,IDC_REMOTE_IP) );
+            EnableWindow ( GetDlgItem(hwnd,IDC_REMOTE_IP), remoteFlag );
+            if ( remoteFlag )
+                SetFocus ( GetDlgItem(hwnd,IDC_REMOTE_IP) );
 
-                BOOL enableTime = remoteFlag ? FALSE : IsDlgButtonChecked(hwnd,RB_WCOMPUTER);
-                EnableWindow ( GetDlgItem(hwnd,TB_WTIME), enableTime );
+            BOOL enableTime = remoteFlag ? FALSE : IsDlgButtonChecked(hwnd,RB_WCOMPUTER);
+            EnableWindow ( GetDlgItem(hwnd,TB_WTIME), enableTime );
 
-                enableTime = remoteFlag ? FALSE : IsDlgButtonChecked(hwnd,RB_BCOMPUTER);
-                EnableWindow ( GetDlgItem(hwnd,TB_BTIME), enableTime );
-            }
-            break;
+            enableTime = remoteFlag ? FALSE : IsDlgButtonChecked(hwnd,RB_BCOMPUTER);
+            EnableWindow ( GetDlgItem(hwnd,TB_BTIME), enableTime );
+        }
+        break;
 #endif // SUPPORT_INTERNET
 
 
-            case IDOK:
-            {
-               result = TRUE;
-               SoundEnableFlag = TRUE;
+        case IDOK:
+        {
+            result = TRUE;
+            SoundEnableFlag = TRUE;
 
 #if SUPPORT_INTERNET
-                if ( IsDlgButtonChecked ( hwnd, IDC_CHESS_CLIENT ) )
-                {
-                    GetWindowText ( GetDlgItem(hwnd,IDC_REMOTE_IP), DefaultServerIpAddress, sizeof(DefaultServerIpAddress) );
-                    result = ConnectToChenardServer ( hwnd, DefPlayer, DefaultServerIpAddress );
-                    if ( result )
-                        EndDialog ( hwnd, IDOK );
+            if ( IsDlgButtonChecked ( hwnd, IDC_CHESS_CLIENT ) )
+            {
+                GetWindowText ( GetDlgItem(hwnd,IDC_REMOTE_IP), DefaultServerIpAddress, sizeof(DefaultServerIpAddress) );
+                result = ConnectToChenardServer ( hwnd, DefPlayer, DefaultServerIpAddress );
+                if ( result )
+                    EndDialog ( hwnd, IDOK );
 
-                    return TRUE;
-                }
+                return TRUE;
+            }
 #endif
 
 
-               // Figure out whether white is human or computer
-               if ( IsDlgButtonChecked ( hwnd, RB_WHUMAN ) ) {
-                   DefPlayer.whiteType = DefPlayerInfo::humanPlayer;
-               } else if ( IsDlgButtonChecked ( hwnd, RB_WCOMPUTER ) ) {
-                   DefPlayer.whiteType = DefPlayerInfo::computerPlayer;
-               } else if (IsDlgButtonChecked (hwnd, RB_W_NAMEDPIPE)) {
-                   DefPlayer.whiteType = DefPlayerInfo::namedPipePlayer;
-               } else {
-                   DefPlayer.whiteType = DefPlayerInfo::internetPlayer;
-                   DefPlayer.whiteInternetConnect.waitForClient = 1;
-               }
-
-               // Think time for white
-               double value = 0;
-
-               if ( !GetWindowText ( GetDlgItem(hwnd,TB_WTIME), WhiteTimeLimit, sizeof(WhiteTimeLimit) ) ||
-                    (value = atof(WhiteTimeLimit)) <= 0 )
-               {
-                   strcpy ( WhiteTimeLimit, defaultTimeLimit );
-                   value = atof(defaultTimeLimit);
-               }
-
-               if ( value < 0.1 )
-                   value = 0.1;
-
-               DefPlayer.whiteThinkTime = long (100 * value);
-               DefPlayer.whiteUseSeconds = 1;
-               DefPlayer.whiteSearchBias = 1;
-
-               // Figure out whether black is human or computer
-
-               if ( IsDlgButtonChecked ( hwnd, RB_BHUMAN ) ) {
-                   DefPlayer.blackType = DefPlayerInfo::humanPlayer;
-               } else if ( IsDlgButtonChecked ( hwnd, RB_BCOMPUTER ) ) {
-                   DefPlayer.blackType = DefPlayerInfo::computerPlayer;
-               } else if (IsDlgButtonChecked (hwnd, RB_B_NAMEDPIPE)) {
-                   DefPlayer.blackType = DefPlayerInfo::namedPipePlayer;
-               } else {
-                   DefPlayer.blackType = DefPlayerInfo::internetPlayer;
-                   DefPlayer.blackInternetConnect.waitForClient = 1;
-               }
-
-               // Think time for black
-
-               if ( !GetWindowText ( GetDlgItem(hwnd,TB_BTIME), BlackTimeLimit, sizeof(BlackTimeLimit) ) ||
-                    (value = atof(BlackTimeLimit)) <= 0 )
-               {
-                   strcpy ( BlackTimeLimit, defaultTimeLimit );
-                   value = atof(defaultTimeLimit);
-               }
-
-               if ( value < 0.1 )
-                   value = 0.1;
-
-               DefPlayer.blackThinkTime = long(100 * value);
-               DefPlayer.blackUseSeconds = 1;
-               DefPlayer.blackSearchBias = 1;
-
-               // Blunder alert
-               DefPlayer.whiteBlunderAlert = IsDlgButtonChecked(hwnd, IDC_CHECK_BLUNDER_ALERT_WHITE) ? true : false;
-               DefPlayer.blackBlunderAlert = IsDlgButtonChecked(hwnd, IDC_CHECK_BLUNDER_ALERT_BLACK) ? true : false;
-
-               // Server names
-               GetWindowText (GetDlgItem(hwnd,TB_W_PIPE_NAME), DefPlayer.whiteServerName, sizeof(DefPlayer.whiteServerName));
-               GetWindowText (GetDlgItem(hwnd,TB_B_PIPE_NAME), DefPlayer.blackServerName, sizeof(DefPlayer.blackServerName));
-
-               EndDialog ( hwnd, IDOK );
-            }
-            break;
-
-            case IDCANCEL:
+            // Figure out whether white is human or computer
+            if ( IsDlgButtonChecked ( hwnd, RB_WHUMAN ) )
             {
-               EndDialog ( hwnd, IDCANCEL );
+                DefPlayer.whiteType = DefPlayerInfo::humanPlayer;
             }
-            break;
-         }
-      }
-      break;
+            else if ( IsDlgButtonChecked ( hwnd, RB_WCOMPUTER ) )
+            {
+                DefPlayer.whiteType = DefPlayerInfo::computerPlayer;
+            }
+            else if (IsDlgButtonChecked (hwnd, RB_W_NAMEDPIPE))
+            {
+                DefPlayer.whiteType = DefPlayerInfo::namedPipePlayer;
+            }
+            else
+            {
+                DefPlayer.whiteType = DefPlayerInfo::internetPlayer;
+                DefPlayer.whiteInternetConnect.waitForClient = 1;
+            }
 
-      default:
-         result = FALSE;
-         break;
-   }
+            // Think time for white
+            double value = 0;
 
-   return result;
+            if ( !GetWindowText ( GetDlgItem(hwnd,TB_WTIME), WhiteTimeLimit, sizeof(WhiteTimeLimit) ) ||
+                    (value = atof(WhiteTimeLimit)) <= 0 )
+            {
+                strcpy ( WhiteTimeLimit, defaultTimeLimit );
+                value = atof(defaultTimeLimit);
+            }
+
+            if ( value < 0.1 )
+                value = 0.1;
+
+            DefPlayer.whiteThinkTime = long (100 * value);
+            DefPlayer.whiteUseSeconds = 1;
+            DefPlayer.whiteSearchBias = 1;
+
+            // Figure out whether black is human or computer
+
+            if ( IsDlgButtonChecked ( hwnd, RB_BHUMAN ) )
+            {
+                DefPlayer.blackType = DefPlayerInfo::humanPlayer;
+            }
+            else if ( IsDlgButtonChecked ( hwnd, RB_BCOMPUTER ) )
+            {
+                DefPlayer.blackType = DefPlayerInfo::computerPlayer;
+            }
+            else if (IsDlgButtonChecked (hwnd, RB_B_NAMEDPIPE))
+            {
+                DefPlayer.blackType = DefPlayerInfo::namedPipePlayer;
+            }
+            else
+            {
+                DefPlayer.blackType = DefPlayerInfo::internetPlayer;
+                DefPlayer.blackInternetConnect.waitForClient = 1;
+            }
+
+            // Think time for black
+
+            if ( !GetWindowText ( GetDlgItem(hwnd,TB_BTIME), BlackTimeLimit, sizeof(BlackTimeLimit) ) ||
+                    (value = atof(BlackTimeLimit)) <= 0 )
+            {
+                strcpy ( BlackTimeLimit, defaultTimeLimit );
+                value = atof(defaultTimeLimit);
+            }
+
+            if ( value < 0.1 )
+                value = 0.1;
+
+            DefPlayer.blackThinkTime = long(100 * value);
+            DefPlayer.blackUseSeconds = 1;
+            DefPlayer.blackSearchBias = 1;
+
+            // Blunder alert
+            DefPlayer.whiteBlunderAlert = IsDlgButtonChecked(hwnd, IDC_CHECK_BLUNDER_ALERT_WHITE) ? true : false;
+            DefPlayer.blackBlunderAlert = IsDlgButtonChecked(hwnd, IDC_CHECK_BLUNDER_ALERT_BLACK) ? true : false;
+
+            // Server names
+            GetWindowText (GetDlgItem(hwnd,TB_W_PIPE_NAME), DefPlayer.whiteServerName, sizeof(DefPlayer.whiteServerName));
+            GetWindowText (GetDlgItem(hwnd,TB_B_PIPE_NAME), DefPlayer.blackServerName, sizeof(DefPlayer.blackServerName));
+
+            EndDialog ( hwnd, IDOK );
+        }
+        break;
+
+        case IDCANCEL:
+        {
+            EndDialog ( hwnd, IDCANCEL );
+        }
+        break;
+        }
+    }
+    break;
+
+    default:
+        result = FALSE;
+        break;
+    }
+
+    return result;
 }
 
 
@@ -1070,27 +1090,27 @@ bool DefinePlayerDialog ( HWND hwnd )
         netFlag = 1;
     }
 
-    LPTSTR restag = netFlag ? 
-        MAKEINTRESOURCE(IDD_DEFINE_PLAYERS2) :
-        MAKEINTRESOURCE(IDD_DEFINE_PLAYERS);
+    LPTSTR restag = netFlag ?
+                    MAKEINTRESOURCE(IDD_DEFINE_PLAYERS2) :
+                    MAKEINTRESOURCE(IDD_DEFINE_PLAYERS);
 #else
     LPTSTR restag = MAKEINTRESOURCE(IDD_DEFINE_PLAYERS);
 #endif
 
     INT_PTR fred = DialogBox (
-        global_hInstance,
-        restag,
-        hwnd,
-        DLGPROC(DefineChessPlayers_DlgProc) );
+                       global_hInstance,
+                       restag,
+                       hwnd,
+                       DLGPROC(DefineChessPlayers_DlgProc) );
 
 #if SUPPORT_INTERNET
     char tempString [256];
 
     if ( fred == IDOK )
     {
-        int iAmServer = Global_ServerMode && 
-            (DefPlayer.whiteType == DefPlayerInfo::internetPlayer ||
-             DefPlayer.blackType == DefPlayerInfo::internetPlayer);
+        int iAmServer = Global_ServerMode &&
+                        (DefPlayer.whiteType == DefPlayerInfo::internetPlayer ||
+                         DefPlayer.blackType == DefPlayerInfo::internetPlayer);
 
         if ( iAmServer )
         {
@@ -1105,7 +1125,7 @@ bool DefinePlayerDialog ( HWND hwnd )
 
             if ( bind ( Global_MySocket, (sockaddr *)&localAddress, sizeof(localAddress) ) != 0 )
             {
-                MessageBox ( hwnd, "Could not bind socket!", "Network Error", MB_OK | MB_ICONERROR );       
+                MessageBox ( hwnd, "Could not bind socket!", "Network Error", MB_OK | MB_ICONERROR );
                 return FALSE;
             }
 
@@ -1117,11 +1137,11 @@ bool DefinePlayerDialog ( HWND hwnd )
             }
 
             sprintf ( tempString, "Inform opponent(s) that server address is:\n\n%u.%u.%u.%u",
-                unsigned ( Global_MyHostEnt.h_addr[0] & 0xff ),
-                unsigned ( Global_MyHostEnt.h_addr[1] & 0xff ),
-                unsigned ( Global_MyHostEnt.h_addr[2] & 0xff ),
-                unsigned ( Global_MyHostEnt.h_addr[3] & 0xff ) );
-                
+                      unsigned ( Global_MyHostEnt.h_addr[0] & 0xff ),
+                      unsigned ( Global_MyHostEnt.h_addr[1] & 0xff ),
+                      unsigned ( Global_MyHostEnt.h_addr[2] & 0xff ),
+                      unsigned ( Global_MyHostEnt.h_addr[3] & 0xff ) );
+
             MessageBox ( hwnd, tempString, "", MB_OK | MB_ICONINFORMATION );
         }
     }
@@ -1223,7 +1243,8 @@ void ReadChenardSetting (const char *key, const char *defaultValue, char *opt, s
         &softwareKeyHandle
     );
 
-    if (status == ERROR_SUCCESS) {
+    if (status == ERROR_SUCCESS)
+    {
         HKEY chenardKey;
 
         status = RegOpenKeyEx (
@@ -1234,12 +1255,15 @@ void ReadChenardSetting (const char *key, const char *defaultValue, char *opt, s
             &chenardKey
         );
 
-        if (status == ERROR_SUCCESS) {
+        if (status == ERROR_SUCCESS)
+        {
             DWORD dataType;
             DWORD dataSize = (DWORD) optSize;
             status = RegQueryValueEx (chenardKey, key, 0, &dataType, (LPBYTE) opt, &dataSize);
-            if (status == ERROR_SUCCESS) {
-                if (dataType == REG_SZ) {
+            if (status == ERROR_SUCCESS)
+            {
+                if (dataType == REG_SZ)
+                {
                     opt[dataSize] = '\0';   // registry functions aren't guaranteed to null-terminate strings for us
                     readValue = true;       // we have read a valid value; do not fall back on the default value passed in to this function
                 }
@@ -1252,7 +1276,8 @@ void ReadChenardSetting (const char *key, const char *defaultValue, char *opt, s
     }
 
 
-    if (!readValue) {
+    if (!readValue)
+    {
         strcpy_s (opt, optSize, defaultValue);
     }
 }
@@ -1269,7 +1294,8 @@ LSTATUS WriteChenardSetting (const char *key, const char *value)
         &softwareKeyHandle
     );
 
-    if (status == ERROR_SUCCESS) {
+    if (status == ERROR_SUCCESS)
+    {
         HKEY chenardKey;
 
         status = RegCreateKeyEx (
@@ -1284,7 +1310,8 @@ LSTATUS WriteChenardSetting (const char *key, const char *value)
             NULL
         );
 
-        if (status == ERROR_SUCCESS) {
+        if (status == ERROR_SUCCESS)
+        {
             status = RegSetValueEx (chenardKey, key, 0, REG_SZ, (const BYTE *)value, (DWORD) (1 + strlen(value)));
             RegCloseKey (chenardKey);
         }
@@ -1464,7 +1491,8 @@ static void SaveChessOptions()
     sprintf ( opt, "%d", int(Global_EnableOppTime) );
     WriteChenardSetting (Profile_EnableOppTime, opt);
 
-    if (DefaultServerIpAddress[0] != '\0') {
+    if (DefaultServerIpAddress[0] != '\0')
+    {
         WriteChenardSetting (Profile_ServerIpAddress, DefaultServerIpAddress);
     }
 
@@ -1536,13 +1564,13 @@ void ChessThreadFunc ( void * )
         // Clear the flag so as to prevent the game from being restarted.
         // Only if the user says to start a new game do we loop again.
         // Each loop causes 'theGame' to be constructed/destructed,
-        // which in turn refreshes the player definitions based on 
+        // which in turn refreshes the player definitions based on
         // global DefPlayer struct.
         Global_StartNewGameConfirmed = false;
 
-        // Constructing the ChessGame object causes 
+        // Constructing the ChessGame object causes
         // CreatePlayer calls to the UI object for White and Black.
-        // If this isn't the first time they have been called, we 
+        // If this isn't the first time they have been called, we
         // need to tell them to explicitly forget anything they have
         // cached about what kind of players White and Black are
         // (i.e. Human, Computer, other).  This way logic inside
@@ -1637,7 +1665,8 @@ PGN_FILE_STATE LoadGameFromPgnFile (FILE *f, ChessBoard &board);     // loads on
 void SetDirectoryFromFilePath (const char *filepath)
 {
     const char *backslash = strrchr (filepath, '\\');
-    if (backslash) {
+    if (backslash)
+    {
         int length = (int) (backslash - filepath);
         char *path = new char [length + 1];
         memcpy (path, filepath, length);
@@ -1652,7 +1681,8 @@ void SetDirectoryFromFilePath (const char *filepath)
 
 bool LoadGameFile (const char *arg)
 {
-    if (arg == NULL) {
+    if (arg == NULL)
+    {
         return false;   // should never happen, but avoid crash
     }
 
@@ -1660,30 +1690,39 @@ bool LoadGameFile (const char *arg)
     const char *secondQuote = firstQuote ? strchr(firstQuote+1,'"') : NULL;
     int firstIndex;
     int secondIndex;
-    if (firstQuote && secondQuote) {
+    if (firstQuote && secondQuote)
+    {
         // Assume the filename is the first group of characters that
         // are surrounded by double quote marks...
         firstIndex  = (int) (firstQuote - arg) + 1;     // skip over quote
         secondIndex = (int) (secondQuote - arg);        // point to quote (will be excluded)
-    } else {
+    }
+    else
+    {
         // Assume the filename is the first group of non-whitespace characters...
         firstIndex = 0;
-        while (arg[firstIndex] && isspace(arg[firstIndex])) {
+        while (arg[firstIndex] && isspace(arg[firstIndex]))
+        {
             ++firstIndex;
         }
 
-        if (arg[firstIndex]) {
+        if (arg[firstIndex])
+        {
             secondIndex = firstIndex + 1;
-            while (arg[secondIndex] && !isspace(arg[secondIndex])) {
+            while (arg[secondIndex] && !isspace(arg[secondIndex]))
+            {
                 ++secondIndex;
             }
-        } else {
+        }
+        else
+        {
             secondIndex = firstIndex;   // empty string
         }
     }
 
     int length = secondIndex - firstIndex;
-    if (length <= 0) {
+    if (length <= 0)
+    {
         return false;
     }
 
@@ -1697,14 +1736,18 @@ bool LoadGameFile (const char *arg)
 
     char msg [256];
     const char *ext = strrchr (filename, '.');
-    if (ext) {
-        if (0 == stricmp (ext, ".pgn")) {
+    if (ext)
+    {
+        if (0 == stricmp (ext, ".pgn"))
+        {
             // This appears to be a PGN file.
             // Use it to load the game.
             FILE *infile = fopen (filename, "rt");
-            if (infile) {
+            if (infile)
+            {
                 PGN_FILE_STATE state = LoadGameFromPgnFile (infile, Global_Board);
-                if (state == PGN_FILE_STATE_GAMEOVER) {
+                if (state == PGN_FILE_STATE_GAMEOVER)
+                {
                     // We successfully loaded the game state into the global chess board.
                     // Now we assist the user by trying to restore the player definitions.
                     // The dialog box will still show, but will be filled in with computer/human
@@ -1716,17 +1759,25 @@ bool LoadGameFile (const char *arg)
                     char line [128];
                     bool foundWhite = false;
                     bool foundBlack = false;
-                    while (fgets (line, sizeof(line), infile)) {
-                        if (0 == strcmp(line,"[White \"Human Player\"]\n")) {
+                    while (fgets (line, sizeof(line), infile))
+                    {
+                        if (0 == strcmp(line,"[White \"Human Player\"]\n"))
+                        {
                             foundWhite = true;
                             PreDefinedWhiteHuman = true;
-                        } else if (0 == strcmp(line, "[Black \"Human Player\"]\n")) {
+                        }
+                        else if (0 == strcmp(line, "[Black \"Human Player\"]\n"))
+                        {
                             foundBlack = true;
                             PreDefinedBlackHuman = true;
-                        } else if (0 == strcmp(line, "[White \"Computer Player (Chenard)\"]\n")) {
+                        }
+                        else if (0 == strcmp(line, "[White \"Computer Player (Chenard)\"]\n"))
+                        {
                             foundWhite = true;
                             PreDefinedWhiteHuman = false;
-                        } else if (0 == strcmp(line, "[Black \"Computer Player (Chenard)\"]\n")) {
+                        }
+                        else if (0 == strcmp(line, "[Black \"Computer Player (Chenard)\"]\n"))
+                        {
                             foundBlack = true;
                             PreDefinedBlackHuman = false;
                         }
@@ -1741,7 +1792,9 @@ bool LoadGameFile (const char *arg)
                     // Set the current directory to the location of the executable.
                     // We assume this is where endgame, training, wav, etc files are...
                     SetDirectoryFromFilePath (__argv[0]);
-                } else {
+                }
+                else
+                {
                     // Something is wrong with this PGN file.
                     // Let the user know we tried, but could not load the file...
                     const char *error = GetPgnFileStateString (state);
@@ -1752,7 +1805,9 @@ bool LoadGameFile (const char *arg)
                     Global_Board.Init();
                 }
                 fclose (infile);
-            } else {
+            }
+            else
+            {
                 MessageBox (HwndMain, "Could not open the specified PGN file.", "PGN Load Error", MB_OK | MB_ICONERROR);
             }
         }
@@ -1792,32 +1847,41 @@ int WINAPI WinMain(
         RegisterClass ( &wndclass );
     }
 
-    if (lpCmdLine[0] != '\0') {
-        if (LoadGameFile (lpCmdLine)) {
+    if (lpCmdLine[0] != '\0')
+    {
+        if (LoadGameFile (lpCmdLine))
+        {
             Global_PgnFileWasLoaded = true;
             // No need to examine the command line further: we have already loaded the game.
-        } else if ( lpCmdLine[0] == '-' ) {
-            if ( lpCmdLine[1] == 'g' ) {
+        }
+        else if ( lpCmdLine[0] == '-' )
+        {
+            if ( lpCmdLine[1] == 'g' )
+            {
                 Global_EnableGA = true;
-                if ( lpCmdLine[2] ) {
+                if ( lpCmdLine[2] )
+                {
                     Global_GA_NumGenes = atoi(&lpCmdLine[2]);
                 }
-            } else if ( lpCmdLine[1]=='d' && lpCmdLine[2]=='b' ) {    // -db : generate endgame database
+            }
+            else if ( lpCmdLine[1]=='d' && lpCmdLine[2]=='b' )        // -db : generate endgame database
+            {
                 Global_EnableEndgameDatabaseGen = true;
                 Global_EnableBoardBreathe = false;
 
-                switch (lpCmdLine[3]) {
-                    case 'd':   // -dbd : dump info about existing databases
-                        Global_EndgameDatabaseMode = 1;
-                        break;
+                switch (lpCmdLine[3])
+                {
+                case 'd':   // -dbd : dump info about existing databases
+                    Global_EndgameDatabaseMode = 1;
+                    break;
 
-                    case 's':   // -dbs : analyze symmetries of databases
-                        Global_EndgameDatabaseMode = 2;
-                        break;
+                case 's':   // -dbs : analyze symmetries of databases
+                    Global_EndgameDatabaseMode = 2;
+                    break;
 
-                    default:
-                        Global_EndgameDatabaseMode = 0;     // -db : actually generate the databases
-                        break;
+                default:
+                    Global_EndgameDatabaseMode = 0;     // -db : actually generate the databases
+                    break;
                 }
             }
         }
@@ -1826,18 +1890,18 @@ int WINAPI WinMain(
     HmenuMain = LoadMenu ( hInstance, MAKEINTRESOURCE(999) );
 
     HwndMain = CreateWindow (
-        chessWindowClass,
-        TitleBarText_WhitesTurn,
-        global_windowFlags,
-        CW_USEDEFAULT,
-        CW_USEDEFAULT,
-        CW_USEDEFAULT,
-        CW_USEDEFAULT,
-        NULL,
-        HmenuMain,
-        hInstance,
-        NULL 
-    );
+                   chessWindowClass,
+                   TitleBarText_WhitesTurn,
+                   global_windowFlags,
+                   CW_USEDEFAULT,
+                   CW_USEDEFAULT,
+                   CW_USEDEFAULT,
+                   CW_USEDEFAULT,
+                   NULL,
+                   HmenuMain,
+                   hInstance,
+                   NULL
+               );
 
     ApplyChessOptions();
     SetChessWindowSize ( HwndMain, (Global_AnalysisType != 0) );
@@ -1922,12 +1986,13 @@ static bool CopyForsythEdwardsNotation()
 {
     const char *copyError = "Copy Forsyth-Edwards Notation Error";
 
-    if (!OpenClipboard(HwndMain)) {
+    if (!OpenClipboard(HwndMain))
+    {
         MessageBox (
             HwndMain,
             "Cannot open the Windows clipboard!",
             copyError,
-            MB_ICONERROR | MB_OK 
+            MB_ICONERROR | MB_OK
         );
         return false;
     }
@@ -1935,44 +2000,55 @@ static bool CopyForsythEdwardsNotation()
     const unsigned bufSize = 256;
     char buffer [bufSize];
 
-    if (!Global_Board.GetForsythEdwardsNotation (buffer, bufSize)) {
+    if (!Global_Board.GetForsythEdwardsNotation (buffer, bufSize))
+    {
         MessageBox (
             HwndMain,
             "Error getting FEN string from board!",
             copyError,
-            MB_ICONERROR | MB_OK 
+            MB_ICONERROR | MB_OK
         );
         return false;
     }
 
     bool result = true;
     HGLOBAL hGlobalMemory = GlobalAlloc ( GHND, strlen(buffer)+1 );
-    if (hGlobalMemory) {
+    if (hGlobalMemory)
+    {
         char far *globalPtr = (char far *) GlobalLock (hGlobalMemory);
-        if (globalPtr) {
+        if (globalPtr)
+        {
             char far *a = globalPtr;
             const char far *b = buffer;
-            do { *a++ = *b; } while ( *b++ );
+            do
+            {
+                *a++ = *b;
+            }
+            while ( *b++ );
             GlobalUnlock (hGlobalMemory);
             EmptyClipboard();
             SetClipboardData ( CF_TEXT, hGlobalMemory );
-        } else {
+        }
+        else
+        {
             GlobalDiscard ( hGlobalMemory );
             MessageBox (
                 HwndMain,
                 "Error locking global memory handle!",
                 copyError,
-                MB_ICONERROR | MB_OK 
+                MB_ICONERROR | MB_OK
             );
 
             result = false;
         }
-    } else {
+    }
+    else
+    {
         MessageBox (
             HwndMain,
             "Error allocating global memory handle!",
             copyError,
-            MB_ICONERROR | MB_OK 
+            MB_ICONERROR | MB_OK
         );
 
         result = false;
@@ -2031,7 +2107,11 @@ static bool CopyGameListing()
         {
             char far *a = globalPtr;
             const char far *b = buffer;
-            do { *a++ = *b; } while ( *b++ );
+            do
+            {
+                *a++ = *b;
+            }
+            while ( *b++ );
             GlobalUnlock (hGlobalMemory);
             EmptyClipboard();
             SetClipboardData ( CF_TEXT, hGlobalMemory );
@@ -2208,7 +2288,7 @@ static void UpdateAnalysisDisplay ()
 
 
 static void DisplayGameReportText(
-    HWND hwnd, 
+    HWND hwnd,
     const ChessUI_win32_gui::gameReport& report)
 {
     const char *message = CHESS_PROGRAM_NAME;
@@ -2216,74 +2296,74 @@ static void DisplayGameReportText(
 
     switch (report.winner)
     {
-        case SIDE_WHITE:
-            if (report.resignation)
+    case SIDE_WHITE:
+        if (report.resignation)
+        {
+            switch (report.quitReason)
             {
-                switch (report.quitReason)
-                {
-                    case qgr_lostConnection:
-                        message = CHESS_PROGRAM_NAME " - Lost connection to Black";
-                        brief = "Lost connection!";
-                        break;
+            case qgr_lostConnection:
+                message = CHESS_PROGRAM_NAME " - Lost connection to Black";
+                brief = "Lost connection!";
+                break;
 
-                    case qgr_startNewGame:
-                        // Leave messages blank
-                        break;
+            case qgr_startNewGame:
+                // Leave messages blank
+                break;
 
-                    case qgr_resign:
-                    default:
-                        message = CHESS_PROGRAM_NAME " - Black resigns";
-                        brief = "Black resigns";
-                        break;
-                }
+            case qgr_resign:
+            default:
+                message = CHESS_PROGRAM_NAME " - Black resigns";
+                brief = "Black resigns";
+                break;
             }
-            else
+        }
+        else
+        {
+            message = CHESS_PROGRAM_NAME " - White wins";
+            brief = "White wins";
+        }
+        break;
+
+    case SIDE_BLACK:
+        if (report.resignation)
+        {
+            switch (report.quitReason)
             {
-                message = CHESS_PROGRAM_NAME " - White wins";
-                brief = "White wins";
+            case qgr_lostConnection:
+                message = CHESS_PROGRAM_NAME " - Lost connection to White";
+                brief = "Lost connection!";
+                break;
+
+            case qgr_startNewGame:
+                // Leave messages blank
+                break;
+
+            case qgr_resign:
+            default:
+                message = CHESS_PROGRAM_NAME " - White resigns";
+                brief = "White resigns";
+                break;
             }
-            break;
+        }
+        else
+        {
+            message = CHESS_PROGRAM_NAME " - Black wins";
+            brief = "Black wins";
+        }
+        break;
 
-        case SIDE_BLACK:
-            if (report.resignation)
-            {
-                switch (report.quitReason)
-                {
-                    case qgr_lostConnection:
-                        message = CHESS_PROGRAM_NAME " - Lost connection to White";
-                        brief = "Lost connection!";
-                        break;
+    case SIDE_NEITHER:
+        message = CHESS_PROGRAM_NAME " - This game is a draw";
+        brief = "Drawn game";
+        break;
 
-                    case qgr_startNewGame:
-                        // Leave messages blank
-                        break;
-
-                    case qgr_resign:
-                    default:
-                        message = CHESS_PROGRAM_NAME " - White resigns";
-                        brief = "White resigns";
-                        break;
-                }
-            }
-            else
-            {
-                message = CHESS_PROGRAM_NAME " - Black wins";
-                brief = "Black wins";
-            }
-            break;
-
-        case SIDE_NEITHER:
-            message = CHESS_PROGRAM_NAME " - This game is a draw";
-            brief = "Drawn game";
-            break;
-
-        default:
-            message = CHESS_PROGRAM_NAME " - !!! I'm confused !!!";
-            brief = "? ? ?";
-            break;
+    default:
+        message = CHESS_PROGRAM_NAME " - !!! I'm confused !!!";
+        brief = "? ? ?";
+        break;
     }
 
-    if ( !Global_EnableGA && !Global_EnableEndgameDatabaseGen ) 
+    if ( !Global_EnableGA && !Global_EnableEndgameDatabaseGen )
     {
         SetWindowText(hwnd, message);
         ChessDisplayTextBuffer::SetText(STATIC_ID_GAME_RESULT, brief);
@@ -2297,7 +2377,7 @@ void UpdateGameStateText(ChessBoard& board)
     {
         if (board.IsDefiniteDraw())
         {
-            if (!Global_EnableGA && !Global_EnableEndgameDatabaseGen) 
+            if (!Global_EnableGA && !Global_EnableEndgameDatabaseGen)
             {
                 SetWindowText(HwndMain, CHESS_PROGRAM_NAME " - Drawn game");
                 ChessDisplayTextBuffer::SetText(STATIC_ID_GAME_RESULT, "Drawn game");
@@ -2334,7 +2414,7 @@ void UpdateGameStateText(ChessBoard& board)
             brief = "Stalemate";
         }
 
-        if (!Global_EnableGA && !Global_EnableEndgameDatabaseGen) 
+        if (!Global_EnableGA && !Global_EnableEndgameDatabaseGen)
         {
             SetWindowText(HwndMain, message);
             ChessDisplayTextBuffer::SetText(STATIC_ID_GAME_RESULT, brief);
@@ -2347,7 +2427,7 @@ void UpdateGameStateText(bool whiteToMove)
     // Update the title bar to reflect whose turn it is.
     SetWindowText (
         HwndMain,
-        whiteToMove ? TitleBarText_WhitesTurn : TitleBarText_BlacksTurn 
+        whiteToMove ? TitleBarText_WhitesTurn : TitleBarText_BlacksTurn
     );
 
     // The game is still going, so clear any prior end-of-game text
@@ -2368,809 +2448,676 @@ LRESULT CALLBACK ChessWndProc (
 
     switch ( msg )
     {
-        case WM_INITMENU:
-            CheckHumanMoveState ( insideHumanMove );
-            break;
-
-        case WM_TIMER:
-        {
-#ifdef CHENARD_PROFILER
-            if ( wparam == 1 )   // make sure it's really our timer
-                ++ProfilerHitCount[ProfilerIndex];
-#endif
-            if ( wparam == 2 )   // analysis display update timer
-                UpdateAnalysisDisplay ();
-        }
+    case WM_INITMENU:
+        CheckHumanMoveState ( insideHumanMove );
         break;
 
-        case WM_CLOSE:
-        {
-    #if 0
-            if ( Global_GameModifiedFlag )
-            {
-                int choice = MessageBox (
-                    hwnd,
-                    "Changes to game will be lost - do you really want to quit?",
-                    ChessProgramName,
-                    MB_ICONQUESTION | MB_YESNO );
+    case WM_TIMER:
+    {
+#ifdef CHENARD_PROFILER
+        if ( wparam == 1 )   // make sure it's really our timer
+            ++ProfilerHitCount[ProfilerIndex];
+#endif
+        if ( wparam == 2 )   // analysis display update timer
+            UpdateAnalysisDisplay ();
+    }
+    break;
 
-                if ( choice == IDNO )
-                    break;   // Don't exit the program after all.
-            }
-    #endif
+    case WM_CLOSE:
+    {
+#if 0
+        if ( Global_GameModifiedFlag )
+        {
+            int choice = MessageBox (
+                             hwnd,
+                             "Changes to game will be lost - do you really want to quit?",
+                             ChessProgramName,
+                             MB_ICONQUESTION | MB_YESNO );
+
+            if ( choice == IDNO )
+                break;   // Don't exit the program after all.
+        }
+#endif
 
 #if SUPPORT_INTERNET
-            if ( Global_NetworkInit )
-            {
-                WSACleanup();
-                Global_NetworkInit = false;
-            }
+        if ( Global_NetworkInit )
+        {
+            WSACleanup();
+            Global_NetworkInit = false;
+        }
 #endif
 
-            PostMessage ( hwnd, WM_QUIT, 0, 0 );
+        PostMessage ( hwnd, WM_QUIT, 0, 0 );
+    }
+    break;
+
+    case WM_CREATE:
+    {
+        if ( !DefinePlayerDialog(hwnd) )
+        {
+            Global_AbortFlag = true;
+        }
+        else
+        {
+            const int textSep = 2;
+            const int textHeight = 12;
+            const int textWidth = 8;
+
+            ChessDisplayTextBuffer *tb = new ChessDisplayTextBuffer (
+                hwnd, STATIC_ID_WHITES_MOVE, CHESS_BOARD_BORDER_DX, 0,
+                ChessDisplayTextBuffer::margin_bottom, ANSI_VAR_FONT );
+
+            tb = new ChessDisplayTextBuffer (
+                hwnd, STATIC_ID_BLACKS_MOVE, 170, 0,
+                ChessDisplayTextBuffer::margin_bottom, ANSI_VAR_FONT );
+
+            tb = new ChessDisplayTextBuffer (
+                hwnd, STATIC_ID_THINKING, SQUARE_SCREENX1(8) - 8*textWidth, 0,
+                ChessDisplayTextBuffer::margin_bottom, ANSI_VAR_FONT );
+
+            int textY = 8;
+            int textID;
+            int depth = 0;
+            for ( textID = FIRST_RIGHT_TEXTID;
+                    textID <= LAST_RIGHT_TEXTID;
+                    textID++, depth++ )
+            {
+                // Creating the object puts it in the class's list of instances
+                tb = new ChessDisplayTextBuffer (
+                    hwnd, textID, 0, textY,
+                    ChessDisplayTextBuffer::margin_right, ANSI_FIXED_FONT,
+                    (textID>=STATIC_ID_BESTPATH(0)) ? (depth & 1) : 0 );
+
+                textY += (textHeight + textSep);
+            }
+
+            for ( textID = STATIC_ID_ADHOC1; textID <= STATIC_ID_ADHOC2; ++textID )
+            {
+                tb = new ChessDisplayTextBuffer (
+                    hwnd, textID, 0, textY,
+                    ChessDisplayTextBuffer::margin_right, ANSI_FIXED_FONT, 0 );
+
+                textY += (textHeight + textSep);
+            }
+
+            char coordString [2] = {0, 0};
+            for ( int coord = 0; coord < 8; ++coord )
+            {
+                tb = new ChessDisplayTextBuffer (
+                    hwnd, STATIC_ID_COORD_RANK_BASE + coord,
+                    0,  // x-coord will be calculated later by RepositionAll()
+                    0,  // same for y-coord
+                    ChessDisplayTextBuffer::margin_rank,
+                    ANSI_VAR_FONT, 1 );
+
+                coordString[0] = '1' + coord;
+                tb->setText ( coordString );
+
+                tb = new ChessDisplayTextBuffer (
+                    hwnd, STATIC_ID_COORD_FILE_BASE + coord,
+                    0,  // x-coord will be calculated later by RepositionAll()
+                    0,  // same for y-coord
+                    ChessDisplayTextBuffer::margin_file,
+                    ANSI_VAR_FONT, 1 );
+
+                coordString[0] = 'a' + coord;
+                tb->setText ( coordString );
+            }
+
+            // Create text buffer for displaying the result of the game,
+            // e.g. "White Wins", "Black Wins", "Draw".
+            // Most of the time it will contain an empty string.
+            tb = new ChessDisplayTextBuffer (
+                hwnd,
+                STATIC_ID_GAME_RESULT,
+                0,  // x-coord will be calculated later by RepositionAll()
+                0,  // same for y-coord
+                ChessDisplayTextBuffer::margin_center,
+                0,    // HACK:  use large font
+                1,
+                false   // transparent background
+            );
+
+            // Use a special color for game result text...
+            tb->setColorOverride(RGB(0xf0, 0x20, 0x20));
+
+            // Create text buffer for displaying blunder analysis
+            tb = new ChessDisplayTextBuffer(
+                hwnd,
+                STATIC_ID_BLUNDER_ANALYSIS,
+                0,  // x-coord calculated by RepositionAll()
+                0,  // y-coord calculated by RepositionAll()
+                ChessDisplayTextBuffer::margin_blunderAnalysis,
+                ANSI_VAR_FONT
+            );
+
+            // Make blunder line somewhat reddish color...
+            tb->setColorOverride(RGB(0xff, 0xb0, 0x00));
+
+            // Create text buffer for display "better move" analysis when blunder is detected.
+            tb = new ChessDisplayTextBuffer(
+                hwnd,
+                STATIC_ID_BETTER_ANALYSIS,
+                0,  // x-coord calculated by RepositionAll()
+                0,  // y-coord calculated by RepositionAll()
+                ChessDisplayTextBuffer::margin_betterAnalysis,
+                ANSI_VAR_FONT,
+                1   // highlight yellow
+            );
+
+            ChessDisplayTextBuffer::RepositionAll();
+        }
+    }
+    break;
+
+    case WM_UPDATE_CHESS_WINDOW_SIZE:
+        SetChessWindowSize(hwnd, (Global_AnalysisType != 0));
+        break;
+
+    case WM_COMMAND:   // Mostly handles program's menus
+    {
+        switch ( LOWORD(wparam) )
+        {
+        case ID_CHENARD_FILE_NEW:
+            Global_ResetGameFlag = true;
+            break;
+
+        case ID_CHENARD_FILE_OPEN:
+            Chenard_FileOpen();
+            break;
+
+        case ID_CHENARD_FILE_SAVE:
+            Chenard_FileSave();
+            break;
+
+        case ID_CHENARD_FILE_SAVEAS:
+            Chenard_FileSaveAs();
+            break;
+
+        case ID_CHENARD_FILE_EXIT:
+            SendMessage ( hwnd, WM_CLOSE, 0, 0 );
+            break;
+
+        case ID_EDIT_CLEARBOARD:
+            Global_ClearBoardFlag = true;
+            break;
+
+        case ID_EDIT_REDOMOVE:
+            Global_RedoMoveFlag = true;
+            break;
+
+        case ID_EDIT_UNDOMOVE:
+            Global_UndoMoveFlag = true;
+            break;
+
+        case ID_EDIT_EDITMODE:
+        {
+            int editMode = GetMenuState ( HmenuMain, ID_EDIT_EDITMODE, MF_BYCOMMAND );
+            editMode = (editMode ^ MF_CHECKED) & MF_CHECKED;
+            CheckMenuItem ( HmenuMain, ID_EDIT_EDITMODE, editMode | MF_BYCOMMAND );
         }
         break;
 
-        case WM_CREATE:
+        case ID_EDIT_COPYGAMELISTING:
         {
-            if ( !DefinePlayerDialog(hwnd) )
+            if ( CopyGameListing() )
             {
-                Global_AbortFlag = true;
+                MessageBox (
+                    hwnd,
+                    "A text listing of the game has been copied to the clipboard.\n"
+                    "You can now paste the listing into a text editor, word processor, etc.",
+                    CHESS_PROGRAM_NAME,
+                    MB_ICONINFORMATION | MB_OK );
+            }
+        }
+        break;
+
+        case ID_HELP_VISITCHENARDWEBPAGE:
+        {
+            ShellExecute (NULL, "open", "http://cosinekitty.com/chenard/", NULL, NULL, SW_SHOWNORMAL);
+        }
+        break;
+
+        case ID_EDIT_COPY_FEN:
+        {
+            if (CopyForsythEdwardsNotation())
+            {
+                MessageBox (
+                    hwnd,
+                    "The Forsyth-Edwards Notation (FEN) for the current "
+                    "board position has been copied to the clipboard.",
+                    CHESS_PROGRAM_NAME,
+                    MB_ICONINFORMATION | MB_OK
+                );
+            }
+        }
+        break;
+
+        case ID_VIEW_ROTATEBOARD:
+            TheBoardDisplayBuffer.toggleView();
+            TheBoardDisplayBuffer.updateAlgebraicCoords();
+            TheBoardDisplayBuffer.freshenBoard();
+            break;
+
+        case ID_VIEW_FRESHEN:
+            TheBoardDisplayBuffer.freshenBoard();
+            break;
+
+        case ID_VIEW_PIECESTYLE_ORIGINAL:
+        {
+            CheckMenuItem ( HmenuMain, ID_VIEW_PIECESTYLE_ORIGINAL, MF_CHECKED );
+            CheckMenuItem ( HmenuMain, ID_VIEW_PIECESTYLE_TILBURG,  MF_UNCHECKED );
+            CheckMenuItem ( HmenuMain, ID_VIEW_PIECESTYLE_SKAK,     MF_UNCHECKED );
+            if ( TheBoardDisplayBuffer.queryPieceFont() != PIECE_FONT_ORIGINAL )
+            {
+                TheBoardDisplayBuffer.changePieceFont (PIECE_FONT_ORIGINAL);
+                ChessDisplayTextBuffer::RepositionAll();
+                SetChessWindowSize ( hwnd, (Global_AnalysisType != 0) );
+                TheBoardDisplayBuffer.freshenBoard();
+            }
+        }
+        break;
+
+        case ID_DUMP_XPOS_TABLE:
+        {
+            if (ComputerChessPlayer::XposTable)
+            {
+                const char *dumpFilename = "xposdump.txt";
+                ComputerChessPlayer::XposTable->debugDump ( dumpFilename );
+                sprintf ( buffer,
+                          "Transposition table has been dumped to file '%s'",
+                          dumpFilename );
             }
             else
             {
-                const int textSep = 2;
-                const int textHeight = 12;
-                const int textWidth = 8;
+                strcpy(buffer, "Transposition table is NULL.");
+            }
 
-                ChessDisplayTextBuffer *tb = new ChessDisplayTextBuffer (
-                    hwnd, STATIC_ID_WHITES_MOVE, CHESS_BOARD_BORDER_DX, 0,
-                    ChessDisplayTextBuffer::margin_bottom, ANSI_VAR_FONT );
+            MessageBox ( hwnd, buffer, CHESS_PROGRAM_NAME, MB_ICONINFORMATION | MB_OK );
+        }
+        break;
 
-                tb = new ChessDisplayTextBuffer (
-                    hwnd, STATIC_ID_BLACKS_MOVE, 170, 0,
-                    ChessDisplayTextBuffer::margin_bottom, ANSI_VAR_FONT );
-
-                tb = new ChessDisplayTextBuffer (
-                    hwnd, STATIC_ID_THINKING, SQUARE_SCREENX1(8) - 8*textWidth, 0,
-                    ChessDisplayTextBuffer::margin_bottom, ANSI_VAR_FONT );
-
-                int textY = 8;
-                int textID;
-                int depth = 0;
-                for ( textID = FIRST_RIGHT_TEXTID;
-                   textID <= LAST_RIGHT_TEXTID;
-                   textID++, depth++ )
-                {
-                    // Creating the object puts it in the class's list of instances
-                    tb = new ChessDisplayTextBuffer (
-                        hwnd, textID, 0, textY,
-                        ChessDisplayTextBuffer::margin_right, ANSI_FIXED_FONT,
-                        (textID>=STATIC_ID_BESTPATH(0)) ? (depth & 1) : 0 );
-
-                    textY += (textHeight + textSep);
-                }
-
-                for ( textID = STATIC_ID_ADHOC1; textID <= STATIC_ID_ADHOC2; ++textID )
-                {
-                    tb = new ChessDisplayTextBuffer (
-                        hwnd, textID, 0, textY,
-                        ChessDisplayTextBuffer::margin_right, ANSI_FIXED_FONT, 0 );
-
-                    textY += (textHeight + textSep);
-                }
-
-                char coordString [2] = {0, 0};
-                for ( int coord = 0; coord < 8; ++coord )
-                {
-                    tb = new ChessDisplayTextBuffer (
-                        hwnd, STATIC_ID_COORD_RANK_BASE + coord,
-                        0,  // x-coord will be calculated later by RepositionAll()
-                        0,  // same for y-coord
-                        ChessDisplayTextBuffer::margin_rank,
-                        ANSI_VAR_FONT, 1 );
-
-                    coordString[0] = '1' + coord;
-                    tb->setText ( coordString );
-
-                    tb = new ChessDisplayTextBuffer (
-                        hwnd, STATIC_ID_COORD_FILE_BASE + coord,
-                        0,  // x-coord will be calculated later by RepositionAll()
-                        0,  // same for y-coord
-                        ChessDisplayTextBuffer::margin_file,
-                        ANSI_VAR_FONT, 1 );
-
-                    coordString[0] = 'a' + coord;
-                    tb->setText ( coordString );
-                }
-
-                // Create text buffer for displaying the result of the game,
-                // e.g. "White Wins", "Black Wins", "Draw".
-                // Most of the time it will contain an empty string.
-                tb = new ChessDisplayTextBuffer (
-                    hwnd,
-                    STATIC_ID_GAME_RESULT,
-                    0,  // x-coord will be calculated later by RepositionAll()
-                    0,  // same for y-coord
-                    ChessDisplayTextBuffer::margin_center,
-                    0,    // HACK:  use large font
-                    1,
-                    false   // transparent background
-                );
-
-                // Use a special color for game result text...
-                tb->setColorOverride(RGB(0xf0, 0x20, 0x20));
-
-                // Create text buffer for displaying blunder analysis
-                tb = new ChessDisplayTextBuffer(
-                    hwnd,
-                    STATIC_ID_BLUNDER_ANALYSIS,
-                    0,  // x-coord calculated by RepositionAll()
-                    0,  // y-coord calculated by RepositionAll()
-                    ChessDisplayTextBuffer::margin_blunderAnalysis,
-                    ANSI_VAR_FONT
-                );
-
-                // Make blunder line somewhat reddish color...
-                tb->setColorOverride(RGB(0xff, 0xb0, 0x00));
-
-                // Create text buffer for display "better move" analysis when blunder is detected.
-                tb = new ChessDisplayTextBuffer(
-                    hwnd,
-                    STATIC_ID_BETTER_ANALYSIS,
-                    0,  // x-coord calculated by RepositionAll()
-                    0,  // y-coord calculated by RepositionAll()
-                    ChessDisplayTextBuffer::margin_betterAnalysis,
-                    ANSI_VAR_FONT,
-                    1   // highlight yellow
-                );
-
+        case ID_VIEW_PIECESTYLE_TILBURG:
+        {
+            CheckMenuItem ( HmenuMain, ID_VIEW_PIECESTYLE_ORIGINAL, MF_UNCHECKED );
+            CheckMenuItem ( HmenuMain, ID_VIEW_PIECESTYLE_TILBURG,  MF_CHECKED );
+            CheckMenuItem ( HmenuMain, ID_VIEW_PIECESTYLE_SKAK,     MF_UNCHECKED );
+            if ( TheBoardDisplayBuffer.queryPieceFont() != PIECE_FONT_TILBURG )
+            {
+                TheBoardDisplayBuffer.changePieceFont (PIECE_FONT_TILBURG);
                 ChessDisplayTextBuffer::RepositionAll();
+                SetChessWindowSize ( hwnd, (Global_AnalysisType != 0) );
+                TheBoardDisplayBuffer.freshenBoard();
             }
         }
         break;
 
-        case WM_UPDATE_CHESS_WINDOW_SIZE:
-            SetChessWindowSize(hwnd, (Global_AnalysisType != 0));
-            break;
-
-        case WM_COMMAND:   // Mostly handles program's menus
+        case ID_VIEW_PIECESTYLE_SKAK:
         {
-            switch ( LOWORD(wparam) )
+            CheckMenuItem ( HmenuMain, ID_VIEW_PIECESTYLE_ORIGINAL, MF_UNCHECKED );
+            CheckMenuItem ( HmenuMain, ID_VIEW_PIECESTYLE_TILBURG,  MF_UNCHECKED );
+            CheckMenuItem ( HmenuMain, ID_VIEW_PIECESTYLE_SKAK,     MF_CHECKED );
+            if ( TheBoardDisplayBuffer.queryPieceFont() != PIECE_FONT_SKAK )
             {
-                case ID_CHENARD_FILE_NEW:
-                    Global_ResetGameFlag = true;
-                    break;
+                TheBoardDisplayBuffer.changePieceFont (PIECE_FONT_SKAK);
+                ChessDisplayTextBuffer::RepositionAll();
+                SetChessWindowSize ( hwnd, (Global_AnalysisType != 0) );
+                TheBoardDisplayBuffer.freshenBoard();
+            }
+        }
+        break;
 
-                case ID_CHENARD_FILE_OPEN:
-                    Chenard_FileOpen();
-                    break;
+        case ID_VIEW_SMALLBOARD:
+        {
+            CheckMenuItem ( HmenuMain, ID_VIEW_SMALLBOARD,  MF_CHECKED );
+            CheckMenuItem ( HmenuMain, ID_VIEW_MEDIUMBOARD, MF_UNCHECKED );
+            CheckMenuItem ( HmenuMain, ID_VIEW_LARGEBOARD,  MF_UNCHECKED );
+            NewBoardSize ( 0 );
+            ChessDisplayTextBuffer::RepositionAll();
+            SetChessWindowSize ( hwnd, (Global_AnalysisType != 0) );
+        }
+        break;
 
-                case ID_CHENARD_FILE_SAVE:
-                    Chenard_FileSave();
-                    break;
+        case ID_VIEW_MEDIUMBOARD:
+        {
+            CheckMenuItem ( HmenuMain, ID_VIEW_SMALLBOARD,  MF_UNCHECKED );
+            CheckMenuItem ( HmenuMain, ID_VIEW_MEDIUMBOARD, MF_CHECKED );
+            CheckMenuItem ( HmenuMain, ID_VIEW_LARGEBOARD,  MF_UNCHECKED );
+            NewBoardSize ( 1 );
+            ChessDisplayTextBuffer::RepositionAll();
+            SetChessWindowSize ( hwnd, (Global_AnalysisType != 0) );
+        }
+        break;
 
-                case ID_CHENARD_FILE_SAVEAS:
-                    Chenard_FileSaveAs();
-                    break;
+        case ID_VIEW_LARGEBOARD:
+        {
+            CheckMenuItem ( HmenuMain, ID_VIEW_SMALLBOARD,  MF_UNCHECKED );
+            CheckMenuItem ( HmenuMain, ID_VIEW_MEDIUMBOARD, MF_UNCHECKED );
+            CheckMenuItem ( HmenuMain, ID_VIEW_LARGEBOARD,  MF_CHECKED );
+            NewBoardSize ( 2 );
+            ChessDisplayTextBuffer::RepositionAll();
+            SetChessWindowSize ( hwnd, (Global_AnalysisType != 0) );
+        }
+        break;
 
-                case ID_CHENARD_FILE_EXIT:
-                    SendMessage ( hwnd, WM_CLOSE, 0, 0 );
-                    break;
+        case ID_VIEW_ANALYSIS_NONE:
+        {
+            CheckMenuItem ( HmenuMain, ID_VIEW_ANALYSIS_NONE, MF_CHECKED | MF_BYCOMMAND );
+            CheckMenuItem ( HmenuMain, ID_VIEW_ANALYSIS_BESTPATH, MF_UNCHECKED | MF_BYCOMMAND );
+            CheckMenuItem ( HmenuMain, ID_VIEW_ANALYSIS_CURRENTPATH, MF_UNCHECKED | MF_BYCOMMAND );
+            Global_AnalysisType = 0;
+            ChessDisplayTextBuffer::RepositionAll();
+            SetChessWindowSize ( hwnd, (Global_AnalysisType != 0) );
+        }
+        break;
 
-                case ID_EDIT_CLEARBOARD:
-                    Global_ClearBoardFlag = true;
-                    break;
+        case ID_VIEW_ANALYSIS_BESTPATH:
+        {
+            CheckMenuItem ( HmenuMain, ID_VIEW_ANALYSIS_NONE, MF_UNCHECKED | MF_BYCOMMAND );
+            CheckMenuItem ( HmenuMain, ID_VIEW_ANALYSIS_BESTPATH, MF_CHECKED | MF_BYCOMMAND );
+            CheckMenuItem ( HmenuMain, ID_VIEW_ANALYSIS_CURRENTPATH, MF_UNCHECKED | MF_BYCOMMAND );
+            Global_AnalysisType = 1;
+            ChessDisplayTextBuffer::RepositionAll();
+            SetChessWindowSize ( hwnd, (Global_AnalysisType != 0) );
+        }
+        break;
 
-                case ID_EDIT_REDOMOVE:
-                    Global_RedoMoveFlag = true;
-                    break;
+        case ID_VIEW_ANALYSIS_CURRENTPATH:
+        {
+            CheckMenuItem ( HmenuMain, ID_VIEW_ANALYSIS_NONE, MF_UNCHECKED | MF_BYCOMMAND );
+            CheckMenuItem ( HmenuMain, ID_VIEW_ANALYSIS_BESTPATH, MF_UNCHECKED | MF_BYCOMMAND );
+            CheckMenuItem ( HmenuMain, ID_VIEW_ANALYSIS_CURRENTPATH, MF_CHECKED | MF_BYCOMMAND );
+            Global_AnalysisType = 2;
+            ChessDisplayTextBuffer::RepositionAll();
+            SetChessWindowSize ( hwnd, (Global_AnalysisType != 0) );
+        }
+        break;
 
-                case ID_EDIT_UNDOMOVE:
-                    Global_UndoMoveFlag = true;
-                    break;
+        case ID_ANIMATE:
+        {
+            int animateFlag = GetMenuState ( HmenuMain, ID_ANIMATE, MF_BYCOMMAND );
+            animateFlag = (animateFlag ^ MF_CHECKED) & MF_CHECKED;
+            Global_AnimateMoves = animateFlag ? true : false;
+            CheckMenuItem ( HmenuMain, ID_ANIMATE, animateFlag | MF_BYCOMMAND );
+        }
+        break;
 
-                case ID_EDIT_EDITMODE:
+        case ID_GAME_OPPTIME:
+        {
+            int oppTimeFlag = GetMenuState ( HmenuMain, ID_GAME_OPPTIME, MF_BYCOMMAND );
+            oppTimeFlag = (oppTimeFlag ^ MF_CHECKED) & MF_CHECKED;
+            Global_EnableOppTime = oppTimeFlag ? true : false;
+            CheckMenuItem ( HmenuMain, ID_GAME_OPPTIME, oppTimeFlag | MF_BYCOMMAND );
+
+            if (!Global_EnableOppTime)
+            {
+                // Immediately abort any pondering that might be in progress.
+                if (Global_UI)
                 {
-                    int editMode = GetMenuState ( HmenuMain, ID_EDIT_EDITMODE, MF_BYCOMMAND );
-                    editMode = (editMode ^ MF_CHECKED) & MF_CHECKED;
-                    CheckMenuItem ( HmenuMain, ID_EDIT_EDITMODE, editMode | MF_BYCOMMAND );
+                    Global_UI->oppTime_abortSearch();
                 }
-                break;
+            }
+        }
+        break;
 
-                case ID_EDIT_COPYGAMELISTING:
+        case ID_HIGHLIGHT_MOVE:
+        {
+            int hiliteFlag = GetMenuState ( HmenuMain, ID_HIGHLIGHT_MOVE, MF_BYCOMMAND );
+            hiliteFlag = (hiliteFlag ^ MF_CHECKED) & MF_CHECKED;
+            Global_HiliteMoves = hiliteFlag ? true : false;
+            CheckMenuItem ( HmenuMain, ID_HIGHLIGHT_MOVE, hiliteFlag | MF_BYCOMMAND );
+        }
+        break;
+
+        case ID_VIEW_SPEAKMOVESTHROUGHSOUNDCARD:
+        {
+            int speak = GetMenuState ( HmenuMain, ID_VIEW_SPEAKMOVESTHROUGHSOUNDCARD, MF_BYCOMMAND );
+            speak = (speak ^ MF_CHECKED) & MF_CHECKED;
+            if ( speak )
+            {
+                if ( WaveFilesExist() )
                 {
-                    if ( CopyGameListing() )
-                    {
-                        MessageBox ( 
-                            hwnd,
-                            "A text listing of the game has been copied to the clipboard.\n"
-                            "You can now paste the listing into a text editor, word processor, etc.",
-                            CHESS_PROGRAM_NAME,
-                            MB_ICONINFORMATION | MB_OK );
-                    }
+                    Global_SpeakMovesFlag = true;
                 }
-                break;
-
-                case ID_HELP_VISITCHENARDWEBPAGE:
+                else
                 {
-                    ShellExecute (NULL, "open", "http://cosinekitty.com/chenard/", NULL, NULL, SW_SHOWNORMAL);
+                    Global_SpeakMovesFlag = false;
+                    speak = 0;
+
+                    MessageBox (
+                        HwndMain,
+                        "Chenard is unable to speak because "
+                        "one or more WAV files (audio recordings) are missing. "
+                        "Note that these files are distributed separately from "
+                        "this program due to their size and the fact that some people "
+                        "will not want to use this feature.\n\n"
+                        "Under the Help menu, choose \"Visit Chenard web page\", "
+                        "download chenwav.zip, and unzip its contents into the same directory "
+                        "where you saved this program (winchen.exe or winchen64.exe)."
+                        ,
+                        "Chenard: Cannot speak!",   // address of title of message box
+                        MB_ICONERROR | MB_OK );
                 }
-                break;
+            }
+            else
+            {
+                Global_SpeakMovesFlag = false;
+            }
+            CheckMenuItem ( HmenuMain, ID_VIEW_SPEAKMOVESTHROUGHSOUNDCARD, speak | MF_BYCOMMAND );
+        }
+        break;
 
-                case ID_EDIT_COPY_FEN:
+        case ID_VIEW_ANNOUNCEMATE:
+        {
+            int announce = GetMenuState (HmenuMain, ID_VIEW_ANNOUNCEMATE, MF_BYCOMMAND);
+            announce = (announce ^ MF_CHECKED) & MF_CHECKED;    // toggle
+            Global_EnableMateAnnounce = (announce != 0);
+            if (Global_UI)
+            {
+                Global_UI->allowMateAnnounce (Global_EnableMateAnnounce);
+            }
+            CheckMenuItem (HmenuMain, ID_VIEW_ANNOUNCEMATE, announce | MF_BYCOMMAND);
+        }
+        break;
+
+        case ID_GAME_FORCEMOVE:
+        {
+            if ( Global_UI )
+                Global_UI->forceMove();
+        }
+        break;
+
+        case ID_GAME_SUGGEST:
+        {
+            extern bool Global_SuggestMoveFlag;
+            Global_SuggestMoveFlag = true;
+        }
+        break;
+
+        case ID_GAME_SUGGESTAGAIN:
+        {
+            extern bool Global_RepeatSuggestMoveFlag;
+            Global_RepeatSuggestMoveFlag = true;
+        }
+        break;
+
+        case ID_GAME_TACTICALBENCHMARK:
+        {
+            Global_TacticalBenchmarkFlag = true;
+        }
+        break;
+
+        case ID_GAME_ALLOWEXTENDEDSEARCH:
+        {
+            if ( Global_UI )
+            {
+                int flag = GetMenuState ( HmenuMain, ID_GAME_ALLOWEXTENDEDSEARCH, MF_BYCOMMAND );
+                flag = (flag ^ MF_CHECKED) & MF_CHECKED;
+                Global_ExtendedSearch = flag ? true : false;
+                CheckMenuItem ( HmenuMain, ID_GAME_ALLOWEXTENDEDSEARCH, flag | MF_BYCOMMAND );
+                MessageBox ( HwndMain,
+                             Global_ExtendedSearch ?
+                             "The computer will now think longer when it thinks it was about to make a mistake." :
+                             "The computer will now use no more than its allowed think time.",
+                             CHESS_PROGRAM_NAME,
+                             MB_OK | MB_ICONINFORMATION );
+
+                if ( Global_UI->queryWhitePlayerType() == DefPlayerInfo::computerPlayer )
                 {
-                    if (CopyForsythEdwardsNotation()) {
-                        MessageBox (
-                            hwnd,
-                            "The Forsyth-Edwards Notation (FEN) for the current "
-                            "board position has been copied to the clipboard.",
-                            CHESS_PROGRAM_NAME,
-                            MB_ICONINFORMATION | MB_OK 
-                        );
-                    }
+                    ComputerChessPlayer *puter =
+                        (ComputerChessPlayer *)Global_UI->queryWhitePlayer();
+
+                    if ( puter )
+                        puter->setExtendedSearchFlag ( Global_ExtendedSearch );
                 }
-                break;
 
-                case ID_VIEW_ROTATEBOARD:
-                    TheBoardDisplayBuffer.toggleView();
-                    TheBoardDisplayBuffer.updateAlgebraicCoords();
-                    TheBoardDisplayBuffer.freshenBoard();
-                    break;
-
-                case ID_VIEW_FRESHEN:
-                    TheBoardDisplayBuffer.freshenBoard();
-                    break;
-
-                case ID_VIEW_PIECESTYLE_ORIGINAL:
+                if ( Global_UI->queryBlackPlayerType() == DefPlayerInfo::computerPlayer )
                 {
-                    CheckMenuItem ( HmenuMain, ID_VIEW_PIECESTYLE_ORIGINAL, MF_CHECKED );
-                    CheckMenuItem ( HmenuMain, ID_VIEW_PIECESTYLE_TILBURG,  MF_UNCHECKED );
-                    CheckMenuItem ( HmenuMain, ID_VIEW_PIECESTYLE_SKAK,     MF_UNCHECKED );
-                    if ( TheBoardDisplayBuffer.queryPieceFont() != PIECE_FONT_ORIGINAL )
-                    {
-                        TheBoardDisplayBuffer.changePieceFont (PIECE_FONT_ORIGINAL);
-                        ChessDisplayTextBuffer::RepositionAll();
-                        SetChessWindowSize ( hwnd, (Global_AnalysisType != 0) );
-                        TheBoardDisplayBuffer.freshenBoard();
-                    }
+                    ComputerChessPlayer *puter =
+                        (ComputerChessPlayer *)Global_UI->queryBlackPlayer();
+
+                    if ( puter )
+                        puter->setExtendedSearchFlag ( Global_ExtendedSearch );
                 }
-                break;
+            }
+        }
+        break;
 
-                case ID_DUMP_XPOS_TABLE:
+        case ID_GAME_AUTO_SINGULAR:
+        {
+            if ( Global_UI )
+            {
+                int flag = GetMenuState ( HmenuMain, ID_GAME_AUTO_SINGULAR, MF_BYCOMMAND );
+                flag = (flag ^ MF_CHECKED) & MF_CHECKED;
+                Global_AutoSingular = flag ? true : false;
+                CheckMenuItem ( HmenuMain, ID_GAME_AUTO_SINGULAR, flag | MF_BYCOMMAND );
+                MessageBox ( HwndMain,
+                             Global_AutoSingular ?
+                             "When you have only one legal move, it will be made for you." :
+                             "When you have only one legal move, you must manually make it.",
+                             CHESS_PROGRAM_NAME,
+                             MB_OK | MB_ICONINFORMATION );
+
+                if ( Global_UI->queryWhitePlayerType() == DefPlayerInfo::humanPlayer )
                 {
-                    if (ComputerChessPlayer::XposTable)
-                    {
-                        const char *dumpFilename = "xposdump.txt";
-                        ComputerChessPlayer::XposTable->debugDump ( dumpFilename );
-                        sprintf ( buffer, 
-                            "Transposition table has been dumped to file '%s'",
-                            dumpFilename );
-                    }
-                    else
-                    {
-                        strcpy(buffer, "Transposition table is NULL.");
-                    }
+                    HumanChessPlayer *human =
+                        (HumanChessPlayer *)Global_UI->queryWhitePlayer();
 
-                    MessageBox ( hwnd, buffer, CHESS_PROGRAM_NAME, MB_ICONINFORMATION | MB_OK );
+                    if ( human )
+                        human->setAutoSingular ( Global_AutoSingular );
                 }
-                break;
 
-                case ID_VIEW_PIECESTYLE_TILBURG:
+                if ( Global_UI->queryBlackPlayerType() == DefPlayerInfo::humanPlayer )
                 {
-                    CheckMenuItem ( HmenuMain, ID_VIEW_PIECESTYLE_ORIGINAL, MF_UNCHECKED );
-                    CheckMenuItem ( HmenuMain, ID_VIEW_PIECESTYLE_TILBURG,  MF_CHECKED );
-                    CheckMenuItem ( HmenuMain, ID_VIEW_PIECESTYLE_SKAK,     MF_UNCHECKED );
-                    if ( TheBoardDisplayBuffer.queryPieceFont() != PIECE_FONT_TILBURG )
-                    {
-                        TheBoardDisplayBuffer.changePieceFont (PIECE_FONT_TILBURG);
-                        ChessDisplayTextBuffer::RepositionAll();
-                        SetChessWindowSize ( hwnd, (Global_AnalysisType != 0) );
-                        TheBoardDisplayBuffer.freshenBoard();
-                    }
+                    HumanChessPlayer *human =
+                        (HumanChessPlayer *)Global_UI->queryBlackPlayer();
+
+                    if ( human )
+                        human->setAutoSingular ( Global_AutoSingular );
                 }
-                break;
+            }
+        }
+        break;
 
-                case ID_VIEW_PIECESTYLE_SKAK:
-                {
-                    CheckMenuItem ( HmenuMain, ID_VIEW_PIECESTYLE_ORIGINAL, MF_UNCHECKED );
-                    CheckMenuItem ( HmenuMain, ID_VIEW_PIECESTYLE_TILBURG,  MF_UNCHECKED );
-                    CheckMenuItem ( HmenuMain, ID_VIEW_PIECESTYLE_SKAK,     MF_CHECKED );
-                    if ( TheBoardDisplayBuffer.queryPieceFont() != PIECE_FONT_SKAK )
-                    {
-                        TheBoardDisplayBuffer.changePieceFont (PIECE_FONT_SKAK);
-                        ChessDisplayTextBuffer::RepositionAll();
-                        SetChessWindowSize ( hwnd, (Global_AnalysisType != 0) );
-                        TheBoardDisplayBuffer.freshenBoard();
-                    }
-                }
-                break;
+        case ID_GAME_ALLOWCOMPUTERTORESIGN:
+        {
+            int flag = GetMenuState ( HmenuMain, ID_GAME_ALLOWCOMPUTERTORESIGN, MF_BYCOMMAND );
+            flag = (flag ^ MF_CHECKED) & MF_CHECKED;
+            Global_AllowResignFlag = flag ? true : false;
+            CheckMenuItem ( HmenuMain, ID_GAME_ALLOWCOMPUTERTORESIGN, flag | MF_BYCOMMAND );
+        }
+        break;
 
-                case ID_VIEW_SMALLBOARD:
-                {
-                    CheckMenuItem ( HmenuMain, ID_VIEW_SMALLBOARD,  MF_CHECKED );
-                    CheckMenuItem ( HmenuMain, ID_VIEW_MEDIUMBOARD, MF_UNCHECKED );
-                    CheckMenuItem ( HmenuMain, ID_VIEW_LARGEBOARD,  MF_UNCHECKED );
-                    NewBoardSize ( 0 );
-                    ChessDisplayTextBuffer::RepositionAll();
-                    SetChessWindowSize ( hwnd, (Global_AnalysisType != 0) );
-                }
-                break;
-
-                case ID_VIEW_MEDIUMBOARD:
-                {
-                    CheckMenuItem ( HmenuMain, ID_VIEW_SMALLBOARD,  MF_UNCHECKED );
-                    CheckMenuItem ( HmenuMain, ID_VIEW_MEDIUMBOARD, MF_CHECKED );
-                    CheckMenuItem ( HmenuMain, ID_VIEW_LARGEBOARD,  MF_UNCHECKED );
-                    NewBoardSize ( 1 );
-                    ChessDisplayTextBuffer::RepositionAll();
-                    SetChessWindowSize ( hwnd, (Global_AnalysisType != 0) );
-                }
-                break;
-
-                case ID_VIEW_LARGEBOARD:
-                {
-                    CheckMenuItem ( HmenuMain, ID_VIEW_SMALLBOARD,  MF_UNCHECKED );
-                    CheckMenuItem ( HmenuMain, ID_VIEW_MEDIUMBOARD, MF_UNCHECKED );
-                    CheckMenuItem ( HmenuMain, ID_VIEW_LARGEBOARD,  MF_CHECKED );
-                    NewBoardSize ( 2 );
-                    ChessDisplayTextBuffer::RepositionAll();
-                    SetChessWindowSize ( hwnd, (Global_AnalysisType != 0) );
-                }
-                break;
-
-                case ID_VIEW_ANALYSIS_NONE:
-                {
-                    CheckMenuItem ( HmenuMain, ID_VIEW_ANALYSIS_NONE, MF_CHECKED | MF_BYCOMMAND );
-                    CheckMenuItem ( HmenuMain, ID_VIEW_ANALYSIS_BESTPATH, MF_UNCHECKED | MF_BYCOMMAND );
-                    CheckMenuItem ( HmenuMain, ID_VIEW_ANALYSIS_CURRENTPATH, MF_UNCHECKED | MF_BYCOMMAND );
-                    Global_AnalysisType = 0;
-                    ChessDisplayTextBuffer::RepositionAll();
-                    SetChessWindowSize ( hwnd, (Global_AnalysisType != 0) );
-                }
-                break;
-
-                case ID_VIEW_ANALYSIS_BESTPATH:
-                {
-                    CheckMenuItem ( HmenuMain, ID_VIEW_ANALYSIS_NONE, MF_UNCHECKED | MF_BYCOMMAND );
-                    CheckMenuItem ( HmenuMain, ID_VIEW_ANALYSIS_BESTPATH, MF_CHECKED | MF_BYCOMMAND );
-                    CheckMenuItem ( HmenuMain, ID_VIEW_ANALYSIS_CURRENTPATH, MF_UNCHECKED | MF_BYCOMMAND );
-                    Global_AnalysisType = 1;
-                    ChessDisplayTextBuffer::RepositionAll();
-                    SetChessWindowSize ( hwnd, (Global_AnalysisType != 0) );
-                }
-                break;
-
-                case ID_VIEW_ANALYSIS_CURRENTPATH:
-                {
-                    CheckMenuItem ( HmenuMain, ID_VIEW_ANALYSIS_NONE, MF_UNCHECKED | MF_BYCOMMAND );
-                    CheckMenuItem ( HmenuMain, ID_VIEW_ANALYSIS_BESTPATH, MF_UNCHECKED | MF_BYCOMMAND );
-                    CheckMenuItem ( HmenuMain, ID_VIEW_ANALYSIS_CURRENTPATH, MF_CHECKED | MF_BYCOMMAND );
-                    Global_AnalysisType = 2;
-                    ChessDisplayTextBuffer::RepositionAll();
-                    SetChessWindowSize ( hwnd, (Global_AnalysisType != 0) );
-                }
-                break;
-
-                case ID_ANIMATE:
-                {
-                    int animateFlag = GetMenuState ( HmenuMain, ID_ANIMATE, MF_BYCOMMAND );
-                    animateFlag = (animateFlag ^ MF_CHECKED) & MF_CHECKED;
-                    Global_AnimateMoves = animateFlag ? true : false;
-                    CheckMenuItem ( HmenuMain, ID_ANIMATE, animateFlag | MF_BYCOMMAND );
-                }
-                break;
-
-                case ID_GAME_OPPTIME:
-                {
-                    int oppTimeFlag = GetMenuState ( HmenuMain, ID_GAME_OPPTIME, MF_BYCOMMAND );
-                    oppTimeFlag = (oppTimeFlag ^ MF_CHECKED) & MF_CHECKED;
-                    Global_EnableOppTime = oppTimeFlag ? true : false;
-                    CheckMenuItem ( HmenuMain, ID_GAME_OPPTIME, oppTimeFlag | MF_BYCOMMAND );
-
-                    if (!Global_EnableOppTime)
-                    {
-                        // Immediately abort any pondering that might be in progress.
-                        if (Global_UI)
-                        {
-                            Global_UI->oppTime_abortSearch();
-                        }
-                    }
-                }
-                break;
-
-                case ID_HIGHLIGHT_MOVE:
-                {
-                    int hiliteFlag = GetMenuState ( HmenuMain, ID_HIGHLIGHT_MOVE, MF_BYCOMMAND );
-                    hiliteFlag = (hiliteFlag ^ MF_CHECKED) & MF_CHECKED;
-                    Global_HiliteMoves = hiliteFlag ? true : false;
-                    CheckMenuItem ( HmenuMain, ID_HIGHLIGHT_MOVE, hiliteFlag | MF_BYCOMMAND );
-                }
-                break;
-
-                case ID_VIEW_SPEAKMOVESTHROUGHSOUNDCARD:
-                {
-                    int speak = GetMenuState ( HmenuMain, ID_VIEW_SPEAKMOVESTHROUGHSOUNDCARD, MF_BYCOMMAND );
-                    speak = (speak ^ MF_CHECKED) & MF_CHECKED;
-                    if ( speak )
-                    {
-                        if ( WaveFilesExist() )
-                        {
-                            Global_SpeakMovesFlag = true;
-                        }
-                        else
-                        {
-                            Global_SpeakMovesFlag = false;
-                            speak = 0;
-                        
-                            MessageBox (
-                                HwndMain,
-"Chenard is unable to speak because "
-"one or more WAV files (audio recordings) are missing. "
-"Note that these files are distributed separately from "
-"this program due to their size and the fact that some people "
-"will not want to use this feature.\n\n"
-"Under the Help menu, choose \"Visit Chenard web page\", "
-"download chenwav.zip, and unzip its contents into the same directory "
-"where you saved this program (winchen.exe or winchen64.exe)."
-,
-                            "Chenard: Cannot speak!",   // address of title of message box  
-                            MB_ICONERROR | MB_OK );
-                        }
-                    }
-                    else
-                    {
-                        Global_SpeakMovesFlag = false;
-                    }
-                    CheckMenuItem ( HmenuMain, ID_VIEW_SPEAKMOVESTHROUGHSOUNDCARD, speak | MF_BYCOMMAND );
-                }
-                break;
-
-                case ID_VIEW_ANNOUNCEMATE:
-                {
-                    int announce = GetMenuState (HmenuMain, ID_VIEW_ANNOUNCEMATE, MF_BYCOMMAND);
-                    announce = (announce ^ MF_CHECKED) & MF_CHECKED;    // toggle
-                    Global_EnableMateAnnounce = (announce != 0);
-                    if (Global_UI) {
-                        Global_UI->allowMateAnnounce (Global_EnableMateAnnounce);
-                    }
-                    CheckMenuItem (HmenuMain, ID_VIEW_ANNOUNCEMATE, announce | MF_BYCOMMAND);
-                }
-                break;
-    
-                case ID_GAME_FORCEMOVE:
-                {
-                    if ( Global_UI )
-                        Global_UI->forceMove();
-                }
-                break;
-
-                case ID_GAME_SUGGEST:
-                {
-                    extern bool Global_SuggestMoveFlag;
-                    Global_SuggestMoveFlag = true;
-                }
-                break;
-
-                case ID_GAME_SUGGESTAGAIN:
-                {
-                    extern bool Global_RepeatSuggestMoveFlag;
-                    Global_RepeatSuggestMoveFlag = true;
-                }
-                break;
-
-                case ID_GAME_TACTICALBENCHMARK:
-                {
-                    Global_TacticalBenchmarkFlag = true;
-                }
-                break;
-
-                case ID_GAME_ALLOWEXTENDEDSEARCH:
-                {
-                    if ( Global_UI )
-                    {
-                        int flag = GetMenuState ( HmenuMain, ID_GAME_ALLOWEXTENDEDSEARCH, MF_BYCOMMAND );
-                        flag = (flag ^ MF_CHECKED) & MF_CHECKED;
-                        Global_ExtendedSearch = flag ? true : false;
-                        CheckMenuItem ( HmenuMain, ID_GAME_ALLOWEXTENDEDSEARCH, flag | MF_BYCOMMAND );
-                        MessageBox ( HwndMain,
-                            Global_ExtendedSearch ?
-                            "The computer will now think longer when it thinks it was about to make a mistake." :
-                            "The computer will now use no more than its allowed think time.",
-                            CHESS_PROGRAM_NAME,
-                            MB_OK | MB_ICONINFORMATION );
-
-                        if ( Global_UI->queryWhitePlayerType() == DefPlayerInfo::computerPlayer )
-                        {
-                            ComputerChessPlayer *puter =
-                                (ComputerChessPlayer *)Global_UI->queryWhitePlayer();
-
-                            if ( puter )
-                                puter->setExtendedSearchFlag ( Global_ExtendedSearch );
-                        }
-
-                        if ( Global_UI->queryBlackPlayerType() == DefPlayerInfo::computerPlayer )
-                        {
-                            ComputerChessPlayer *puter =
-                                (ComputerChessPlayer *)Global_UI->queryBlackPlayer();
-
-                            if ( puter )
-                                puter->setExtendedSearchFlag ( Global_ExtendedSearch );
-                        }
-                    }
-                }
-                break;
-
-                case ID_GAME_AUTO_SINGULAR:
-                {
-                    if ( Global_UI )
-                    {
-                        int flag = GetMenuState ( HmenuMain, ID_GAME_AUTO_SINGULAR, MF_BYCOMMAND );
-                        flag = (flag ^ MF_CHECKED) & MF_CHECKED;
-                        Global_AutoSingular = flag ? true : false;
-                        CheckMenuItem ( HmenuMain, ID_GAME_AUTO_SINGULAR, flag | MF_BYCOMMAND );
-                        MessageBox ( HwndMain, 
-                            Global_AutoSingular ?
-                            "When you have only one legal move, it will be made for you." :
-                            "When you have only one legal move, you must manually make it.",
-                            CHESS_PROGRAM_NAME,
-                            MB_OK | MB_ICONINFORMATION );
-
-                        if ( Global_UI->queryWhitePlayerType() == DefPlayerInfo::humanPlayer )
-                        {
-                            HumanChessPlayer *human = 
-                                (HumanChessPlayer *)Global_UI->queryWhitePlayer();
-
-                            if ( human )
-                                human->setAutoSingular ( Global_AutoSingular );
-                        }
-
-                        if ( Global_UI->queryBlackPlayerType() == DefPlayerInfo::humanPlayer )
-                        {
-                            HumanChessPlayer *human = 
-                                (HumanChessPlayer *)Global_UI->queryBlackPlayer();
-
-                            if ( human )
-                                human->setAutoSingular ( Global_AutoSingular );
-                        }
-                    }
-                }
-                break;
-
-                case ID_GAME_ALLOWCOMPUTERTORESIGN:
-                {
-                    int flag = GetMenuState ( HmenuMain, ID_GAME_ALLOWCOMPUTERTORESIGN, MF_BYCOMMAND );
-                    flag = (flag ^ MF_CHECKED) & MF_CHECKED;
-                    Global_AllowResignFlag = flag ? true : false;
-                    CheckMenuItem ( HmenuMain, ID_GAME_ALLOWCOMPUTERTORESIGN, flag | MF_BYCOMMAND );
-                }
-                break;
-
-                case ID_GAME_RESIGN:
-                {
-                    if (Global_GameOverFlag)
-                    {
-                        MessageBox(HwndMain, "Cannot resign because game is already over.", CHESS_PROGRAM_NAME, MB_OK);
-                    }
-                    else 
-                    {
-                        if (MessageBox ( 
-                            HwndMain, 
-                            "Do you really want to resign?", 
+        case ID_GAME_RESIGN:
+        {
+            if (Global_GameOverFlag)
+            {
+                MessageBox(HwndMain, "Cannot resign because game is already over.", CHESS_PROGRAM_NAME, MB_OK);
+            }
+            else
+            {
+                if (MessageBox (
+                            HwndMain,
+                            "Do you really want to resign?",
                             CHESS_PROGRAM_NAME,
                             MB_ICONQUESTION | MB_YESNO ) == IDYES )
-                        {
-                            extern bool Global_UserResign;
-                            Global_UserResign = true;
-                        }
-                    }
-                }
-                break;
-
-                case ID_EDIT_THINK_TIMES:
                 {
-                    if ( Global_UI )
-                    {
-                        DialogBox (
-                            global_hInstance,
-                            MAKEINTRESOURCE(IDD_EDIT_THINK_TIMES),
-                            hwnd,
-                            DLGPROC(EditThinkTimes_DlgProc) );
-                    }
+                    extern bool Global_UserResign;
+                    Global_UserResign = true;
                 }
-                break;
-
-                case ID_EDIT_BLUNDER_THRESHOLD:
-                {
-                    if (Global_UI)
-                    {
-                        DialogBox(
-                            global_hInstance,
-                            MAKEINTRESOURCE(IDD_EDIT_BLUNDER_THRESHOLD),
-                            hwnd,
-                            DLGPROC(EditBlunderAlertThreshold_DlgProc));
-                    }
-                }
-                break;
-
-                case ID_ENTER_FEN:
-                    DialogBox (
-                        global_hInstance,
-                        MAKEINTRESOURCE(IDD_ENTER_FEN),
-                        hwnd,
-                        DLGPROC(EnterFen_DlgProc)
-                    );
-                    break;
-
-                case ID_HELP_ABOUT:
-                    DialogBox (
-                        global_hInstance,
-                        MAKEINTRESOURCE(IDD_ABOUT),
-                        hwnd,
-                        DLGPROC(About_DlgProc) );
-                    break;
-
-                case ID_HELP_HOWDOICASTLE:
-                    MessageBox ( 
-                        HwndMain,
-                        "To castle, click on your king, then click the square "
-                        "where the king will land (i.e., two squares to the right or left)."
-                        "The computer will automatically move the rook around the king for you.",
-                        CHESS_PROGRAM_NAME,
-                        MB_ICONINFORMATION | MB_OK );
-                    break;
-
-                case ID_KEY_N:      TheBoardDisplayBuffer.keyMove ( 0,  1);   break;
-                case ID_KEY_NE:     TheBoardDisplayBuffer.keyMove ( 1,  1);   break;
-                case ID_KEY_E:      TheBoardDisplayBuffer.keyMove ( 1,  0);   break;
-                case ID_KEY_SE:     TheBoardDisplayBuffer.keyMove ( 1, -1);   break;
-                case ID_KEY_S:      TheBoardDisplayBuffer.keyMove ( 0, -1);   break;
-                case ID_KEY_SW:     TheBoardDisplayBuffer.keyMove (-1, -1);   break;
-                case ID_KEY_W:      TheBoardDisplayBuffer.keyMove (-1,  0);   break;
-                case ID_KEY_NW:     TheBoardDisplayBuffer.keyMove (-1,  1);   break;
-
-                case ID_KEY_CHOOSE:
-                    if ( insideHumanMove )
-                    {
-                        int x = TheBoardDisplayBuffer.getKeySelectX();
-                        int y = TheBoardDisplayBuffer.getKeySelectY();
-
-                        bool editMode = 0 != (MF_CHECKED & GetMenuState(HmenuMain, ID_EDIT_EDITMODE, MF_BYCOMMAND));
-
-                        if ( editMode )
-                        {
-                            SQUARE square = EMPTY;
-
-                            if ( Global_GameOverFlag || EditSquareDialog ( hwnd, square ) )
-                                SendEditRequest ( x, y, square );
-                        }
-                        else
-                        {
-                            TheBoardDisplayBuffer.squareSelectedNotify ( x, y );
-                        }
-                    }
-                    break;
-
-                // Allow the user to enter moves by typing algebraic coordinates.
-                // For example, "g1f3" will move the piece at g1 to f3.
-                case ID_ALGEBRAIC_A:
-                case ID_ALGEBRAIC_B:
-                case ID_ALGEBRAIC_C:
-                case ID_ALGEBRAIC_D:
-                case ID_ALGEBRAIC_E:
-                case ID_ALGEBRAIC_F:
-                case ID_ALGEBRAIC_G:
-                case ID_ALGEBRAIC_H:
-                case ID_ALGEBRAIC_1:
-                case ID_ALGEBRAIC_2:
-                case ID_ALGEBRAIC_3:
-                case ID_ALGEBRAIC_4:
-                case ID_ALGEBRAIC_5:
-                case ID_ALGEBRAIC_6:
-                case ID_ALGEBRAIC_7:
-                case ID_ALGEBRAIC_8:
-                    {
-                        bool editMode = 0 != (MF_CHECKED & GetMenuState(HmenuMain, ID_EDIT_EDITMODE, MF_BYCOMMAND));
-                        if (insideHumanMove && !editMode) 
-                        {
-                            // Convert the command code to the equivalent character 'a'..'h' or '1'..'8'.
-                            const WORD id = LOWORD(wparam);
-                            char c;
-                            if ((id >= ID_ALGEBRAIC_A) && (id <= ID_ALGEBRAIC_H))
-                            {
-                                c = static_cast<char>((id - ID_ALGEBRAIC_A) + 'a');
-                            }
-                            else
-                            {
-                                c = static_cast<char>((id - ID_ALGEBRAIC_1) + '1');
-                            }
-                            TheBoardDisplayBuffer.sendAlgebraicChar(c);
-                        }
-                    }
-                    break;
             }
         }
         break;
 
-        case WM_ERASEBKGND:
+        case ID_EDIT_THINK_TIMES:
         {
-            if ( !Global_AbortFlag )
+            if ( Global_UI )
             {
-                RECT crect;
-                GetClientRect ( hwnd, &crect );
-                // Do not erase the background behind the board because the bitmaps
-                // are opaque anyway.  Break the remaining area into four rectangles.
-                HBRUSH hbrush = CreateSolidBrush ( CHESS_BACKGROUND_COLOR );
-
-                // Erase above the chess board
-                RECT rect;
-                rect.left = crect.left;
-                rect.top = crect.top;
-                rect.right = SQUARE_SCREENX2(7)+1;
-                rect.bottom = SQUARE_SCREENY1(7)-1;
-                FillRect ( HDC(wparam), &rect, hbrush );
-
-                // Erase below the chess board
-                rect.top = SQUARE_SCREENY2(0)+1;
-                rect.bottom = crect.bottom;
-                FillRect ( HDC(wparam), &rect, hbrush );
-
-                // Erase to the left of the chess board
-                rect.left = crect.left;
-                rect.right = SQUARE_SCREENX1(0)-1;
-                rect.top = SQUARE_SCREENY1(7)-1;
-                rect.bottom = SQUARE_SCREENY2(0)+1;
-                FillRect ( HDC(wparam), &rect, hbrush );
-
-                // Erase to the right of the chess board
-                rect.left = SQUARE_SCREENX2(7)+1;
-                rect.right = crect.right;
-                rect.top = crect.top;
-                rect.bottom = crect.bottom;
-                FillRect ( HDC(wparam), &rect, hbrush );
-                DeleteObject ( hbrush );
-                result = TRUE;
+                DialogBox (
+                    global_hInstance,
+                    MAKEINTRESOURCE(IDD_EDIT_THINK_TIMES),
+                    hwnd,
+                    DLGPROC(EditThinkTimes_DlgProc) );
             }
         }
         break;
 
-        case WM_PAINT:
+        case ID_EDIT_BLUNDER_THRESHOLD:
         {
-            if ( !Global_AbortFlag )
+            if (Global_UI)
             {
-                PAINTSTRUCT ps;
-                HDC hdc = BeginPaint ( hwnd, &ps );
-                int x1 = SQUARE_CHESSX (ps.rcPaint.left);
-                int x2 = SQUARE_CHESSX (ps.rcPaint.right);
-                int y1 = SQUARE_CHESSY (ps.rcPaint.bottom);
-                int y2 = SQUARE_CHESSY (ps.rcPaint.top);
-                TheBoardDisplayBuffer.draw ( hdc, x1, x2, y1, y2 );
-                ChessDisplayTextBuffer::DrawAll ( hdc );
-                EndPaint ( hwnd, &ps );
-                result = TRUE;
+                DialogBox(
+                    global_hInstance,
+                    MAKEINTRESOURCE(IDD_EDIT_BLUNDER_THRESHOLD),
+                    hwnd,
+                    DLGPROC(EditBlunderAlertThreshold_DlgProc));
             }
         }
         break;
 
-        case WM_LBUTTONUP:
-        {
+        case ID_ENTER_FEN:
+            DialogBox (
+                global_hInstance,
+                MAKEINTRESOURCE(IDD_ENTER_FEN),
+                hwnd,
+                DLGPROC(EnterFen_DlgProc)
+            );
+            break;
+
+        case ID_HELP_ABOUT:
+            DialogBox (
+                global_hInstance,
+                MAKEINTRESOURCE(IDD_ABOUT),
+                hwnd,
+                DLGPROC(About_DlgProc) );
+            break;
+
+        case ID_HELP_HOWDOICASTLE:
+            MessageBox (
+                HwndMain,
+                "To castle, click on your king, then click the square "
+                "where the king will land (i.e., two squares to the right or left)."
+                "The computer will automatically move the rook around the king for you.",
+                CHESS_PROGRAM_NAME,
+                MB_ICONINFORMATION | MB_OK );
+            break;
+
+        case ID_KEY_N:      TheBoardDisplayBuffer.keyMove ( 0,  1);   break;
+        case ID_KEY_NE:     TheBoardDisplayBuffer.keyMove ( 1,  1);   break;
+        case ID_KEY_E:      TheBoardDisplayBuffer.keyMove ( 1,  0);   break;
+        case ID_KEY_SE:     TheBoardDisplayBuffer.keyMove ( 1, -1);   break;
+        case ID_KEY_S:      TheBoardDisplayBuffer.keyMove ( 0, -1);   break;
+        case ID_KEY_SW:     TheBoardDisplayBuffer.keyMove (-1, -1);   break;
+        case ID_KEY_W:      TheBoardDisplayBuffer.keyMove (-1,  0);   break;
+        case ID_KEY_NW:     TheBoardDisplayBuffer.keyMove (-1,  1);   break;
+
+        case ID_KEY_CHOOSE:
             if ( insideHumanMove )
             {
-                int mouseX = LOWORD(lparam);
-                int mouseY = HIWORD(lparam);
+                int x = TheBoardDisplayBuffer.getKeySelectX();
+                int y = TheBoardDisplayBuffer.getKeySelectY();
 
-                int x = SQUARE_CHESSX ( mouseX );
-                int y = SQUARE_CHESSY ( mouseY );
-                if ( !TheBoardDisplayBuffer.queryWhiteView() )
-                {
-                    // Need to rotate the coords...
-
-                    x = 7 - x;
-                    y = 7 - y;
-                }
-
-                int editMode = MF_CHECKED &
-                    GetMenuState ( HmenuMain, ID_EDIT_EDITMODE, MF_BYCOMMAND );
+                bool editMode = 0 != (MF_CHECKED & GetMenuState(HmenuMain, ID_EDIT_EDITMODE, MF_BYCOMMAND));
 
                 if ( editMode )
                 {
@@ -3183,155 +3130,290 @@ LRESULT CALLBACK ChessWndProc (
                 {
                     TheBoardDisplayBuffer.squareSelectedNotify ( x, y );
                 }
-
-                if (Global_TransientCenteredMessage)
-                {
-                    // There is text superimposed on the board that
-                    // should go away as soon as any mouse clicks are received.
-                    Global_TransientCenteredMessage = false;
-                    ChessDisplayTextBuffer::SetText(STATIC_ID_GAME_RESULT, "");
-                }
             }
-        }
-        break;
-
-        case WM_RBUTTONUP:
-        {
-            if ( insideHumanMove )
-            {
-                int mouseX = LOWORD(lparam);
-                int mouseY = HIWORD(lparam);
-
-                int editMode = MF_CHECKED &
-                GetMenuState ( HmenuMain, ID_EDIT_EDITMODE, MF_BYCOMMAND );
-
-                if ( editMode )
-                {
-                    int x = SQUARE_CHESSX ( mouseX );
-                    int y = SQUARE_CHESSY ( mouseY );
-
-                    if ( !TheBoardDisplayBuffer.queryWhiteView() )
-                    {
-                        // Need to rotate the coords...
-
-                        x = 7 - x;
-                        y = 7 - y;
-                    }
-
-                    SendEditRequest ( x, y, Global_BoardEditRequest.getMostRecentSquare() );
-                }
-            }
-        }
-        break;
-
-        case WM_DDC_ENTER_HUMAN_MOVE:
-        {
-            // Getting here means that we have just begun reading
-            // a human player's move.  There are certain menu options
-            // whose enable state should be changed now.
-
-            insideHumanMove = true;
-            CheckHumanMoveState ( insideHumanMove );
-        }
-        break;
-
-        case WM_DDC_LEAVE_HUMAN_MOVE:
-        {
-            // Getting here means we are just now finishing with
-            // a human player's move.
-
-            insideHumanMove = false;
-            CheckHumanMoveState ( insideHumanMove );
-        }
-        break;
-
-        case WM_DDC_FATAL:
-        {
-            char *errorText = (char *)(lparam);
-
-            MessageBox ( 
-                hwnd,
-                errorText,
-                CHESS_PROGRAM_NAME " fatal error",
-                MB_ICONEXCLAMATION | MB_OK );
-
-            PostMessage ( hwnd, WM_QUIT, ULONG(0), ULONG(0) );
-        }
-        break;
-
-        case WM_DDC_PREDICT_MATE:
-            if ( !Global_SpeakMovesFlag )
-            {
-                sprintf ( buffer, "Mate in %d", int(wparam) );
-                MessageBox ( hwnd,
-                    buffer,
-                    ChessProgramName,
-                    MB_OK );
-            }
-            *(int *)(lparam) = 1;   // signals that message box is finished
             break;
 
-        case WM_DDC_PROMOTE_PAWN:
+            // Allow the user to enter moves by typing algebraic coordinates.
+            // For example, "g1f3" will move the piece at g1 to f3.
+        case ID_ALGEBRAIC_A:
+        case ID_ALGEBRAIC_B:
+        case ID_ALGEBRAIC_C:
+        case ID_ALGEBRAIC_D:
+        case ID_ALGEBRAIC_E:
+        case ID_ALGEBRAIC_F:
+        case ID_ALGEBRAIC_G:
+        case ID_ALGEBRAIC_H:
+        case ID_ALGEBRAIC_1:
+        case ID_ALGEBRAIC_2:
+        case ID_ALGEBRAIC_3:
+        case ID_ALGEBRAIC_4:
+        case ID_ALGEBRAIC_5:
+        case ID_ALGEBRAIC_6:
+        case ID_ALGEBRAIC_7:
+        case ID_ALGEBRAIC_8:
         {
-            SQUARE *promPtr = (SQUARE *)lparam;
-            SQUARE localProm = EMPTY;
-
-            DialogBoxParam ( 
-                global_hInstance,
-                MAKEINTRESOURCE(IDD_PROMOTE_PAWN),
-                hwnd,
-                DLGPROC(PromotePawn_DlgProc),
-                LPARAM(&localProm) );
-
-            if ( localProm != R_INDEX &&
-                 localProm != B_INDEX &&
-                 localProm != N_INDEX &&
-                 localProm != Q_INDEX )
+            bool editMode = 0 != (MF_CHECKED & GetMenuState(HmenuMain, ID_EDIT_EDITMODE, MF_BYCOMMAND));
+            if (insideHumanMove && !editMode)
             {
-                localProm = Q_INDEX;
+                // Convert the command code to the equivalent character 'a'..'h' or '1'..'8'.
+                const WORD id = LOWORD(wparam);
+                char c;
+                if ((id >= ID_ALGEBRAIC_A) && (id <= ID_ALGEBRAIC_H))
+                {
+                    c = static_cast<char>((id - ID_ALGEBRAIC_A) + 'a');
+                }
+                else
+                {
+                    c = static_cast<char>((id - ID_ALGEBRAIC_1) + '1');
+                }
+                TheBoardDisplayBuffer.sendAlgebraicChar(c);
+            }
+        }
+        break;
+        }
+    }
+    break;
+
+    case WM_ERASEBKGND:
+    {
+        if ( !Global_AbortFlag )
+        {
+            RECT crect;
+            GetClientRect ( hwnd, &crect );
+            // Do not erase the background behind the board because the bitmaps
+            // are opaque anyway.  Break the remaining area into four rectangles.
+            HBRUSH hbrush = CreateSolidBrush ( CHESS_BACKGROUND_COLOR );
+
+            // Erase above the chess board
+            RECT rect;
+            rect.left = crect.left;
+            rect.top = crect.top;
+            rect.right = SQUARE_SCREENX2(7)+1;
+            rect.bottom = SQUARE_SCREENY1(7)-1;
+            FillRect ( HDC(wparam), &rect, hbrush );
+
+            // Erase below the chess board
+            rect.top = SQUARE_SCREENY2(0)+1;
+            rect.bottom = crect.bottom;
+            FillRect ( HDC(wparam), &rect, hbrush );
+
+            // Erase to the left of the chess board
+            rect.left = crect.left;
+            rect.right = SQUARE_SCREENX1(0)-1;
+            rect.top = SQUARE_SCREENY1(7)-1;
+            rect.bottom = SQUARE_SCREENY2(0)+1;
+            FillRect ( HDC(wparam), &rect, hbrush );
+
+            // Erase to the right of the chess board
+            rect.left = SQUARE_SCREENX2(7)+1;
+            rect.right = crect.right;
+            rect.top = crect.top;
+            rect.bottom = crect.bottom;
+            FillRect ( HDC(wparam), &rect, hbrush );
+            DeleteObject ( hbrush );
+            result = TRUE;
+        }
+    }
+    break;
+
+    case WM_PAINT:
+    {
+        if ( !Global_AbortFlag )
+        {
+            PAINTSTRUCT ps;
+            HDC hdc = BeginPaint ( hwnd, &ps );
+            int x1 = SQUARE_CHESSX (ps.rcPaint.left);
+            int x2 = SQUARE_CHESSX (ps.rcPaint.right);
+            int y1 = SQUARE_CHESSY (ps.rcPaint.bottom);
+            int y2 = SQUARE_CHESSY (ps.rcPaint.top);
+            TheBoardDisplayBuffer.draw ( hdc, x1, x2, y1, y2 );
+            ChessDisplayTextBuffer::DrawAll ( hdc );
+            EndPaint ( hwnd, &ps );
+            result = TRUE;
+        }
+    }
+    break;
+
+    case WM_LBUTTONUP:
+    {
+        if ( insideHumanMove )
+        {
+            int mouseX = LOWORD(lparam);
+            int mouseY = HIWORD(lparam);
+
+            int x = SQUARE_CHESSX ( mouseX );
+            int y = SQUARE_CHESSY ( mouseY );
+            if ( !TheBoardDisplayBuffer.queryWhiteView() )
+            {
+                // Need to rotate the coords...
+
+                x = 7 - x;
+                y = 7 - y;
             }
 
-            *promPtr = localProm;
-        }
-        break;
+            int editMode = MF_CHECKED &
+                           GetMenuState ( HmenuMain, ID_EDIT_EDITMODE, MF_BYCOMMAND );
 
-        case WM_DDC_GAME_RESULT:
+            if ( editMode )
+            {
+                SQUARE square = EMPTY;
+
+                if ( Global_GameOverFlag || EditSquareDialog ( hwnd, square ) )
+                    SendEditRequest ( x, y, square );
+            }
+            else
+            {
+                TheBoardDisplayBuffer.squareSelectedNotify ( x, y );
+            }
+
+            if (Global_TransientCenteredMessage)
+            {
+                // There is text superimposed on the board that
+                // should go away as soon as any mouse clicks are received.
+                Global_TransientCenteredMessage = false;
+                ChessDisplayTextBuffer::SetText(STATIC_ID_GAME_RESULT, "");
+            }
+        }
+    }
+    break;
+
+    case WM_RBUTTONUP:
+    {
+        if ( insideHumanMove )
         {
-            const ChessUI_win32_gui::gameReport& report = *(ChessUI_win32_gui::gameReport *)(lparam);
-            DisplayGameReportText(hwnd, report);
-        }
-        break;
+            int mouseX = LOWORD(lparam);
+            int mouseY = HIWORD(lparam);
 
-        case WM_DDC_GAME_OVER:
+            int editMode = MF_CHECKED &
+                           GetMenuState ( HmenuMain, ID_EDIT_EDITMODE, MF_BYCOMMAND );
+
+            if ( editMode )
+            {
+                int x = SQUARE_CHESSX ( mouseX );
+                int y = SQUARE_CHESSY ( mouseY );
+
+                if ( !TheBoardDisplayBuffer.queryWhiteView() )
+                {
+                    // Need to rotate the coords...
+
+                    x = 7 - x;
+                    y = 7 - y;
+                }
+
+                SendEditRequest ( x, y, Global_BoardEditRequest.getMostRecentSquare() );
+            }
+        }
+    }
+    break;
+
+    case WM_DDC_ENTER_HUMAN_MOVE:
+    {
+        // Getting here means that we have just begun reading
+        // a human player's move.  There are certain menu options
+        // whose enable state should be changed now.
+
+        insideHumanMove = true;
+        CheckHumanMoveState ( insideHumanMove );
+    }
+    break;
+
+    case WM_DDC_LEAVE_HUMAN_MOVE:
+    {
+        // Getting here means we are just now finishing with
+        // a human player's move.
+
+        insideHumanMove = false;
+        CheckHumanMoveState ( insideHumanMove );
+    }
+    break;
+
+    case WM_DDC_FATAL:
+    {
+        char *errorText = (char *)(lparam);
+
+        MessageBox (
+            hwnd,
+            errorText,
+            CHESS_PROGRAM_NAME " fatal error",
+            MB_ICONEXCLAMATION | MB_OK );
+
+        PostMessage ( hwnd, WM_QUIT, ULONG(0), ULONG(0) );
+    }
+    break;
+
+    case WM_DDC_PREDICT_MATE:
+        if ( !Global_SpeakMovesFlag )
         {
-            insideHumanMove = true;
-            Global_GameOverFlag = true;
-            CheckHumanMoveState ( insideHumanMove );
+            sprintf ( buffer, "Mate in %d", int(wparam) );
+            MessageBox ( hwnd,
+                         buffer,
+                         ChessProgramName,
+                         MB_OK );
         }
+        *(int *)(lparam) = 1;   // signals that message box is finished
         break;
 
-        case WM_DDC_DRAW_VECTOR:
+    case WM_DDC_PROMOTE_PAWN:
+    {
+        SQUARE *promPtr = (SQUARE *)lparam;
+        SQUARE localProm = EMPTY;
+
+        DialogBoxParam (
+            global_hInstance,
+            MAKEINTRESOURCE(IDD_PROMOTE_PAWN),
+            hwnd,
+            DLGPROC(PromotePawn_DlgProc),
+            LPARAM(&localProm) );
+
+        if ( localProm != R_INDEX &&
+                localProm != B_INDEX &&
+                localProm != N_INDEX &&
+                localProm != Q_INDEX )
         {
-            int vofs1 = int(wparam);
-            int vofs2 = int(lparam);
-            int x1 = SQUARE_MIDX ( XPART(vofs1) - 2 );
-            int y1 = SQUARE_MIDY ( YPART(vofs1) - 2 );
-            int x2 = SQUARE_MIDX ( XPART(vofs2) - 2 );
-            int y2 = SQUARE_MIDY ( YPART(vofs2) - 2 );
-            HDC hdc = GetDC ( hwnd );
-            HGDIOBJ oldpen = SelectObject ( hdc, GetStockObject(WHITE_PEN) );
-            int prev = SetROP2 ( hdc, R2_XORPEN );
-            MoveToEx ( hdc, x1, y1, NULL );
-            LineTo ( hdc, x2, y2 );
-            SetROP2 ( hdc, prev );
-            SelectObject ( hdc, oldpen );
-            ReleaseDC ( hwnd, hdc );
+            localProm = Q_INDEX;
         }
-        break;
 
-        default:
-            result = (BOOL) DefWindowProc ( hwnd, msg, wparam, lparam );
-            break;
+        *promPtr = localProm;
+    }
+    break;
+
+    case WM_DDC_GAME_RESULT:
+    {
+        const ChessUI_win32_gui::gameReport& report = *(ChessUI_win32_gui::gameReport *)(lparam);
+        DisplayGameReportText(hwnd, report);
+    }
+    break;
+
+    case WM_DDC_GAME_OVER:
+    {
+        insideHumanMove = true;
+        Global_GameOverFlag = true;
+        CheckHumanMoveState ( insideHumanMove );
+    }
+    break;
+
+    case WM_DDC_DRAW_VECTOR:
+    {
+        int vofs1 = int(wparam);
+        int vofs2 = int(lparam);
+        int x1 = SQUARE_MIDX ( XPART(vofs1) - 2 );
+        int y1 = SQUARE_MIDY ( YPART(vofs1) - 2 );
+        int x2 = SQUARE_MIDX ( XPART(vofs2) - 2 );
+        int y2 = SQUARE_MIDY ( YPART(vofs2) - 2 );
+        HDC hdc = GetDC ( hwnd );
+        HGDIOBJ oldpen = SelectObject ( hdc, GetStockObject(WHITE_PEN) );
+        int prev = SetROP2 ( hdc, R2_XORPEN );
+        MoveToEx ( hdc, x1, y1, NULL );
+        LineTo ( hdc, x2, y2 );
+        SetROP2 ( hdc, prev );
+        SelectObject ( hdc, oldpen );
+        ReleaseDC ( hwnd, hdc );
+    }
+    break;
+
+    default:
+        result = (BOOL) DefWindowProc ( hwnd, msg, wparam, lparam );
+        break;
     }
 
     return result;
@@ -3366,9 +3448,9 @@ void ChessBeep ( int freq, int duration )
 ChessDisplayTextBuffer *ChessDisplayTextBuffer::All = 0;
 
 
-ChessDisplayTextBuffer::ChessDisplayTextBuffer ( 
-        HWND _hwnd, int _id, int _x, int _y, marginType _margin, int _textFont, 
-        int _highlight, bool _isBackgroundOpaque ):
+ChessDisplayTextBuffer::ChessDisplayTextBuffer (
+    HWND _hwnd, int _id, int _x, int _y, marginType _margin, int _textFont,
+    int _highlight, bool _isBackgroundOpaque ):
     id ( _id ),
     hwnd ( _hwnd ),
     text ( new char [MAX_CHESS_TEXT+1] ),
@@ -3408,70 +3490,70 @@ void ChessDisplayTextBuffer::reposition()
 
     switch ( margin )
     {
-        case margin_right:
-        {
-            x = CHESS_BITMAP_DX*8 + CHESS_LEFT_MARGIN + 2*CHESS_BOARD_BORDER_DX + 4;
-        }
-        break;
+    case margin_right:
+    {
+        x = CHESS_BITMAP_DX*8 + CHESS_LEFT_MARGIN + 2*CHESS_BOARD_BORDER_DX + 4;
+    }
+    break;
 
-        case margin_bottom:
-        {
-            y = CHESS_BITMAP_DY*8 + 2*CHESS_BOARD_BORDER_DY + CHESS_BOTTOM_MARGIN - 2;
+    case margin_bottom:
+    {
+        y = CHESS_BITMAP_DY*8 + 2*CHESS_BOARD_BORDER_DY + CHESS_BOTTOM_MARGIN - 2;
 
-            // Special case for "thinking" tag:
+        // Special case for "thinking" tag:
 
-            if ( id == STATIC_ID_THINKING )
-                x = SQUARE_SCREENX1(8) - 8*textWidth;
-        }
-        break;
+        if ( id == STATIC_ID_THINKING )
+            x = SQUARE_SCREENX1(8) - 8*textWidth;
+    }
+    break;
 
-        case margin_rank:
-        {
-            const int coord = id - STATIC_ID_COORD_RANK_BASE;
-            x = CHESS_BOARD_BORDER_DX - 1;
-            y = SQUARE_MIDY(coord) - textHeight/2;
-        }
-        break;
+    case margin_rank:
+    {
+        const int coord = id - STATIC_ID_COORD_RANK_BASE;
+        x = CHESS_BOARD_BORDER_DX - 1;
+        y = SQUARE_MIDY(coord) - textHeight/2;
+    }
+    break;
 
-        case margin_file:
-        {
-            const int coord = id - STATIC_ID_COORD_FILE_BASE;
-            x = SQUARE_MIDX(coord) - textWidth/2;
-            y = SQUARE_SCREENY1(-1) + 2;
-        }
-        break;
+    case margin_file:
+    {
+        const int coord = id - STATIC_ID_COORD_FILE_BASE;
+        x = SQUARE_MIDX(coord) - textWidth/2;
+        y = SQUARE_SCREENY1(-1) + 2;
+    }
+    break;
 
-        case margin_center:
-        {
-            x = 0;
-            y = 0;
-            RECT rect;
-            calcRegion(rect);
+    case margin_center:
+    {
+        x = 0;
+        y = 0;
+        RECT rect;
+        calcRegion(rect);
 
-            x = SQUARE_SCREENX2(3) - rect.right/2;
-            y = SQUARE_SCREENY1(3) - rect.bottom/2;
-        }
-        break;
+        x = SQUARE_SCREENX2(3) - rect.right/2;
+        y = SQUARE_SCREENY1(3) - rect.bottom/2;
+    }
+    break;
 
-        case margin_blunderAnalysis:
-        {
-            x = SQUARE_SCREENX1(0);
+    case margin_blunderAnalysis:
+    {
+        x = SQUARE_SCREENX1(0);
 
-            // Same calculation as margin_bottom, but then shifted down.
-            y = CHESS_BITMAP_DY*8 + 2*CHESS_BOARD_BORDER_DY + CHESS_BOTTOM_MARGIN - 2;
-            y += MOVE_TEXT_DY + 8 + 0*20;
-        }
-        break;
+        // Same calculation as margin_bottom, but then shifted down.
+        y = CHESS_BITMAP_DY*8 + 2*CHESS_BOARD_BORDER_DY + CHESS_BOTTOM_MARGIN - 2;
+        y += MOVE_TEXT_DY + 8 + 0*20;
+    }
+    break;
 
-        case margin_betterAnalysis:
-        {
-            x = SQUARE_SCREENX1(0);
+    case margin_betterAnalysis:
+    {
+        x = SQUARE_SCREENX1(0);
 
-            // Same calculation as margin_bottom, but then shifted down.
-            y = CHESS_BITMAP_DY*8 + 2*CHESS_BOARD_BORDER_DY + CHESS_BOTTOM_MARGIN - 2;
-            y += MOVE_TEXT_DY + 8 + 1*20;
-        }
-        break;
+        // Same calculation as margin_bottom, but then shifted down.
+        y = CHESS_BITMAP_DY*8 + 2*CHESS_BOARD_BORDER_DY + CHESS_BOTTOM_MARGIN - 2;
+        y += MOVE_TEXT_DY + 8 + 1*20;
+    }
+    break;
     }
 }
 
@@ -3505,8 +3587,8 @@ HFONT ChessDisplayTextBuffer::createFont() const
         // This is used for the game result text.
         // http://msdn.microsoft.com/en-us/library/windows/desktop/dd183499(v=vs.85).aspx
         font = CreateFont(
-            48, 0, 0, 0, FW_DONTCARE, FALSE, FALSE, FALSE, DEFAULT_CHARSET, 0, 
-            CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, VARIABLE_PITCH, "Arial");
+                   48, 0, 0, 0, FW_DONTCARE, FALSE, FALSE, FALSE, DEFAULT_CHARSET, 0,
+                   CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, VARIABLE_PITCH, "Arial");
     }
     else
     {
@@ -3553,7 +3635,7 @@ void ChessDisplayTextBuffer::draw ( HDC hdc ) const
     SetBkMode(hdc, isBackgroundOpaque ? OPAQUE : TRANSPARENT);
     TextOut ( hdc, x, y, p, (int)strlen(p) );
     SetBkMode(hdc, OPAQUE);
-    if ( oldBkColor != CLR_INVALID ) 
+    if ( oldBkColor != CLR_INVALID )
         SetBkColor ( hdc, oldBkColor );
     if ( oldTextColor != CLR_INVALID )
         SetTextColor ( hdc, oldTextColor );
@@ -3746,11 +3828,11 @@ void ChessDisplayTextBuffer::SetText ( int _id, const char *newText )
 
 
          Revision history:
-    
+
     2001 January 14 [Don Cross]
          Turned off question "do you really want to quit?"...
          after all, it's just a chess game, not your PhD thesis.
-    
+
     2001 January 5 [Don Cross]
          Adding support for generation of endgame databases,
          specifically for K+R vs K, K+Q vs K, K+P vs K.
@@ -3758,68 +3840,68 @@ void ChessDisplayTextBuffer::SetText ( int _id, const char *newText )
          an upper limit of 64*63*62 = 249984 possible positions.
          We can pre-compute a file of optimal moves for these
          situations.
-    
+
     1999 April 2 [Don Cross]
-         Added a temporary ComputerChessPlayer pointer in 
+         Added a temporary ComputerChessPlayer pointer in
          UpdateAnalysisDisplay() because I found a rare case where
          the pointer is set to NULL from the chess thread after it
          has been tested for not being NULL.  This results in an
          access violation.  Hopefully, this fix should prevent that
          from happening again.
-    
+
     1999 March 13 [Don Cross]
          Added a call to SetFocus() in About_DlgProc() so that user
          can just hit Enter to dismiss the dialog.  Previously, the
          OK button did not have focus for some reason.
-    
+
     1999 February 19 [Don Cross]
-         Adding support for genetic algorithm trainer to GUI version of 
+         Adding support for genetic algorithm trainer to GUI version of
          Chenard.
-    
+
     1999 January 21 [Don Cross]
          Adding "extended search" flag, which when enabled allows computer
          to think longer when its minmax score drops surprisingly.
-    
+
     1999 January 16 [Don Cross]
          Adding "Automatic Singular Move" option.
-    
+
     1999 January 12 [Don Cross]
          Made "copy game listing" buffer be 64K instead of just 4K,
          because extremely long games were getting truncated.
-    
+
     1999 January 7 [Don Cross]
          In "Define Players" dialog, now set focus on think time when
          radio button for a computer player is selected.
-    
+
     1999 January 5 [Don Cross]
          Started working on InternetChessPlayer support.
-    
+
     1999 January 3 [Don Cross]
          Now displays algebraic coords to the left and bottom of the board.
          Display "thinking" when the computer performing search.
-    
+
     1998 November 15 [Don Cross]
          Fixed minor UI bug: "Game | Allow Computer to Resign" option
          was working, but not reflecting changes in state.  Added one
          line of code to fix this.
          Now user can enter non-integer number of seconds as search times.
          Changed default piece style to "Skak".
-    
+
     1997 June 10 [Don Cross]
          Adding an execution profiler so I can figure out where my
          code needs to be optimized.
-    
+
     1997 May 10 [Don Cross]
-         Making Edit|Copy Game Listing work when it is the computer's 
+         Making Edit|Copy Game Listing work when it is the computer's
          turn to move.
-    
+
     1997 March 8 [Don Cross]
          Adding Game|Allow computer to resign, Game|Resign.
-    
+
     1997 March 3 [Don Cross]
          Changed bool Global_ViewDebugFlag into int Global_AnalysisType.
          Now the allowed values are 0=none, 1=bestpath, 2=currentpath.
-    
+
     1997 February 6 [Don Cross]
          I have decided to move the WAV files in the WinChenard
          distribution to their own zip file which can be downloaded
@@ -3828,60 +3910,60 @@ void ChessDisplayTextBuffer::SetText ( int _id, const char *newText )
          *.WAV files before going into View|Speak mode.  If they are not
          present, I will present a dialog box which tells the user how
          to get them from the Chenard web page.
-    
+
     1997 January 25 [Don Cross]
          Made Edit|Copy Game Listing self-explanatory by displaying
          an informational dialog box after the operation completes
          successfully.  This was in response to an email I received
          from someone who couldn't figure out what the command was doing.
          Also added better error checking for anomalous conditions.
-    
+
     1997 January 30 [Don Cross]
          Adding support for Edit|Undo Move and Edit|Redo Move.
          Adding new Skak font.
-    
+
     1997 January 3 [Don Cross]
          Added support for editing the think time limit for computer
          players while the game is in progress.
          Also, put the View|Freshen menu command back in, because
          Lyle says he saw the display get screwed up once.
-    
+
     1996 August 24 [Don Cross]
          Replaced memory-based learning tree with disk-based tree.
-    
+
     1996 July 29 [Don Cross]
          Copied code from OS/2 Presentation Manager version of Chenard
          as baseline for Win32 GUI version.
-    
+
     1994 February 9 [Don Cross]
          Adding visual feedback for selecting squares.
-    
+
     1994 January 31 [Don Cross]
          Fixed RestoreBoardFromFile so that it calls
          ChessBoard::SaveSpecialMove when it finds an edit command
          in the game file.
-    
+
     1994 February 4 [Don Cross]
          Fixed bug with editing board when viewed from Black's side.
          Fixed bug with Empty side not disabling pieces in edit dialog.
-    
+
     1994 January 12 [Don Cross]:
          Started adding application menu for Game, Edit, View.
          Here are the menu commands I intend to support:
-    
+
          Game:
             New:   start over at the beginning of the game.
             Open:  read a game from a file and continue it.
             Save, Save As:  save the game to a file.
-    
+
          Edit:  (most/all options will be disabled if not human's turn)
             Clear board:  make the board blank???
             Set up pieces:  go into "edit mode"???
-    
+
     1993 December 31 [Don Cross]:
          Fixed bug: Title bar text used to say it was White's turn
          when we restored a game from a file and it was either side's
          turn to move.
-    
+
 */
 

@@ -28,9 +28,9 @@ bool ReadFromFile ( FILE *f, Move &m )
 
     m.source = BYTE (data[0]);
     m.dest   = BYTE (data[1]);
-    m.score  = INT16 (data[2] | (data[3] << 8)); 
+    m.score  = INT16 (data[2] | (data[3] << 8));
 
-    return true;   
+    return true;
 }
 
 
@@ -48,7 +48,7 @@ bool WriteToFile ( FILE *f, const Move &m )
     if ( fputc(m.score >> 8, f) == EOF )
         return false;
 
-    return true; 
+    return true;
 }
 
 
@@ -64,10 +64,10 @@ ChessGame::ChessGame ( ChessBoard &Board, ChessUI &Ui ):
     blackPlayer = ui.CreatePlayer ( SIDE_BLACK );
 }
 
-ChessGame::ChessGame ( 
-    ChessBoard &_board, 
-    ChessUI &_ui, 
-    bool /*_whiteIsHuman*/, 
+ChessGame::ChessGame (
+    ChessBoard &_board,
+    ChessUI &_ui,
+    bool /*_whiteIsHuman*/,
     bool /*_blackIsHuman*/,
     ChessPlayer *_whitePlayer,
     ChessPlayer *_blackPlayer ):
@@ -132,21 +132,26 @@ void ChessGame::DetectAutoSaveFile()
     // and make auto-save to the file <counter>.pgn...
     const char *CounterFileName = "game.counter";
     FILE *file = fopen (CounterFileName, "rt");
-    if (file) {
+    if (file)
+    {
         int counter;
-        if (1 == fscanf (file, "%d", &counter)) {
+        if (1 == fscanf (file, "%d", &counter))
+        {
             char GameFileName [64];
             sprintf (GameFileName, "%05d.pgn", counter);
-            if (AutoSaveToFile (GameFileName)) {
+            if (AutoSaveToFile (GameFileName))
+            {
                 fclose (file);
                 file = fopen (CounterFileName, "wt");
-                if (file) {
+                if (file)
+                {
                     fprintf (file, "%d\n", ++counter);
                 }
             }
         }
 
-        if (file) {
+        if (file)
+        {
             fclose (file);
             file = NULL;
         }
@@ -175,10 +180,14 @@ void ChessGame::Play()
     {
         ui.DrawBoard ( board );
 
-        if (board.GetCurrentPlyNumber() == 0) {     // handle starting multiple games
+        if (board.GetCurrentPlyNumber() == 0)       // handle starting multiple games
+        {
             DetectAutoSaveFile();   // every time we start a new game, increment game number
-        } else {
-            if (autoSave_Filename) {
+        }
+        else
+        {
+            if (autoSave_Filename)
+            {
                 SaveGamePGN ( board, autoSave_Filename );
             }
         }
@@ -347,76 +356,76 @@ bool LoadGame ( ChessBoard &board, const char *filename )
     2. Moved old manual revision history after cvs log tag.
     3. Made sure each source file has extra blank line at end so gcc under Linux won't fuss!
 
-    
-    
+
+
 
          Revision history:
-    
+
     1993 July 14 [Don Cross]
          Changed constructor to use initializer list.
-    
+
     1993 August 30 [Don Cross]
          Changing pointers to references in the interfaces where
          appropriate.
-    
+
     1993 October 19 [Don Cross]
          Added calls to ChessBoard::IsDefiniteDraw() to end the
          game automatically when an obvious draw has occurred.
-    
+
     1993 October 21 [Don Cross]
          Added the ChessUI::RecordMove() function and
          narrowed the meaning of ChessUI::DisplayMove().
-    
+
     1993 October 22 [Don Cross]
          Adding runtime check for sizes of standard integer data types.
-    
+
     1994 January 15 [Don Cross]
          Added check for SPECIAL_MOVE_NULL, which causes the
          move returned by GetMove to be ignored.  This is useful
          for resetting the game, and might be useful for other things.
-    
+
     1994 January 16 [Don Cross]
          Added logic to fix problem with causing an instant draw
          and ending the game when the board is edited into a drawn
          position.
-    
+
     1994 January 17 [Don Cross]
          Changed check for SPECIAL_MOVE_NULL to a call to Move::ShouldIgnore()
-    
+
     1994 February 9 [Don Cross]
          Changed ChessPlayer::GetMove() to return time spent thinking.
          This way, the ComputerChessPlayer can internally exclude time
          spent animating the move.
-    
+
     1995 March 26 [Don Cross]
          Added new constructor ChessGame::ChessGame ( ChessBoard &, ChessUI &, bool, bool ).
          This constructor refrains from creating the players, but is told what
          kind of players to expect.
-    
+
     1995 July 13 [Don Cross]
          Added ChessGame::~ChessGame.
          Added ChessGame::AutoSaveToFile.
-    
+
     1995 December 30 [Don Cross]
          Made ChessGame::~ChessGame delete blackPlayer and whitePlayer.
-    
+
     1996 August 23 [Don Cross]
-         Replacing old memory-based learning tree with disk-based 
+         Replacing old memory-based learning tree with disk-based
          class LearnTree.
-    
+
     1997 March 8 [Don Cross]
          Causing a resignation to issue a negative feedback for continuation
          in the learning tree.
-    
+
     1999 January 4 [Don Cross]
          Updated coding style.
-    
+
     1999 January 11 [Don Cross]
          Added calls to ChessPlayer::InformResignation() to notify
          remote opponent of loss of connection or resignation.
-    
+
     1999 January 15 [Don Cross]
-         Adding ReadFromFile(FILE *,Move &) and 
+         Adding ReadFromFile(FILE *,Move &) and
          WriteToFile(FILE *,const Move &) functions to allow portable
          file I/O for Move structures.  This eliminates any danger
          of endianness or structure packing non-portability.

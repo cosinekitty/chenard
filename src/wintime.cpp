@@ -20,26 +20,32 @@ INT32 ChessTime()
     static LARGE_INTEGER performanceFrequency;
 
     LARGE_INTEGER pc;
-    if (!QueryPerformanceCounter (&pc)) {
+    if (!QueryPerformanceCounter (&pc))
+    {
         ChessFatal ("Failure in QueryPerformanceCounter()");
     }
 
-    if (firstTime) {
+    if (firstTime)
+    {
         startTime = pc;
         firstTime = false;
 
-        if (!QueryPerformanceFrequency (&performanceFrequency)) {
+        if (!QueryPerformanceFrequency (&performanceFrequency))
+        {
             ChessFatal ("Failure in QueryPerformanceFrequency");
         }
 
-        if (performanceFrequency.QuadPart <= 1000) {
+        if (performanceFrequency.QuadPart <= 1000)
+        {
             ChessFatal ("QueryPerformanceFrequency returned a value that is too small!");
         }
 
         performanceFrequency.QuadPart /= 100;       // instead of counts per second, we want counts per centisecond!
 
         return 0;
-    } else {
+    }
+    else
+    {
         // WARNING:  This code can go 248.5513 days before wraping around the signed 32-bit integer.
         // That should be good enough for most uses, but it could cause problems some day.
         // If so, I will need to redesign ChessTime() to return a 64-bit integer.

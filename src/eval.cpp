@@ -225,30 +225,30 @@ static const SCORE PawnCenter [] =
 #define PAWN_BALANCE 1
 #if PAWN_BALANCE
 
-    // The following table gives pawn imbalance scores.
-    // This must be scaled relative to the enemy pieces which
-    // confront the pawns.
+// The following table gives pawn imbalance scores.
+// This must be scaled relative to the enemy pieces which
+// confront the pawns.
 
-    static const SCORE PawnBalance [9][9] =
-    {
-        //   0     1     2     3     4     5     6     7     8
+static const SCORE PawnBalance [9][9] =
+{
+    //   0     1     2     3     4     5     6     7     8
 
-        {    0,  120,  140,  150,  157,  162,  167,  170,  172},    // 0
-        {    0,    0,   55,   70,   80,   90,   97,  105,  110},    // 1
-        {    0,    0,    0,   10,   20,   30,   40,   50,   60},    // 2
-        {    0,    0,    0,    0,    6,   15,   20,   25,   30},    // 3
-        {    0,    0,    0,    0,    0,    4,   10,   12,   15},    // 4
-        {    0,    0,    0,    0,    0,    0,    3,    5,   10},    // 5
-        {    0,    0,    0,    0,    0,    0,    0,    2,    3},    // 6
-        {    0,    0,    0,    0,    0,    0,    0,    0,    1},    // 7
-        {    0,    0,    0,    0,    0,    0,    0,    0,    0},    // 8
-    };
+    {    0,  120,  140,  150,  157,  162,  167,  170,  172},    // 0
+    {    0,    0,   55,   70,   80,   90,   97,  105,  110},    // 1
+    {    0,    0,    0,   10,   20,   30,   40,   50,   60},    // 2
+    {    0,    0,    0,    0,    6,   15,   20,   25,   30},    // 3
+    {    0,    0,    0,    0,    0,    4,   10,   12,   15},    // 4
+    {    0,    0,    0,    0,    0,    0,    3,    5,   10},    // 5
+    {    0,    0,    0,    0,    0,    0,    0,    2,    3},    // 6
+    {    0,    0,    0,    0,    0,    0,    0,    0,    1},    // 7
+    {    0,    0,    0,    0,    0,    0,    0,    0,    0},    // 8
+};
 
 #endif // PAWN_BALANCE
 
 // Rook ----------------------------------------------------------------
 #define  ROOK_PIN_Q                (gene.v[62])   // rook pins B/N against Q
-#define  ROOK_PIN_K                (gene.v[63])   
+#define  ROOK_PIN_K                (gene.v[63])
 #define  ROOK_OPEN_FILE            (gene.v[64])
 #define  ROOK_CAN_REACH_7TH_RANK   (gene.v[65])
 #define  ROOK_ON_7TH_RANK          (gene.v[66])
@@ -606,7 +606,7 @@ SCORE ComputerChessPlayer::BlackRookBonus ( const SQUARE *b, int ofs, int wk_off
 }
 
 
-SCORE ComputerChessPlayer::WhiteBishopBonus ( 
+SCORE ComputerChessPlayer::WhiteBishopBonus (
     const SQUARE *b,
     int ofs,
     int bk_offset )
@@ -745,7 +745,7 @@ SCORE ComputerChessPlayer::WhiteBishopBonus (
 }
 
 
-SCORE ComputerChessPlayer::BlackBishopBonus ( 
+SCORE ComputerChessPlayer::BlackBishopBonus (
     const SQUARE *b,
     int ofs,
     int bk_offset )
@@ -1064,7 +1064,7 @@ SCORE ComputerChessPlayer::BlackKnightFork ( const SQUARE *p )
 }
 
 
-SCORE ComputerChessPlayer::WhiteKnightBonus ( 
+SCORE ComputerChessPlayer::WhiteKnightBonus (
     const SQUARE *inBoard,
     int ofs,
     int bk_offset )
@@ -1079,7 +1079,7 @@ SCORE ComputerChessPlayer::WhiteKnightBonus (
         score += CTEK_KNIGHT;
 
     score += WhiteKnightFork ( inBoard );
-    
+
     if ( AttackBlackKingPos ( inBoard + OFFSET(2,1) ) )
         score += KNIGHT_ATTACK_KPOS;
 
@@ -1132,7 +1132,7 @@ SCORE ComputerChessPlayer::WhiteKnightBonus (
 }
 
 
-SCORE ComputerChessPlayer::BlackKnightBonus ( 
+SCORE ComputerChessPlayer::BlackKnightBonus (
     const SQUARE *inBoard,
     int ofs,
     int wk_offset )
@@ -1212,7 +1212,7 @@ static const SCORE QueenPosition [] =
 };
 
 
-SCORE ComputerChessPlayer::WhiteQueenBonus ( 
+SCORE ComputerChessPlayer::WhiteQueenBonus (
     const SQUARE *b,
     int ofs,
     int bk_offset )
@@ -1226,7 +1226,7 @@ SCORE ComputerChessPlayer::WhiteQueenBonus (
         score += CTEK_QUEEN3;
 
     const SQUARE *p;
-    for ( p=b+ofs+NORTH; (*p & ~(WQ_MASK | WR_MASK)) == EMPTY; p += NORTH );    
+    for ( p=b+ofs+NORTH; (*p & ~(WQ_MASK | WR_MASK)) == EMPTY; p += NORTH );
     if ( AttackBlackKingPos(p) )
         score += QUEEN_ATTACK_KPOS;
 
@@ -1265,7 +1265,7 @@ SCORE ComputerChessPlayer::WhiteQueenBonus (
 }
 
 
-SCORE ComputerChessPlayer::BlackQueenBonus ( 
+SCORE ComputerChessPlayer::BlackQueenBonus (
     const SQUARE *b,
     int ofs,
     int wk_offset )
@@ -1275,11 +1275,11 @@ SCORE ComputerChessPlayer::BlackQueenBonus (
 
     if ( dist < 2 )
         score += CTEK_QUEEN2;
-    else if ( dist < 3 ) 
+    else if ( dist < 3 )
         score += CTEK_QUEEN3;
 
     const SQUARE *p;
-    for ( p=b+ofs+SOUTH; (*p & ~(BQ_MASK | BR_MASK)) == EMPTY; p += SOUTH );    
+    for ( p=b+ofs+SOUTH; (*p & ~(BQ_MASK | BR_MASK)) == EMPTY; p += SOUTH );
     if ( AttackWhiteKingPos(p) )
         score += QUEEN_ATTACK_KPOS;
 
@@ -1299,7 +1299,7 @@ SCORE ComputerChessPlayer::BlackQueenBonus (
 
     if ( AttackBlackKingPos(p) )
         score += QUEEN_PROTECT_KPOS;
-    
+
     for ( p=b+ofs+EAST; (*p & ~(BQ_MASK | BR_MASK)) == EMPTY; p += EAST );
     if ( AttackWhiteKingPos(p) )
         score += QUEEN_ATTACK_KPOS;
@@ -1319,7 +1319,7 @@ SCORE ComputerChessPlayer::BlackQueenBonus (
 
 
 
-SCORE ComputerChessPlayer::CastleHoleDanger ( 
+SCORE ComputerChessPlayer::CastleHoleDanger (
     const SQUARE *p,
     int dir,
     SQUARE mask )
@@ -1355,7 +1355,7 @@ SCORE ComputerChessPlayer::CommonMidgameEval ( ChessBoard &board )
     // assistance from either black knight(s) or black bishop(s).
     bool timidWKing =
         ( (board.inventory[BQ_INDEX] > 0 || board.inventory[BR_INDEX] > 1) &&
-        (board.inventory[BB_INDEX] > 0 || board.inventory[BN_INDEX] > 0) );
+          (board.inventory[BB_INDEX] > 0 || board.inventory[BN_INDEX] > 0) );
 
     // Check white castling...
 
@@ -1439,34 +1439,34 @@ SCORE ComputerChessPlayer::CommonMidgameEval ( ChessBoard &board )
                 if ( b[wk + OFFSET(-1,1)] & WP_MASK )
                     score += PAWN_PROTECTS_KING2;
                 else if ( wk < OFFSET(2,6) &&
-                      !(b[wk + OFFSET(-1,2)] & (WP_MASK | OFFBOARD)) &&
-                      !(b[wk + OFFSET(-1,3)] & (WP_MASK | OFFBOARD)) )
+                          !(b[wk + OFFSET(-1,2)] & (WP_MASK | OFFBOARD)) &&
+                          !(b[wk + OFFSET(-1,3)] & (WP_MASK | OFFBOARD)) )
                 {
                     score -= CASTLE_HOLE1;
-                    score -= CastleHoleDanger ( 
-                        &b[wk+OFFSET(-1,0)], NORTH, (BR_MASK | BQ_MASK) );
+                    score -= CastleHoleDanger (
+                                 &b[wk+OFFSET(-1,0)], NORTH, (BR_MASK | BQ_MASK) );
                 }
 
                 if ( b[wk + OFFSET(0,1)] & WP_MASK )
                     score += PAWN_PROTECTS_KING1;
                 else if ( wk < OFFSET(2,6) &&
-                      !(b[wk + OFFSET(0,2)] & WP_MASK) &&
-                      !(b[wk + OFFSET(0,3)] & WP_MASK) )
+                          !(b[wk + OFFSET(0,2)] & WP_MASK) &&
+                          !(b[wk + OFFSET(0,3)] & WP_MASK) )
                 {
                     score -= CASTLE_HOLE2;
-                    score -= CastleHoleDanger ( 
-                        &b[wk], NORTH, (BR_MASK | BQ_MASK) );
+                    score -= CastleHoleDanger (
+                                 &b[wk], NORTH, (BR_MASK | BQ_MASK) );
                 }
 
                 if ( b[wk + OFFSET(1,1)] & WP_MASK )
                     score += PAWN_PROTECTS_KING2;
                 else if ( wk < OFFSET(2,6) &&
-                      !(b[wk + OFFSET(0,2)] & WP_MASK) &&
-                      !(b[wk + OFFSET(0,3)] & WP_MASK) )
+                          !(b[wk + OFFSET(0,2)] & WP_MASK) &&
+                          !(b[wk + OFFSET(0,3)] & WP_MASK) )
                 {
                     score -= CASTLE_HOLE3;
-                    score -= CastleHoleDanger ( 
-                        &b[wk+OFFSET(1,0)], NORTH, (BR_MASK | BQ_MASK) );
+                    score -= CastleHoleDanger (
+                                 &b[wk+OFFSET(1,0)], NORTH, (BR_MASK | BQ_MASK) );
                 }
 
                 if ( b[wk + OFFSET(-1,2)] & WP_MASK )
@@ -1542,11 +1542,11 @@ SCORE ComputerChessPlayer::CommonMidgameEval ( ChessBoard &board )
 
     //---------------------------- BLACK KING ----------------------------
 
-    // Black king is timid if there is a white queen or a pair of white rooks 
+    // Black king is timid if there is a white queen or a pair of white rooks
     // with assistance from either white knight(s) or white bishop(s).
     bool timidBKing =
         ( (board.inventory[WQ_INDEX] > 0 || board.inventory[WR_INDEX] > 1) &&
-        (board.inventory[WB_INDEX] > 0 || board.inventory[WN_INDEX] > 0) );
+          (board.inventory[WB_INDEX] > 0 || board.inventory[WN_INDEX] > 0) );
 
     // Check black castling...
 
@@ -1624,40 +1624,40 @@ SCORE ComputerChessPlayer::CommonMidgameEval ( ChessBoard &board )
                 if ( b[bk + OFFSET(-1,-1)] & BP_MASK )
                     score -= PAWN_PROTECTS_KING2;
                 else if ( bk > OFFSET(9,5) &&
-                      !(b[bk + OFFSET(-1,-2)] & (BP_MASK | OFFBOARD) ) &&
-                      !(b[bk + OFFSET(-1,-3)] & (BP_MASK | OFFBOARD) ) )
+                          !(b[bk + OFFSET(-1,-2)] & (BP_MASK | OFFBOARD) ) &&
+                          !(b[bk + OFFSET(-1,-3)] & (BP_MASK | OFFBOARD) ) )
                 {
                     score += CASTLE_HOLE1;
-                    score += CastleHoleDanger ( 
-                        &b[bk+OFFSET(-1,0)],
-                        SOUTH,
-                        (WR_MASK | WQ_MASK) );
+                    score += CastleHoleDanger (
+                                 &b[bk+OFFSET(-1,0)],
+                                 SOUTH,
+                                 (WR_MASK | WQ_MASK) );
                 }
 
                 if ( b[bk + OFFSET(0,-1)] & BP_MASK )
                     score -= PAWN_PROTECTS_KING1;
                 else if ( bk > OFFSET(9,5) &&
-                      !(b[bk + OFFSET(0,-2)] & BP_MASK) &&
-                      !(b[bk + OFFSET(0,-3)] & BP_MASK) )
+                          !(b[bk + OFFSET(0,-2)] & BP_MASK) &&
+                          !(b[bk + OFFSET(0,-3)] & BP_MASK) )
                 {
                     score += CASTLE_HOLE2;
-                    score += CastleHoleDanger ( 
-                        &b[bk],
-                        SOUTH,
-                        (WR_MASK | WQ_MASK) );
+                    score += CastleHoleDanger (
+                                 &b[bk],
+                                 SOUTH,
+                                 (WR_MASK | WQ_MASK) );
                 }
 
                 if ( b[bk + OFFSET(1,-1)] & BP_MASK )
                     score -= PAWN_PROTECTS_KING2;
                 else if ( bk > OFFSET(9,5) &&
-                      !(b[bk + OFFSET(1,-2)] & BP_MASK) &&
-                      !(b[bk + OFFSET(1,-3)] & BP_MASK) )
+                          !(b[bk + OFFSET(1,-2)] & BP_MASK) &&
+                          !(b[bk + OFFSET(1,-3)] & BP_MASK) )
                 {
                     score += CASTLE_HOLE3;
-                    score += CastleHoleDanger ( 
-                        &b[bk + OFFSET(1,0)],
-                        SOUTH,
-                        (WR_MASK | WQ_MASK) );
+                    score += CastleHoleDanger (
+                                 &b[bk + OFFSET(1,0)],
+                                 SOUTH,
+                                 (WR_MASK | WQ_MASK) );
                 }
 
                 if ( b[bk + OFFSET(-1,-2)] & BP_MASK )
@@ -1816,7 +1816,7 @@ SCORE ComputerChessPlayer::CommonMidgameEval ( ChessBoard &board )
 }
 
 
-SCORE ComputerChessPlayer::WhiteMidgameEval ( 
+SCORE ComputerChessPlayer::WhiteMidgameEval (
     ChessBoard &board,
     int depth,
     SCORE alpha,
@@ -1837,7 +1837,7 @@ SCORE ComputerChessPlayer::WhiteMidgameEval (
         // assistance from either black knight(s) or black bishop(s).
         bool timidWKing =
             ( (board.inventory[BQ_INDEX] > 0 || board.inventory[BR_INDEX] > 1) &&
-            (board.inventory[BB_INDEX] > 0 || board.inventory[BN_INDEX] > 0) );
+              (board.inventory[BB_INDEX] > 0 || board.inventory[BN_INDEX] > 0) );
 
         if ( timidWKing )
             score += WKingPosition1 [board.wk_offset];    // cautious position table
@@ -1880,7 +1880,7 @@ SCORE ComputerChessPlayer::WhiteMidgameEval (
 }
 
 
-SCORE ComputerChessPlayer::BlackMidgameEval ( 
+SCORE ComputerChessPlayer::BlackMidgameEval (
     ChessBoard &board,
     int depth,
     SCORE alpha,
@@ -1897,11 +1897,11 @@ SCORE ComputerChessPlayer::BlackMidgameEval (
 
         score = MaterialEval ( board.wmaterial, board.bmaterial );
 
-        // Black king is timid if there is a white queen or a pair of white rooks 
+        // Black king is timid if there is a white queen or a pair of white rooks
         // with assistance from either white knight(s) or white bishop(s).
         bool timidBKing =
             ( (board.inventory[WQ_INDEX] > 0 || board.inventory[WR_INDEX] > 1) &&
-            (board.inventory[WB_INDEX] > 0 || board.inventory[WN_INDEX] > 0) );
+              (board.inventory[WB_INDEX] > 0 || board.inventory[WN_INDEX] > 0) );
 
         if ( timidBKing )
             score -= BKingPosition1 [board.bk_offset];  // cautious position table
@@ -1944,7 +1944,7 @@ SCORE ComputerChessPlayer::BlackMidgameEval (
 }
 
 
-SCORE ComputerChessPlayer::WhitePawnBonus ( 
+SCORE ComputerChessPlayer::WhitePawnBonus (
     const ChessBoard &b,
     const int   ofs,
     const int   x,
@@ -2021,8 +2021,8 @@ SCORE ComputerChessPlayer::WhitePawnBonus (
     else if ( isPassedPawn )
     {
         score += PASSED_PAWN_ALONE;
-        int leftProtectPossible = 
-            (board[ofs+SOUTHWEST]==EMPTY) 
+        int leftProtectPossible =
+            (board[ofs+SOUTHWEST]==EMPTY)
             && (board[ofs+2*SOUTH+WEST] & WP_MASK);
 
         int rightProtectPossible =
@@ -2036,12 +2036,12 @@ SCORE ComputerChessPlayer::WhitePawnBonus (
             score -= PASSED_PAWN_VULNERABLE;
     }
 
-    if ( (board [ofs + NORTHEAST] & WB_MASK) 
-        || (board [ofs + NORTHWEST] & WB_MASK) )
+    if ( (board [ofs + NORTHEAST] & WB_MASK)
+            || (board [ofs + NORTHWEST] & WB_MASK) )
         score += BISHOP_PROTECT_PAWN;
 
     if ( (board[ofs+NORTHEAST] & (BN_MASK|BB_MASK|BR_MASK|BQ_MASK|BK_MASK)) &&
-         (board[ofs+NORTHWEST] & (BN_MASK|BB_MASK|BR_MASK|BQ_MASK|BK_MASK)) )
+            (board[ofs+NORTHWEST] & (BN_MASK|BB_MASK|BR_MASK|BQ_MASK|BK_MASK)) )
         score += PAWN_FORK;
 
     if ( isPassedPawn )
@@ -2049,9 +2049,9 @@ SCORE ComputerChessPlayer::WhitePawnBonus (
         SCORE passedPawnBonus = 0;
         switch ( ybase )
         {
-            case OFFSET(2,6):  passedPawnBonus = PASSED_3_FROM_PROM;   break;
-            case OFFSET(2,7):  passedPawnBonus = PASSED_2_FROM_PROM;   break;
-            case OFFSET(2,8):  passedPawnBonus = PASSED_1_FROM_PROM;   break;
+        case OFFSET(2,6):  passedPawnBonus = PASSED_3_FROM_PROM;   break;
+        case OFFSET(2,7):  passedPawnBonus = PASSED_2_FROM_PROM;   break;
+        case OFFSET(2,8):  passedPawnBonus = PASSED_1_FROM_PROM;   break;
         }
 
         if ( !protectPossible )
@@ -2079,7 +2079,7 @@ SCORE ComputerChessPlayer::WhitePawnBonus (
                 passedPawnBonus += ROOK_BACKS_PASSED_PAWN1;
         }
 
-        // look forward for non-pawn pieces that block the pawn's 
+        // look forward for non-pawn pieces that block the pawn's
         // potential to advance...
 
         for ( bofs=ofs + NORTH; board[bofs] != OFFBOARD; bofs += NORTH )
@@ -2145,7 +2145,7 @@ SCORE ComputerChessPlayer::WhitePawnBonus (
 }
 
 
-SCORE ComputerChessPlayer::BlackPawnBonus ( 
+SCORE ComputerChessPlayer::BlackPawnBonus (
     const ChessBoard &b,
     const int         ofs,
     const int         x,
@@ -2219,8 +2219,8 @@ SCORE ComputerChessPlayer::BlackPawnBonus (
     else if ( isPassedPawn )
     {
         score += PASSED_PAWN_ALONE;
-        int leftProtectPossible = 
-            (board[ofs+NORTHWEST]==EMPTY) 
+        int leftProtectPossible =
+            (board[ofs+NORTHWEST]==EMPTY)
             && (board[ofs+2*NORTH+WEST] & BP_MASK);
 
         int rightProtectPossible =
@@ -2234,8 +2234,8 @@ SCORE ComputerChessPlayer::BlackPawnBonus (
             score -= PASSED_PAWN_VULNERABLE;
     }
 
-    if ( (board [ofs + SOUTHEAST] & BB_MASK) 
-        || (board [ofs + SOUTHWEST] & BB_MASK) )
+    if ( (board [ofs + SOUTHEAST] & BB_MASK) ||
+         (board [ofs + SOUTHWEST] & BB_MASK) )
         score += BISHOP_PROTECT_PAWN;
 
     if ( (board[ofs+SOUTHEAST] & (WN_MASK|WB_MASK|WR_MASK|WQ_MASK|WK_MASK)) &&
@@ -2247,9 +2247,9 @@ SCORE ComputerChessPlayer::BlackPawnBonus (
         SCORE passedPawnBonus = 0;
         switch ( ybase )
         {
-            case OFFSET(2,5):  passedPawnBonus = PASSED_3_FROM_PROM;   break;
-            case OFFSET(2,4):  passedPawnBonus = PASSED_2_FROM_PROM;   break;
-            case OFFSET(2,3):  passedPawnBonus = PASSED_1_FROM_PROM;   break;
+        case OFFSET(2,5):  passedPawnBonus = PASSED_3_FROM_PROM;   break;
+        case OFFSET(2,4):  passedPawnBonus = PASSED_2_FROM_PROM;   break;
+        case OFFSET(2,3):  passedPawnBonus = PASSED_1_FROM_PROM;   break;
         }
 
         if ( !protectPossible )
@@ -2277,7 +2277,7 @@ SCORE ComputerChessPlayer::BlackPawnBonus (
                 passedPawnBonus += ROOK_BACKS_PASSED_PAWN1;
         }
 
-        // look forward for non-pawn pieces that block the pawn's 
+        // look forward for non-pawn pieces that block the pawn's
         // potential to advance...
 
         for ( bofs=ofs + SOUTH; board[bofs] != OFFBOARD; bofs += SOUTH )
@@ -2362,76 +2362,76 @@ SCORE ComputerChessPlayer::BlackPawnBonus (
 
 
          Revision history:
-    
+
     1993 August 30 [Don Cross]
          Changing pointers to references in the interfaces where
          appropriate.
-    
+
     1993 October 19 [Don Cross]
          Added bonuses for being castled and being able to castle.
          Added small bonus for putting opponent in check.
          Added knowledge of definite draws that aren't stalements.
          Added all kinds of cool positional knowledge about
          bishops, knights, and especially pawns.
-    
+
     1993 October 24 [Don Cross]
          Added MaterialEval() which encourages trades when ahead
          in material, and discourages trades when down in material.
-    
+
     1993 October 25 [Don Cross]
          Added castling security knowledge.
-    
+
     1993 October 31 [Don Cross]
          Added knowledge of knight forks.
-    
+
     1993 December 31 [Don Cross]
          Added knowledge of pawn forks.
-    
+
     1994 January 5 [Don Cross]
          Increased the value of pawn forks.
          Improved blocked-bishop heuristics.
          Improved efficiency of split-pawn heuristics.
          Increased value of split (isolated) pawn.
-    
+
     1994 February 3 [Don Cross]
          Tried to improve knight fork heuristics.
-    
+
     1994 February 6 [Don Cross]
          Changing knight and king position heuristics over to
          lookup tables.
-    
+
     1994 February 10 [Don Cross]
          Changing over to using indexed pieces.
-    
+
     1994 February 14 [Don Cross]
          Made castled position heuristics a lot better!
-    
+
     1994 February 17 [Don Cross]
          Moved all piece positional code into bonus functions.
-    
+
     1994 February 18 [Don Cross]
          Changed eval function to not do positional eval if material
          eval is far enough beyond pruning that position doesn't
          matter anyway.
-    
+
     1995 March 31 [Don Cross]
          Adding bonuses for having pawns attack key center squares.
          This will be most important for opening play.
          Also noticed & fixed a little problem with the asymmetry
          in the KnightPosition array.  (I wasn't correcting for
          White's point of view.)
-    
+
     1995 April 16 [Don Cross]
          Added pawn balance code.
          This code corrects for the strategic benefit
          of being the only player with pawns.
          See ComputerChessPlayer::CommonMidgameEval().
-    
+
     1996 July 21 [Don Cross]
          Refining castling heuristics.  Was ignoring the "KingPosition"
          tables when king had not yet moved.  This resulted in less than
          desired net bonus for castling behavior.
-    
+
     1996 July 22 [Don Cross]
          Replaced simple back-rank penalties for bishops with a complete
          position table.
@@ -2439,35 +2439,35 @@ SCORE ComputerChessPlayer::BlackPawnBonus (
          were not finding kings except in the first 'if' statement.
          Adding bonus for every square surrounding an enemy king which
          is under attack.
-    
+
     1996 July 23 [Don Cross]
          Added CTEK_PAWN stuff.
-    
+
     1996 July 27 [Don Cross]
          Toned down king position heuristics.
-    
+
     1996 August 28 [Don Cross]
          Decreasing the importance of split pawns, rook-file pawns, and
          doubled pawns.  Chenard seems to be giving away knights too
          easily, and I want to see if this is a fix.
-    
+
     1997 June 10 [Don Cross]
          Adding support for built-in profiler code.
-    
+
     1999 January 5 [Don Cross]
          Fixed indentation and updated coding style.
-    
+
     1999 January 13 [Don Cross]
          Added code to find pins caused by bishops against
          enemy rooks, queens, and kings.
-    
+
     1999 January 24 [Don Cross]
          Checking for pins caused by rooks against enemy king and queen.
          Making bishop pins and rook pins count more against a king
          than a queen.
          Added QueenPosition[] array, an attempt to keep computer's queen
          out of corners, (or force enemy's there).
-    
+
     1999 January 27 [Don Cross]
          Trying to make Chenard more aggressive against enemy king and
          more defensive about own king.  Toward this end, I have added
@@ -2475,7 +2475,7 @@ SCORE ComputerChessPlayer::BlackPawnBonus (
          attempt to determine whether a square known to be under attack
          puts any real pressure on a nearby king.  This really slows
          down the search, but it may be worth it for strategic strength.
-    
+
     1999 January 28 [Don Cross]
          Noticed that knight-fork bonus was too small: I was using the
          QUEEN_VAL, ROOK_VAL, and KNIGHT_VAL constants directly, even
@@ -2484,7 +2484,7 @@ SCORE ComputerChessPlayer::BlackPawnBonus (
          constant, and replaced with a factor of 7 (for effective 0.7 factor)
          as a form of reckoning uncertainty.
          Decreased SAFE_EVAL_PRUNE_MARGIN from 400 to 180.
-    
+
     1999 January 29 [Don Cross]
          Adding some new criteria for passed pawns being good:
          making passed pawns that are not as easily protected by other
@@ -2492,19 +2492,19 @@ SCORE ComputerChessPlayer::BlackPawnBonus (
          Adding bonuses for getting rook(s) behind a passed pawn.
          Adding penalty for having pieces (of either side) in the
          path of a passed pawn.
-    
+
     1999 February 5 [Don Cross]
          Moved inclusion of king position table value into score before
          deciding whether to do "safe eval prune".  Also increased
          SAFE_EVAL_PRUNE_MARGIN back up to 220.  Both changes are intended
          to decrease the likelihood of messing up the search in some
-         oddball position, even though both will decrease average search 
+         oddball position, even though both will decrease average search
          efficiency.
-    
+
     1999 February 10 [Don Cross]
-         Doh!  Realized that the bishop pin stuff was incorrectly 
+         Doh!  Realized that the bishop pin stuff was incorrectly
          coded such that it never had any effect.  This has been fixed.
-    
+
     1999 February 17 [Don Cross]
          Increasing the values of the xxx_ATTACK_KPOS constants.
          Adding calls to Attack...KingPos() functions to motivate

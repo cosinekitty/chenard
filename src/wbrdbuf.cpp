@@ -23,15 +23,17 @@ int PieceFont_DY [NUM_PIECE_FONTS] = {40, 48, 48};
 
 void NewBoardSize ( int newSize )
 {
-    if ( newSize < 0 || newSize > 2 ) {
+    if ( newSize < 0 || newSize > 2 )
+    {
         newSize = 0;
     }
 
     ChessBoardSize = newSize;
-    switch (ChessBoardSize) {
-        case 1:   BitmapScaleFactor = 3;  BitmapScaleDenom = 2;  break;
-        case 2:   BitmapScaleFactor = 2;  BitmapScaleDenom = 1;  break;
-        default:  BitmapScaleFactor = 1;  BitmapScaleDenom = 1;  break;
+    switch (ChessBoardSize)
+    {
+    case 1:   BitmapScaleFactor = 3;  BitmapScaleDenom = 2;  break;
+    case 2:   BitmapScaleFactor = 2;  BitmapScaleDenom = 1;  break;
+    default:  BitmapScaleFactor = 1;  BitmapScaleDenom = 1;  break;
     }
 }
 
@@ -283,11 +285,11 @@ void DrawBitmap (
     ptOrg.y = 0;
     DPtoLP ( hdcMem, &ptOrg, 1 );
 
-    StretchBlt ( 
-        hdc, xStart, yStart, 
-        (BitmapScaleFactor * ptSize.x) / BitmapScaleDenom, 
+    StretchBlt (
+        hdc, xStart, yStart,
+        (BitmapScaleFactor * ptSize.x) / BitmapScaleDenom,
         (BitmapScaleFactor * ptSize.y) / BitmapScaleDenom,
-        hdcMem, ptOrg.x, ptOrg.y, 
+        hdcMem, ptOrg.x, ptOrg.y,
         ptSize.x, ptSize.y,
         SRCCOPY );
 
@@ -330,25 +332,25 @@ void BoardDisplayBuffer::drawSquare (
 
     switch ( square )
     {
-        case EMPTY:       hbm = whiteSquare ? ew  : eb;   break;
+    case EMPTY:       hbm = whiteSquare ? ew  : eb;   break;
 
-        case WPAWN:       hbm = whiteSquare ? wpw : wpb;  break;
-        case WKNIGHT:     hbm = whiteSquare ? wnw : wnb;  break;
-        case WBISHOP:     hbm = whiteSquare ? wbw : wbb;  break;
-        case WROOK:       hbm = whiteSquare ? wrw : wrb;  break;
-        case WQUEEN:      hbm = whiteSquare ? wqw : wqb;  break;
-        case WKING:       hbm = whiteSquare ? wkw : wkb;  break;
+    case WPAWN:       hbm = whiteSquare ? wpw : wpb;  break;
+    case WKNIGHT:     hbm = whiteSquare ? wnw : wnb;  break;
+    case WBISHOP:     hbm = whiteSquare ? wbw : wbb;  break;
+    case WROOK:       hbm = whiteSquare ? wrw : wrb;  break;
+    case WQUEEN:      hbm = whiteSquare ? wqw : wqb;  break;
+    case WKING:       hbm = whiteSquare ? wkw : wkb;  break;
 
-        case BPAWN:       hbm = whiteSquare ? bpw : bpb;  break;
-        case BKNIGHT:     hbm = whiteSquare ? bnw : bnb;  break;
-        case BBISHOP:     hbm = whiteSquare ? bbw : bbb;  break;
-        case BROOK:       hbm = whiteSquare ? brw : brb;  break;
-        case BQUEEN:      hbm = whiteSquare ? bqw : bqb;  break;
-        case BKING:       hbm = whiteSquare ? bkw : bkb;  break;
+    case BPAWN:       hbm = whiteSquare ? bpw : bpb;  break;
+    case BKNIGHT:     hbm = whiteSquare ? bnw : bnb;  break;
+    case BBISHOP:     hbm = whiteSquare ? bbw : bbb;  break;
+    case BROOK:       hbm = whiteSquare ? brw : brb;  break;
+    case BQUEEN:      hbm = whiteSquare ? bqw : bqb;  break;
+    case BKING:       hbm = whiteSquare ? bkw : bkb;  break;
 
-        case OFFBOARD:    DrawOffboard(hdc,x,y,whiteViewFlag);  return;
+    case OFFBOARD:    DrawOffboard(hdc,x,y,whiteViewFlag);  return;
 
-        default:          hbm = whiteSquare ? qmw : qmb;
+    default:          hbm = whiteSquare ? qmw : qmb;
     }
 
     short xStart, yStart;
@@ -389,8 +391,7 @@ void BoardDisplayBuffer::drawSquare (
     extern bool Global_HiliteMoves;
     if ( Global_HiliteMoves )
     {
-        if ( /* (hiliteSourceX == x && hiliteSourceY == y) || */
-             (hiliteDestX == x && hiliteDestY == y) )
+        if (hiliteDestX == x && hiliteDestY == y)
         {
             oldbrush = (HBRUSH) SelectObject ( hdc, GetStockObject(NULL_BRUSH) );
             hpen = CreatePen ( PS_SOLID, 0, RGB(128,128,0) );
@@ -409,7 +410,8 @@ void BoardDisplayBuffer::drawSquare (
         }
     }
 
-    if (readingMoveFlag && (hiliteKeyX == x) && (hiliteKeyY == y)) {
+    if (readingMoveFlag && (hiliteKeyX == x) && (hiliteKeyY == y))
+    {
         // Display keyboard move selector...
 
         oldbrush = (HBRUSH) SelectObject ( hdc, GetStockObject(NULL_BRUSH) );
@@ -434,7 +436,8 @@ void BoardDisplayBuffer::drawSquare (
 
 void BoardDisplayBuffer::touchSquare (int x, int y)
 {
-    if (DisplayCoordsValid(x,y)) {
+    if (DisplayCoordsValid(x,y))
+    {
         changed[x][y] = true;
         freshenSquare (x, y);
     }
@@ -465,13 +468,17 @@ void BoardDisplayBuffer::keySelectSquare (int x, int y)
 
 void BoardDisplayBuffer::keyMove (int dx, int dy)
 {
-    if (readingMoveFlag) {
-        if (DisplayCoordsValid (hiliteKeyX, hiliteKeyY)) {
-            if (!whiteViewFlag) {
+    if (readingMoveFlag)
+    {
+        if (DisplayCoordsValid (hiliteKeyX, hiliteKeyY))
+        {
+            if (!whiteViewFlag)
+            {
                 dx = -dx;
                 dy = -dy;
             }
-            if (DisplayCoordsValid (hiliteKeyX + dx, hiliteKeyY + dy)) {
+            if (DisplayCoordsValid (hiliteKeyX + dx, hiliteKeyY + dy))
+            {
                 keySelectSquare (hiliteKeyX + dx, hiliteKeyY + dy);
             }
         }
@@ -479,8 +486,8 @@ void BoardDisplayBuffer::keyMove (int dx, int dy)
 }
 
 
-void BoardDisplayBuffer::informMoveCoords ( 
-    int sourceX, int sourceY, 
+void BoardDisplayBuffer::informMoveCoords (
+    int sourceX, int sourceY,
     int destX,   int destY )
 {
     hiliteSourceX  =  sourceX;
@@ -500,7 +507,7 @@ void BoardDisplayBuffer::drawVector ( HDC hdc )
 }
 
 
-void BoardDisplayBuffer::draw ( 
+void BoardDisplayBuffer::draw (
     HDC hdc,
     int minx, int maxx,
     int miny, int maxy )
@@ -543,8 +550,8 @@ void BoardDisplayBuffer::draw (
     HBRUSH oldbrush = (HBRUSH) SelectObject ( hdc, GetStockObject(NULL_BRUSH) );
     HPEN oldpen = (HPEN) SelectObject ( hdc, GetStockObject(BLACK_PEN) );
 
-    Rectangle ( 
-        hdc, 
+    Rectangle (
+        hdc,
         SQUARE_SCREENX1(0)-1, SQUARE_SCREENY1(7)-1,
         SQUARE_SCREENX2(7)+2, SQUARE_SCREENY2(0)+2 );
 
@@ -555,7 +562,8 @@ void BoardDisplayBuffer::draw (
 
 void BoardDisplayBuffer::setSquareContents ( int x, int y, SQUARE s )
 {
-    if (DisplayCoordsValid(x,y)) {
+    if (DisplayCoordsValid(x,y))
+    {
         board[x][y] = s;
         changed[x][y] = true;
     }
@@ -678,7 +686,7 @@ void BoardDisplayBuffer::freshenBoard()
     rect.left   =   SQUARE_SCREENX1(0);
     rect.top    =   SQUARE_SCREENY1(7);
     rect.right  =   SQUARE_SCREENX2(7);
-    rect.bottom =   SQUARE_SCREENY2(0);  
+    rect.bottom =   SQUARE_SCREENY2(0);
 
     InvalidateRect ( HwndMain, &rect, FALSE );
 }
@@ -753,26 +761,26 @@ BoardDisplayBuffer TheBoardDisplayBuffer;
 
 
          Revision history:
-    
+
     1999 February 12 [Don Cross]
          Updated coding style.
-    
+
     1999 January 11 [Don Cross]
          Adding new capability: hilighting dest square of all moves.
          Adding user control to enable/disable this, along with
          control over whether to animate opponent moves.
-    
+
     1999 January 3 [Don Cross]
          Adding support for displaying algebraic coordinates around board.
-    
+
     1997 January 30 [Don Cross]
          Adding "Skak" font.
-    
+
     1996 July 29 [Don Cross]
          Started porting from OS/2 to Win32.
-    
+
     1994 February 9 [Don Cross]
          Adding visual feedback for selecting squares.
-    
+
 */
 

@@ -20,35 +20,35 @@ unsigned _stklen = 0x6000;
 #pragma argsused
 int main ( int argc, char *argv[] )
 {
-   extern bool sound_flag;
-   sound_flag = false;
+    extern bool sound_flag;
+    sound_flag = false;
 
-   printf ( "\n"
-            "Chenard / MS-DOS CGA version (22 June 1997)\n"
-            "A chess program by Don Cross <dcross@intersrv.com>\n"
-            "http://www.intersrv.com/~dcross\n\n" );
+    printf ( "\n"
+             "Chenard / MS-DOS CGA version (22 June 1997)\n"
+             "A chess program by Don Cross <dcross@intersrv.com>\n"
+             "http://www.intersrv.com/~dcross\n\n" );
 
-   ChessBoard       theBoard;
-   ChessUI_dos_cga  theUserInterface;
-   ChessGame theGame ( theBoard, theUserInterface );
-   theGame.Play();
+    ChessBoard       theBoard;
+    ChessUI_dos_cga  theUserInterface;
+    ChessGame theGame ( theBoard, theUserInterface );
+    theGame.Play();
 
-   return 0;
+    return 0;
 }
 
 
 void ChessFatal ( const char *message )
 {
-   fprintf ( stderr, "Chess fatal:\n%s\n", message );
+    fprintf ( stderr, "Chess fatal:\n%s\n", message );
 
-   FILE *errorLog = fopen ( "doscga.err", "wt" );
-   if ( errorLog )
-   {
-      fprintf ( errorLog, "Chess fatal:\n%s\n", message );
-      fclose ( errorLog );
-   }
+    FILE *errorLog = fopen ( "doscga.err", "wt" );
+    if ( errorLog )
+    {
+        fprintf ( errorLog, "Chess fatal:\n%s\n", message );
+        fclose ( errorLog );
+    }
 
-   exit(1);
+    exit(1);
 }
 
 
@@ -63,8 +63,8 @@ void ChessFatal ( const char *message )
     Found these on CDROM marked "14 September 1999".
     Added cvs log tag and moved old revision history after that.
 
-    
-    
+
+
      Revision history:
 
 1996 February 28 [Don Cross]

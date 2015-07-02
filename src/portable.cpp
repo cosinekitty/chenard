@@ -18,9 +18,9 @@
 #include "lrntree.h"
 
 
-int AnalyzeGameFile ( 
-    double thinkTimeInSeconds, 
-    const char *inGameFilename, 
+int AnalyzeGameFile (
+    double thinkTimeInSeconds,
+    const char *inGameFilename,
     const char *outListFilename );
 
 const char * const CHENARD_VERSION = ConvertDateToVersion(__DATE__);
@@ -115,7 +115,7 @@ int main ( int argc, const char *argv[] )
                 return 1;
             }
         }
-        
+
         ChessGame theGame ( theBoard, theUserInterface );
 
         if ( gameFilename )
@@ -140,7 +140,8 @@ int main ( int argc, const char *argv[] )
             // Tree trainer
 
             int timeToThink = atoi(argv[1]+2);
-            if ( timeToThink < 1 ) {
+            if ( timeToThink < 1 )
+            {
                 timeToThink = 10;
             }
 
@@ -161,16 +162,17 @@ int main ( int argc, const char *argv[] )
             Learn_Output = 1;
 
             LearnTree tree;
-            for ( int argindex=2; argindex < argc; ++argindex ) {
+            for ( int argindex=2; argindex < argc; ++argindex )
+            {
                 tree.absorbFile ( argv[argindex] );
             }
-            
+
             tree.trainer (
                 whitePlayer,
                 blackPlayer,
                 theBoard,
                 theUserInterface,
-                INT32(timeToThink) * INT32(100) 
+                INT32(timeToThink) * INT32(100)
             );
 
             delete whitePlayer;
@@ -217,9 +219,9 @@ int main ( int argc, const char *argv[] )
             tagSaveFile = fopen ( tagFilename, "wt" );
             if ( !tagSaveFile )
             {
-                sprintf ( line, 
-                    "Cannot open unique tag file '%s' for write!\n", 
-                    tagFilename );
+                sprintf ( line,
+                          "Cannot open unique tag file '%s' for write!\n",
+                          tagFilename );
 
                 ChessFatal ( line );
             }
@@ -277,9 +279,9 @@ int main ( int argc, const char *argv[] )
             // Battle two genes against each other...
             if ( argc < 3 )
             {
-                fprintf ( stderr, 
-                    "Gene battle usage:\n\n"
-                    "    chenard -b genefile1 [genefile2]\n\n" );
+                fprintf ( stderr,
+                          "Gene battle usage:\n\n"
+                          "    chenard -b genefile1 [genefile2]\n\n" );
 
                 return 1;
             }
@@ -293,9 +295,9 @@ int main ( int argc, const char *argv[] )
         {
             if ( argc < 5 )
             {
-                fprintf ( stderr, 
-                    "Gene pool merge usage:\n\n"
-                    "    chenard -G poolsize otherdir1 otherdir2 ...\n\n" );
+                fprintf ( stderr,
+                          "Gene pool merge usage:\n\n"
+                          "    chenard -G poolsize otherdir1 otherdir2 ...\n\n" );
 
                 return 1;
             }
@@ -303,12 +305,12 @@ int main ( int argc, const char *argv[] )
             // Slurp "cream of the crop" from other GAs into current directory.
             int outputPoolSize = atoi(argv[2]);
 
-            return ChessGA::MergePools ( 
-                outputPoolSize, 
-                argc-3,
-                argv+3,
-                theUserInterface,
-                1 );
+            return ChessGA::MergePools (
+                       outputPoolSize,
+                       argc-3,
+                       argv+3,
+                       theUserInterface,
+                       1 );
         }
 #if !CHENARD_LINUX
         else if ( strcmp ( argv[1], "-E" ) == 0 )
@@ -332,8 +334,8 @@ int main ( int argc, const char *argv[] )
             else
             {
                 fprintf ( stderr,
-                    "Use:  %s -p scoreWindow\n\nwhere 'scoreWindow' is at least 50\n\n",
-                    argv[0] );
+                          "Use:  %s -p scoreWindow\n\nwhere 'scoreWindow' is at least 50\n\n",
+                          argv[0] );
 
                 return 0;
             }
@@ -344,9 +346,9 @@ int main ( int argc, const char *argv[] )
 
             if ( argc != 5 )
             {
-                fprintf ( stderr, 
-                    "Use:  %s -a thinkTimeSeconds inGameFile outListingFile\n\n", 
-                    argv[0] );
+                fprintf ( stderr,
+                          "Use:  %s -a thinkTimeSeconds inGameFile outListingFile\n\n",
+                          argv[0] );
 
                 return 0;
             }
@@ -355,8 +357,8 @@ int main ( int argc, const char *argv[] )
             if ( thinkTimeSeconds < 0.1 )
             {
                 fprintf ( stderr,
-                    "Invalid think time '%s'\n",
-                    argv[2] );
+                          "Invalid think time '%s'\n",
+                          argv[2] );
 
                 return 1;
             }
@@ -367,11 +369,11 @@ int main ( int argc, const char *argv[] )
         }
         else
         {
-            fprintf ( stderr, 
-                "Use:  %s [-s<time_per_move_in_seconds>]\n", argv[0] );
+            fprintf ( stderr,
+                      "Use:  %s [-s<time_per_move_in_seconds>]\n", argv[0] );
 
-            fprintf ( stderr, 
-                "The option '-s' causes Chenard to play against itself.\n" );
+            fprintf ( stderr,
+                      "The option '-s' causes Chenard to play against itself.\n" );
 
             return 1;
         }
@@ -398,7 +400,8 @@ void ChessUI_stdio_InterceptBestPath::DisplayBestPath (
     ChessUI_stdio::DisplayBestPath ( board, path );
 
 #if 0 // !!! temp debug
-    if (listFile) {
+    if (listFile)
+    {
         fprintf ( listFile, "\n{ " );
         ChessBoard temp = board;
         Move move;
@@ -418,10 +421,10 @@ void ChessUI_stdio_InterceptBestPath::DisplayBestPath (
 }
 
 
-void AnalyzePosition ( 
+void AnalyzePosition (
     ChessUI_stdio_InterceptBestPath &ui,
     ComputerChessPlayer &thinker,
-    ChessBoard &_board, 
+    ChessBoard &_board,
     FILE *listFile,
     int column )
 {
@@ -463,9 +466,9 @@ void AnalyzePosition (
 }
 
 
-int AnalyzeGameFile ( 
-    double thinkTimeInSeconds, 
-    const char *inGameFilename, 
+int AnalyzeGameFile (
+    double thinkTimeInSeconds,
+    const char *inGameFilename,
     const char *outListFilename )
 {
     FILE *gameFile = fopen ( inGameFilename, "rb" );
@@ -505,11 +508,13 @@ int AnalyzeGameFile (
     char moveString [64];
 
     tChessMoveStream *stream = tChessMoveStream::OpenFileForRead (inGameFilename);
-    if (stream) {
+    if (stream)
+    {
         bool reset = false;
         for ( int i=0; stream->GetNextMove(move,reset); ++i )
         {
-            if (reset) {
+            if (reset)
+            {
                 board.Init();
                 fprintf (listFile, "\n----------- NEW GAME -----------\n\n");
             }
@@ -539,7 +544,9 @@ int AnalyzeGameFile (
 
         delete stream;
         stream = NULL;
-    } else {
+    }
+    else
+    {
         fprintf (stderr, "Error:  Failure to create stream object for '%s'\n", inGameFilename);
         return 3;
     }
@@ -650,28 +657,28 @@ int AnalyzeGameFile (
     2. Moved old manual revision history after cvs log tag.
     3. Made sure each source file has extra blank line at end so gcc under Linux won't fuss!
 
-    
+
          Revision history:
-    
+
     1993 May [Don Cross]
          Started writing.
-    
+
     1993 August 30 [Don Cross]
          Changing pointers to references in the interfaces where
          appropriate.
-    
+
     1995 March 26 [Don Cross]
          Added self-play capability.
-    
+
     1995 April 2 [Don Cross]
          Added command line option to load game from file.
          This enables Dr. Chenard to play against itself in
          an arbitrary position.
          Made separate functions LoadGame and SaveGame.
-    
+
     1996 February 28 [Don Cross]
          Put in advertising for my email address and web page.
-    
+
     1996 July 28 [Don Cross]
          Made it so that when you pass a game filename as argv[1],
          Chenard will use it whether or not the file already exists.
@@ -680,33 +687,33 @@ int AnalyzeGameFile (
          If no filename is provided, Chenard now always starts new
          game and autosaves to "chess.gam".
          These changes make it more convenient to play games on ChessLive.
-    
+
     1996 August 23 [Don Cross]
          Replacing old memory-based learning tree with disk-based tree file
-    
+
     1999 January 1 [Don Cross]
          Minor code style changes.
          Added conditionally compiled code to recognize GNU C++ version.
-    
+
     1999 January 15 [Don Cross]
          Merging in lots of minor changes from Windows/DOS versions.
-    
+
     1999 January 18 [Don Cross]
          Now tree trainer can absorb game files specified on command line
          into the experience tree before beginning training.
-    
+
     1999 February 17 [Don Cross]
          Adding a genetic algorithm for evolving better eval and
          moving ordering heuristics.
-    
+
     1999 July 19 [Don Cross]
-         Adding a game analysis option '-a'.  This goes through a 
+         Adding a game analysis option '-a'.  This goes through a
          given game file move by move and performs a search and
-         prints out the score and best path for each position in the 
+         prints out the score and best path for each position in the
          game.  This is useful for studying human-vs-human games.
-    
+
     2001 January 12 [Don Cross]
          Adding tree packer option '-p'.
-    
+
 */
 

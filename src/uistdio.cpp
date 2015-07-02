@@ -62,19 +62,19 @@ ChessPlayer *ChessUI_stdio::CreatePlayer ( ChessSide side )
 
     switch ( side )
     {
-        case SIDE_WHITE:
-            sideName = "White";
-            PlayerString = &WhitePlayerString;
-            break;
+    case SIDE_WHITE:
+        sideName = "White";
+        PlayerString = &WhitePlayerString;
+        break;
 
-        case SIDE_BLACK:
-            sideName = "Black";
-            PlayerString = &BlackPlayerString;
-            break;
+    case SIDE_BLACK:
+        sideName = "Black";
+        PlayerString = &BlackPlayerString;
+        break;
 
-        default:
-            ChessFatal ( "Invalid call to ChessUI_stdio::CreatePlayer()" );
-            break;
+    default:
+        ChessFatal ( "Invalid call to ChessUI_stdio::CreatePlayer()" );
+        break;
     }
 
 #if SUPPORT_LINUX_INTERNET
@@ -116,7 +116,8 @@ ChessPlayer *ChessUI_stdio::CreatePlayer ( ChessSide side )
                 printf ( "Enter think time in seconds [10]: " );
                 fflush(stdout);
                 UserString[0] = '\0';
-                if (!fgets (UserString, sizeof(UserString), stdin)) {
+                if (!fgets (UserString, sizeof(UserString), stdin))
+                {
                     // I added this to get around a compiler warning in Linux for not checking return value of fgets().
                     strcpy (UserString, "10");      // apply default if for some reason we can't read line from stdin
                 }
@@ -135,7 +136,7 @@ ChessPlayer *ChessUI_stdio::CreatePlayer ( ChessSide side )
                 {
                     double ThinkTime = 0;
                     if ( !(sscanf ( UserString, "%lf", &ThinkTime ) == 1 &&
-                           ThinkTime >= 0.1) )
+                            ThinkTime >= 0.1) )
                     {
                         ThinkTime = 10;
                     }
@@ -325,8 +326,8 @@ bool ChessUI_stdio::ReadMove (
             else
             {
                 fprintf ( stderr,
-                    "Error opening file '%s' for read!\x07\n",
-                    temp );
+                          "Error opening file '%s' for read!\x07\n",
+                          temp );
             }
         }
         else if ( sscanf ( s, "save %s", temp ) == 1 )
@@ -338,15 +339,15 @@ bool ChessUI_stdio::ReadMove (
             else
             {
                 fprintf ( stderr,
-                    "Error opening file '%s' for write!\x07\n",
-                    temp );
+                          "Error opening file '%s' for write!\x07\n",
+                          temp );
             }
         }
         else if ( strcmp ( s, "scores" ) == 0 )
         {
             showScores = !showScores;
             printf ( "Display of min-max scores and best path info now %s.\n",
-                (showScores ? "ENABLED" : "DISABLED") );
+                     (showScores ? "ENABLED" : "DISABLED") );
         }
         else if ( strcmp ( s, "undo" ) == 0 )
         {
@@ -374,7 +375,7 @@ bool ChessUI_stdio::ReadMove (
                         (ComputerChessPlayer *)whitePlayer;
                     cp->SetTimeLimit ( INT32(100) * INT32(newTimeLimit) );
                     printf ( "Set White's search time limit to %d seconds\n",
-                        newTimeLimit );
+                             newTimeLimit );
                 }
 
                 if ( blackPlayerType==PT_COMPUTER && blackPlayer )
@@ -383,7 +384,7 @@ bool ChessUI_stdio::ReadMove (
                         (ComputerChessPlayer *)blackPlayer;
                     cp->SetTimeLimit ( INT32(100) * INT32(newTimeLimit) );
                     printf ( "Set Black's search time limit to %d seconds\n",
-                        newTimeLimit );
+                             newTimeLimit );
                 }
             }
             else
@@ -392,7 +393,7 @@ bool ChessUI_stdio::ReadMove (
             }
         }
         else if ( sscanf ( s, "edit %[a-zA-Z1-8.]", temp ) == 1
-            && strlen(temp)==3 )
+                  && strlen(temp)==3 )
         {
             int x = temp[1] - 'a';
             int y = temp[2] - '1';
@@ -401,19 +402,19 @@ bool ChessUI_stdio::ReadMove (
                 SQUARE square = 0xFFFFFFFF;
                 switch ( temp[0] )
                 {
-                    case 'P':   square = WPAWN;     break;
-                    case 'N':   square = WKNIGHT;   break;
-                    case 'B':   square = WBISHOP;   break;
-                    case 'R':   square = WROOK;     break;
-                    case 'Q':   square = WQUEEN;    break;
-                    case 'K':   square = WKING;     break;
-                    case 'p':   square = BPAWN;     break;
-                    case 'n':   square = BKNIGHT;   break;
-                    case 'b':   square = BBISHOP;   break;
-                    case 'r':   square = BROOK;     break;
-                    case 'q':   square = BQUEEN;    break;
-                    case 'k':   square = BKING;     break;
-                    case '.':   square = EMPTY;     break;
+                case 'P':   square = WPAWN;     break;
+                case 'N':   square = WKNIGHT;   break;
+                case 'B':   square = WBISHOP;   break;
+                case 'R':   square = WROOK;     break;
+                case 'Q':   square = WQUEEN;    break;
+                case 'K':   square = WKING;     break;
+                case 'p':   square = BPAWN;     break;
+                case 'n':   square = BKNIGHT;   break;
+                case 'b':   square = BBISHOP;   break;
+                case 'r':   square = BROOK;     break;
+                case 'q':   square = BQUEEN;    break;
+                case 'k':   square = BKING;     break;
+                case '.':   square = EMPTY;     break;
                 }
 
                 if ( square != 0xFFFFFFFF )
@@ -462,13 +463,13 @@ void ChessUI_stdio::DrawBoard ( const ChessBoard &board )
 {
     switch ( boardDisplayType )
     {
-        case BDT_LARGE_COLOR:
-            DrawBoard_LargeColor (board);
-            break;
+    case BDT_LARGE_COLOR:
+        DrawBoard_LargeColor (board);
+        break;
 
-        case BDT_STANDARD:
-        default:
-            DrawBoard_Standard (board);
+    case BDT_STANDARD:
+    default:
+        DrawBoard_Standard (board);
     }
 }
 
@@ -489,9 +490,12 @@ void ChessUI_stdio::DrawBoard_Standard ( const ChessBoard &board )
 
     char fen_buffer[256];
     char *fen = board.GetForsythEdwardsNotation (fen_buffer, sizeof(fen_buffer));
-    if (fen) {
+    if (fen)
+    {
         printf("\nFEN = %s\n", fen);
-    } else {
+    }
+    else
+    {
         printf("\n!!! FEN FAILURE !!!\n");
     }
 
@@ -549,9 +553,9 @@ void ChessUI_stdio::RecordMove (
     FormatChessMove ( board, move, movestr );
     int whiteMove = board.WhiteToMove();
     printf ( "\n%s%s  (%0.2lf seconds)\n",
-        whiteMove ? "White: " : "Black: ",
-        movestr,
-        double(thinkTime) / 100.0 );
+             whiteMove ? "White: " : "Black: ",
+             movestr,
+             double(thinkTime) / 100.0 );
 
     FILE *log = fopen ( LogFilename, "at" );
     if ( log )
@@ -567,7 +571,7 @@ void ChessUI_stdio::RecordMove (
     else
     {
         fprintf ( stderr,
-            "*** Warning:  Cannot append to file '%s'\n", LogFilename );
+                  "*** Warning:  Cannot append to file '%s'\n", LogFilename );
     }
 }
 
@@ -581,20 +585,20 @@ void ChessUI_stdio::ReportEndOfGame ( ChessSide winner )
 {
     switch ( winner )
     {
-        case SIDE_WHITE:
-            printf ( "White wins.\n" );
-            break;
+    case SIDE_WHITE:
+        printf ( "White wins.\n" );
+        break;
 
-        case SIDE_BLACK:
-            printf ( "Black wins.\n" );
-            break;
+    case SIDE_BLACK:
+        printf ( "Black wins.\n" );
+        break;
 
-        case SIDE_NEITHER:
-            printf ( "Game over.\n" );
-            break;
+    case SIDE_NEITHER:
+        printf ( "Game over.\n" );
+        break;
 
-        default:
-            printf ( "The game is over, and I don't know why!\n" );
+    default:
+        printf ( "The game is over, and I don't know why!\n" );
     }
 }
 
@@ -604,7 +608,8 @@ void ChessUI_stdio::NotifyUser ( const char *message )
     printf ( ">>> %s [press Enter] ", message );
     fflush (stdout);
     char junk [256];
-    if ( fgets ( junk, sizeof(junk), stdin ) ) {
+    if ( fgets ( junk, sizeof(junk), stdin ) )
+    {
         // Do nothing.  This 'if' statement exists solely to get rid of a Linux gcc compiler warning.
     }
 }
@@ -614,21 +619,21 @@ static int ConvertCharToPromPiece ( char x )
 {
     switch ( x )
     {
-        case 'b':
-        case 'B':
-            return B_INDEX;
+    case 'b':
+    case 'B':
+        return B_INDEX;
 
-        case 'n':
-        case 'N':
-            return N_INDEX;
+    case 'n':
+    case 'N':
+        return N_INDEX;
 
-        case 'r':
-        case 'R':
-            return R_INDEX;
+    case 'r':
+    case 'R':
+        return R_INDEX;
 
-        case 'q':
-        case 'Q':
-            return Q_INDEX;
+    case 'q':
+    case 'Q':
+        return Q_INDEX;
     }
 
     return 0;
@@ -702,15 +707,15 @@ void ChessUI_stdio::DisplayBestMoveSoFar (
     if ( showScores )
     {
         printf ( "\rBest so far: depth=%d  score=%d  move=[%s]              \n",
-                level,
-                m.score,
-                moveString );
+                 level,
+                 m.score,
+                 moveString );
     }
     else
     {
         printf ( "\rBest so far: depth=%d  move=[%s]                \n",
-                level,
-                moveString );
+                 level,
+                 moveString );
     }
 
     fflush (stdout);
@@ -748,7 +753,7 @@ void ChessUI_stdio::DisplayBestPath (
 
 void ChessUI_stdio::PredictMate ( int numMoves )
 {
-   printf ( "Mate in %d\n", numMoves );
+    printf ( "Mate in %d\n", numMoves );
 }
 
 
@@ -765,7 +770,7 @@ void ChessUI_stdio::ReportComputerStats (
         "\ngenerated=%lu, visited=%lu, evaluated=%lu\n",
         (unsigned long) nodesGenerated,
         (unsigned long) nodesVisited,
-        (unsigned long) nodesEvaluated 
+        (unsigned long) nodesEvaluated
     );
 }
 
@@ -791,20 +796,20 @@ static void SetAnsiMode ( int newMode, int &oldMode )
         printf ( "\x1b[m" );
         switch ( newMode )
         {
-            case ANSIMODE_WonB:
-                printf ( "\x1b[38m\x1b[45m" );
-                break;
+        case ANSIMODE_WonB:
+            printf ( "\x1b[38m\x1b[45m" );
+            break;
 
-            case ANSIMODE_WonW:
-                printf ( "\x1b[38m\x1b[46m" );
-                break;
+        case ANSIMODE_WonW:
+            printf ( "\x1b[38m\x1b[46m" );
+            break;
 
-            case ANSIMODE_BonB:
-                printf ( "\x1b[30m\x1b[45m" );
-                break;
+        case ANSIMODE_BonB:
+            printf ( "\x1b[30m\x1b[45m" );
+            break;
 
-            case ANSIMODE_BonW:
-                printf ( "\x1b[30m\x1b[46m" );
+        case ANSIMODE_BonW:
+            printf ( "\x1b[30m\x1b[46m" );
         }
     }
 }
@@ -816,46 +821,60 @@ void ChessUI_stdio::DrawBoard_LargeColor ( const ChessBoard &board )
     const int idy = 4;  // number of rows in each image
 
     static const char *imageR[] =
-    { " _ _ _ ",
-      " [___] ",
-      "  | |  ",
-      " [___] " };
+    {
+        " _ _ _ ",
+        " [___] ",
+        "  | |  ",
+        " [___] "
+    };
 
     static const char *imageN[] =
-    { "  _^^  ",
-      " <_  | ",
-      "   / | ",
-      "  <__| " };
+    {
+        "  _^^  ",
+        " <_  | ",
+        "   / | ",
+        "  <__| "
+    };
 
     static const char *imageB[] =
-    { "   ^   ",
-      "  (/)  ",
-      "   U   ",
-      "  /_\\  " };
+    {
+        "   ^   ",
+        "  (/)  ",
+        "   U   ",
+        "  /_\\  "
+    };
 
     static const char *imageQ[] =
-    { " vvOvv ",
-      "  \\^/  ",
-      "  | |  ",
-      " {===} " };
+    {
+        " vvOvv ",
+        "  \\^/  ",
+        "  | |  ",
+        " {===} "
+    };
 
     static const char *imageK[] =
-    { "  _+_  ",
-      " {ooo} ",
-      "  >-<  ",
-      " (___) " };
+    {
+        "  _+_  ",
+        " {ooo} ",
+        "  >-<  ",
+        " (___) "
+    };
 
     static const char *imageP[] =
-    { "       ",
-      "   O   ",
-      "   T   ",
-      "  /_\\  " };
+    {
+        "       ",
+        "   O   ",
+        "   T   ",
+        "  /_\\  "
+    };
 
     static const char *imageE[] =
-    { "       ",
-      "       ",
-      "       ",
-      "       " };
+    {
+        "       ",
+        "       ",
+        "       ",
+        "       "
+    };
 
 
     int currentMode = -1;
@@ -885,12 +904,12 @@ void ChessUI_stdio::DrawBoard_LargeColor ( const ChessBoard &board )
                 const char **image = imageE;
                 switch ( piece )
                 {
-                    case WPAWN:   case BPAWN:    image = imageP;   break;
-                    case WKNIGHT: case BKNIGHT:  image = imageN;   break;
-                    case WBISHOP: case BBISHOP:  image = imageB;   break;
-                    case WROOK:   case BROOK:    image = imageR;   break;
-                    case WQUEEN:  case BQUEEN:   image = imageQ;   break;
-                    case WKING:   case BKING:    image = imageK;   break;
+                case WPAWN:   case BPAWN:    image = imageP;   break;
+                case WKNIGHT: case BKNIGHT:  image = imageN;   break;
+                case WBISHOP: case BBISHOP:  image = imageB;   break;
+                case WROOK:   case BROOK:    image = imageR;   break;
+                case WQUEEN:  case BQUEEN:   image = imageQ;   break;
+                case WKING:   case BKING:    image = imageK;   break;
                 }
 
                 const char *raster = image[row];
@@ -929,11 +948,11 @@ BoardDisplayType Next ( BoardDisplayType displayType )
 {
     switch ( displayType )
     {
-        case BDT_STANDARD:
-            return BDT_LARGE_COLOR;
+    case BDT_STANDARD:
+        return BDT_LARGE_COLOR;
 
-        case BDT_LARGE_COLOR:
-            return BDT_STANDARD;
+    case BDT_LARGE_COLOR:
+        return BDT_STANDARD;
     }
 
     return BDT_STANDARD;

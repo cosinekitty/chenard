@@ -21,10 +21,10 @@ text_info StartupTextInfo;
 
 void Advertise()
 {
-   printf ( "\n"
-            "Chenard / MS-DOS VGA version (22 June 1997)\n"
-            "A chess program by Don Cross <dcross@intersrv.com>\n"
-            "http://www.intersrv.com/~dcross\n\n" );
+    printf ( "\n"
+             "Chenard / MS-DOS VGA version (22 June 1997)\n"
+             "A chess program by Don Cross <dcross@intersrv.com>\n"
+             "http://www.intersrv.com/~dcross\n\n" );
 }
 
 
@@ -38,39 +38,39 @@ void ExitCode()
 #pragma argsused
 int main ( int argc, char *argv[] )
 {
-   gettextinfo ( &StartupTextInfo );
-   atexit ( ExitCode );
+    gettextinfo ( &StartupTextInfo );
+    atexit ( ExitCode );
 
-   extern bool sound_flag;
-   sound_flag = false;
+    extern bool sound_flag;
+    sound_flag = false;
 
-   extern int Learn_Output;
-   Learn_Output = 0;
-   Advertise();
+    extern int Learn_Output;
+    Learn_Output = 0;
+    Advertise();
 
-   ChessBoard       theBoard;
-   ChessUI_dos_vga  theUserInterface;
-   ChessGame theGame ( theBoard, theUserInterface );
-   theGame.Play();
+    ChessBoard       theBoard;
+    ChessUI_dos_vga  theUserInterface;
+    ChessGame theGame ( theBoard, theUserInterface );
+    theGame.Play();
 
-   Advertise();
+    Advertise();
 
-   return 0;
+    return 0;
 }
 
 
 void ChessFatal ( const char *message )
 {
-   fprintf ( stderr, "Chess fatal:\n%s\n", message );
+    fprintf ( stderr, "Chess fatal:\n%s\n", message );
 
-   FILE *errorLog = fopen ( "doscga.err", "wt" );
-   if ( errorLog )
-   {
-      fprintf ( errorLog, "Chess fatal:\n%s\n", message );
-      fclose ( errorLog );
-   }
+    FILE *errorLog = fopen ( "doscga.err", "wt" );
+    if ( errorLog )
+    {
+        fprintf ( errorLog, "Chess fatal:\n%s\n", message );
+        fclose ( errorLog );
+    }
 
-   exit(1);
+    exit(1);
 }
 
 
@@ -85,7 +85,7 @@ void ChessFatal ( const char *message )
     Found these on CDROM marked "14 September 1999".
     Added cvs log tag and moved old revision history after that.
 
-    
+
      Revision history:
 
 1996 March 6 [Don Cross]
@@ -100,6 +100,6 @@ void ChessFatal ( const char *message )
 1993 August 30 [Don Cross]
      Changing pointers to references in the interfaces where
      appropriate.
-    
+
 */
 

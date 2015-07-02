@@ -13,7 +13,7 @@ MoveUndoPath Global_MoveUndoPath;
 
 MoveUndoPath::~MoveUndoPath()
 {
-    if ( moveList ) 
+    if ( moveList )
     {
         delete[] moveList;
         moveList = 0;
@@ -28,7 +28,7 @@ void MoveUndoPath::resetFromBoard ( const ChessBoard &board )
     {
         size = 1024;    // arbitrary but larger than necessary
         moveList = new Move [size];
-        if ( !moveList )  
+        if ( !moveList )
         {
             ChessFatal ( "Out of memory allocating MoveUndoPath" );
             return;
@@ -108,13 +108,13 @@ bool MoveUndoPath::redo ( ChessBoard &board )
 
 
         Revision history:
-    
+
     1999 January 16 [Don Cross]
         Split off from file 'undopath.cpp' for text-mode version
         of Chenard.
-    
+
     1997 January 30 [Don Cross]
         Started writing.
-    
+
 */
 

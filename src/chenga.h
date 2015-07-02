@@ -23,14 +23,14 @@ struct ChessGeneInfo
     double fitness() const;
     long numGames() const { return numGamesAsWhite + numGamesAsBlack; }
 
-    ChessGeneInfo(): 
-        numWins(0), 
-        numLosses(0), 
+    ChessGeneInfo():
+        numWins(0),
+        numLosses(0),
         numDraws(0),
         numGamesAsWhite(0),
         numGamesAsBlack(0),
         id(0)
-        {}
+    {}
 };
 
 
@@ -47,9 +47,9 @@ public:
     int load ( const char *dirPrefix = "" );
     void run();
 
-    static int MergePools ( 
+    static int MergePools (
         int outputPoolSize,
-        int dirc, 
+        int dirc,
         const char *dirv[],
         ChessUI &,
         int _allowTextOutput );
@@ -102,7 +102,7 @@ private:
 };
 
 
-int GeneBattle ( 
+int GeneBattle (
     ChessUI &,
     const char *geneFilename1,
     const char *geneFilename2 );
@@ -128,9 +128,9 @@ int GeneBattle (
 
 
         Revision history:
-    
+
     1999 February 18 [Don Cross]
          Started writing.
-    
+
 */
 

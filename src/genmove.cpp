@@ -11,7 +11,7 @@
 #include "profiler.h"
 
 
-int ChessBoard::GenWhiteMoves ( 
+int ChessBoard::GenWhiteMoves (
     MoveList            &ml,
     ComputerChessPlayer *player )
 {
@@ -30,33 +30,33 @@ int ChessBoard::GenWhiteMoves (
             {
                 switch ( UPIECE_INDEX(piece) )
                 {
-                    case P_INDEX:
-                        GenMoves_WP ( ml, ofs, ybase );
-                        break;
+                case P_INDEX:
+                    GenMoves_WP ( ml, ofs, ybase );
+                    break;
 
-                    case N_INDEX:
-                        GenMoves_WN ( ml, ofs );
-                        break;
+                case N_INDEX:
+                    GenMoves_WN ( ml, ofs );
+                    break;
 
-                    case B_INDEX:
-                        GenMoves_WB ( ml, ofs );
-                        break;
+                case B_INDEX:
+                    GenMoves_WB ( ml, ofs );
+                    break;
 
-                    case R_INDEX:
-                        GenMoves_WR ( ml, ofs );
-                        break;
+                case R_INDEX:
+                    GenMoves_WR ( ml, ofs );
+                    break;
 
-                    case Q_INDEX:
-                        GenMoves_WQ ( ml, ofs );
-                        break;
+                case Q_INDEX:
+                    GenMoves_WQ ( ml, ofs );
+                    break;
 
-                    case K_INDEX:
-                        GenMoves_WK ( ml, ofs );
-                        break;
+                case K_INDEX:
+                    GenMoves_WK ( ml, ofs );
+                    break;
 
-                    default:
-                        ChessFatal ( "Undefined white piece in ChessBoard::GenWhiteMoves" );
-                        break;
+                default:
+                    ChessFatal ( "Undefined white piece in ChessBoard::GenWhiteMoves" );
+                    break;
                 }
             }
         }
@@ -102,15 +102,15 @@ void ChessBoard::GenMoves_WP ( MoveList &ml, int ofs, int ybase )
         if ( board [ofs + NORTHEAST] & BLACK_MASK )
             ml.AddMove ( ofs, ofs + NORTHEAST );
         else if ( (prev_move.source & BOARD_OFFSET_MASK) == ofs + OFFSET(1,2) &&
-                prev_move.dest == ofs + OFFSET(1,0) &&
-                (board [prev_move.dest] & BP_MASK) )
+                  prev_move.dest == ofs + OFFSET(1,0) &&
+                  (board [prev_move.dest] & BP_MASK) )
             ml.AddMove ( ofs, SPECIAL_MOVE_EP_EAST );
 
         if ( board [ofs + NORTHWEST] & BLACK_MASK )
             ml.AddMove ( ofs, ofs + NORTHWEST );
         else if ( (prev_move.source & BOARD_OFFSET_MASK) == ofs + OFFSET(-1,2) &&
-                prev_move.dest == ofs + OFFSET(-1,0) &&
-                (board [prev_move.dest] & BP_MASK) )
+                  prev_move.dest == ofs + OFFSET(-1,0) &&
+                  (board [prev_move.dest] & BP_MASK) )
             ml.AddMove ( ofs, SPECIAL_MOVE_EP_WEST );
     }
     else if ( ybase == OFFSET(2,8) )
@@ -348,7 +348,7 @@ void ChessBoard::GenMoves_WK ( MoveList &ml, int source )
 
 //--------------------------------------------------------------------------
 
-int ChessBoard::GenBlackMoves ( 
+int ChessBoard::GenBlackMoves (
     MoveList             &ml,
     ComputerChessPlayer  *player )
 {
@@ -368,33 +368,33 @@ int ChessBoard::GenBlackMoves (
             {
                 switch ( UPIECE_INDEX(piece) )
                 {
-                    case P_INDEX:
-                        GenMoves_BP ( ml, ofs, ybase );
-                        break;
+                case P_INDEX:
+                    GenMoves_BP ( ml, ofs, ybase );
+                    break;
 
-                    case N_INDEX:
-                        GenMoves_BN ( ml, ofs );
-                        break;
+                case N_INDEX:
+                    GenMoves_BN ( ml, ofs );
+                    break;
 
-                    case B_INDEX:
-                        GenMoves_BB ( ml, ofs );
-                        break;
+                case B_INDEX:
+                    GenMoves_BB ( ml, ofs );
+                    break;
 
-                    case R_INDEX:
-                        GenMoves_BR ( ml, ofs );
-                        break;
+                case R_INDEX:
+                    GenMoves_BR ( ml, ofs );
+                    break;
 
-                    case Q_INDEX:
-                        GenMoves_BQ ( ml, ofs );
-                        break;
+                case Q_INDEX:
+                    GenMoves_BQ ( ml, ofs );
+                    break;
 
-                    case K_INDEX:
-                        GenMoves_BK ( ml, ofs );
-                        break;
+                case K_INDEX:
+                    GenMoves_BK ( ml, ofs );
+                    break;
 
-                    default:
-                        ChessFatal ( "Undefined black piece in ChessBoard::GenBlackMoves" );
-                        break;
+                default:
+                    ChessFatal ( "Undefined black piece in ChessBoard::GenBlackMoves" );
+                    break;
                 }
             }
         }
@@ -440,15 +440,15 @@ void ChessBoard::GenMoves_BP ( MoveList &ml, int ofs, int ybase )
         if ( board [ofs + SOUTHEAST] & WHITE_MASK )
             ml.AddMove ( ofs, ofs + SOUTHEAST );
         else if ( (prev_move.source & BOARD_OFFSET_MASK) == ofs + OFFSET(1,-2) &&
-                prev_move.dest == ofs + OFFSET(1,0) &&
-                (board [prev_move.dest] & WP_MASK) )
+                  prev_move.dest == ofs + OFFSET(1,0) &&
+                  (board [prev_move.dest] & WP_MASK) )
             ml.AddMove ( ofs, SPECIAL_MOVE_EP_EAST );
 
         if ( board [ofs + SOUTHWEST] & WHITE_MASK )
             ml.AddMove ( ofs, ofs + SOUTHWEST );
         else if ( (prev_move.source & BOARD_OFFSET_MASK) == ofs + OFFSET(-1,-2) &&
-                prev_move.dest == ofs + OFFSET(-1,0) &&
-                (board [prev_move.dest] & WP_MASK) )
+                  prev_move.dest == ofs + OFFSET(-1,0) &&
+                  (board [prev_move.dest] & WP_MASK) )
             ml.AddMove ( ofs, SPECIAL_MOVE_EP_WEST );
     }
     else if ( ybase == OFFSET(2,3) )
@@ -683,7 +683,7 @@ void ChessBoard::GenMoves_BK ( MoveList &ml, int source )
 }
 
 
-void ChessBoard::RemoveIllegalWhite ( 
+void ChessBoard::RemoveIllegalWhite (
     MoveList &ml,
     ComputerChessPlayer *player )
 {
@@ -700,7 +700,7 @@ void ChessBoard::RemoveIllegalWhite (
             is_illegal = (flags & SF_WCHECK) ? true : false;
             if ( !is_illegal )
             {
-                player->WhiteMoveOrdering ( 
+                player->WhiteMoveOrdering (
                     *this, *move, unmove,
                     player->moveOrder_depth,
                     player->moveOrder_bestPathFlag );
@@ -709,7 +709,7 @@ void ChessBoard::RemoveIllegalWhite (
 
             if ( is_illegal )
             {
-                if ( i < --(ml.num) )                   
+                if ( i < --(ml.num) )
                     *move = ml.m [ml.num];      // Overwrite this move with the last move...
             }
             else
@@ -718,7 +718,8 @@ void ChessBoard::RemoveIllegalWhite (
                 ++move;
             }
         }
-        if (player->IsSearchRandomized()) {
+        if (player->IsSearchRandomized())
+        {
             ml.Shuffle();
         }
         ml.WhiteSort();
@@ -734,7 +735,7 @@ void ChessBoard::RemoveIllegalWhite (
             if ( is_illegal )
             {
                 if ( i < --(ml.num) )
-                   *move = ml.m [ml.num];       // Overwrite this move with the last move...
+                    *move = ml.m [ml.num];       // Overwrite this move with the last move...
             }
             else
             {
@@ -747,7 +748,7 @@ void ChessBoard::RemoveIllegalWhite (
 }
 
 
-void ChessBoard::RemoveIllegalBlack ( 
+void ChessBoard::RemoveIllegalBlack (
     MoveList            &ml,
     ComputerChessPlayer *player )
 {
@@ -764,7 +765,7 @@ void ChessBoard::RemoveIllegalBlack (
             is_illegal = (flags & SF_BCHECK) ? true : false;
             if ( !is_illegal )
             {
-                player->BlackMoveOrdering ( 
+                player->BlackMoveOrdering (
                     *this, *move, unmove,
                     player->moveOrder_depth,
                     player->moveOrder_bestPathFlag );
@@ -774,7 +775,7 @@ void ChessBoard::RemoveIllegalBlack (
             if ( is_illegal )
             {
                 if ( i < --(ml.num) )
-                   *move = ml.m [ml.num];   // Overwrite this move with the last move...
+                    *move = ml.m [ml.num];   // Overwrite this move with the last move...
             }
             else
             {
@@ -782,7 +783,8 @@ void ChessBoard::RemoveIllegalBlack (
                 ++move;
             }
         }
-        if (player->IsSearchRandomized()) {
+        if (player->IsSearchRandomized())
+        {
             ml.Shuffle();
         }
         ml.BlackSort();
@@ -841,29 +843,29 @@ void ChessBoard::RemoveIllegalBlack (
 
 
          Revision history:
-    
+
     1999 August 4 [Don Cross]
          Adding some debug code.
-    
+
     1999 January 4 [Don Cross]
          Updating coding style.
-    
+
     1994 February 10 [Don Cross]
          Adding piece indexing.
-    
+
     1994 February 3 [Don Cross]
          Added support for BestPath.
-    
+
     1993 October 21 [Don Cross]
          Made GenWhiteMoves and GenBlackMoves initialize each move.score
          to 0 if this is not being done for a ComputerChessPlayer.
-    
+
     1993 August 30 [Don Cross]
          Changing pointers to references in the interfaces where
          appropriate.
-    
+
     1993 April ?? [Don Cross]
          Started writing.
-    
+
 */
 

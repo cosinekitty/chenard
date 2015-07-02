@@ -1,8 +1,8 @@
 /*
     gamefile.cpp  -  Don Cross, January 2006.
-    
+
     C++ classes to abstract the process to load chess moves from
-    various kinds of files:  old chenard GAM, PGN, or 
+    various kinds of files:  old chenard GAM, PGN, or
     Yahoo game listing email text.
 */
 
@@ -16,20 +16,23 @@
 #include "chess.h"
 #include "gamefile.h"
 
-//-----------------------------------------------------------------------------------------------  
+//-----------------------------------------------------------------------------------------------
 
 bool ScanAlgebraic (char file, char rank, int &offset)
 {
-    if ((file >= 'a') && (file <= 'h') && (rank >= '1') && (rank <= '8')) {
+    if ((file >= 'a') && (file <= 'h') && (rank >= '1') && (rank <= '8'))
+    {
         offset = OFFSET ((file - 'a') + 2, (rank - '1') + 2);
         return true;
-    } else {
+    }
+    else
+    {
         offset = 0;     // This is so caller does not need to check return value (can check offset instead)
         return false;
     }
 }
 
-//-----------------------------------------------------------------------------------------------  
+//-----------------------------------------------------------------------------------------------
 
 tChessMoveStream *tChessMoveStream::OpenFileForRead (const char *filename)
 {
@@ -42,23 +45,32 @@ tChessMoveStream *tChessMoveStream::OpenFileForRead (const char *filename)
     // it ends with the extension ".gam"...
     const char *ext = strrchr (filename, '.');
 
-    if (0 == stricmp (ext, ".gam")) {
+    if (0 == stricmp (ext, ".gam"))
+    {
         infile = fopen (filename, "rb");
-        if (infile) {
+        if (infile)
+        {
             stream = new tChessMoveFile_GAM (infile);
         }
-    } else {
+    }
+    else
+    {
         infile = fopen (filename, "rt");
-        if (infile) {
+        if (infile)
+        {
             // Now we need to peek through the file to see what kind of file it is...
 
-            while (fgets (line, sizeof(line), infile)) {
-                if (line[0] == '[') {
+            while (fgets (line, sizeof(line), infile))
+            {
+                if (line[0] == '[')
+                {
                     // e.g. '[Event "?"]'
                     rewind (infile);    // do this so object we create can read moves from the file
                     stream = new tChessMoveFile_PGN (infile);
                     break;
-                } else if (line[0] == ';') {
+                }
+                else if (line[0] == ';')
+                {
                     // e.g. ';Title: Yahoo! Chess Game'
                     rewind (infile);    // do this so object we create can read moves from the file
                     stream = new tChessMoveFile_Yahoo (infile);
@@ -68,8 +80,10 @@ tChessMoveStream *tChessMoveStream::OpenFileForRead (const char *filename)
         }
     }
 
-    if (stream == NULL) {
-        if (infile) {
+    if (stream == NULL)
+    {
+        if (infile)
+        {
             fclose (infile);
             infile = NULL;
         }
@@ -78,7 +92,7 @@ tChessMoveStream *tChessMoveStream::OpenFileForRead (const char *filename)
     return stream;
 }
 
-//-----------------------------------------------------------------------------------------------  
+//-----------------------------------------------------------------------------------------------
 
 bool tChessMoveFile_GAM::GetNextMove (Move &move, bool &GameReset)
 {
@@ -86,7 +100,7 @@ bool tChessMoveFile_GAM::GetNextMove (Move &move, bool &GameReset)
     return ::ReadFromFile (infile, move);
 }
 
-//-----------------------------------------------------------------------------------------------  
+//-----------------------------------------------------------------------------------------------
 
 bool tChessMoveFile_PGN::GetNextMove (Move &move, bool &GameReset)
 {
@@ -97,17 +111,23 @@ bool tChessMoveFile_PGN::GetNextMove (Move &move, bool &GameReset)
 
     GameReset = false;
 
-    if (GetNextPgnMove (infile, movestr, state, info)) {
-        if (state == PGN_FILE_STATE_NEWGAME) {
-            if (info.fen[0]) {
+    if (GetNextPgnMove (infile, movestr, state, info))
+    {
+        if (state == PGN_FILE_STATE_NEWGAME)
+        {
+            if (info.fen[0])
+            {
                 return false;       // this API does not support edited positions!
-            } else {
+            }
+            else
+            {
                 GameReset = true;
                 board.Init();
             }
         }
 
-        if (board.ScanMove (movestr, move)) {
+        if (board.ScanMove (movestr, move))
+        {
             board.MakeMove (move, unmove);
             return true;
         }
@@ -116,7 +136,7 @@ bool tChessMoveFile_PGN::GetNextMove (Move &move, bool &GameReset)
     return false;
 }
 
-//-----------------------------------------------------------------------------------------------  
+//-----------------------------------------------------------------------------------------------
 
 bool tChessMoveFile_Yahoo::GetNextMove (Move &move, bool &GameReset)
 {
@@ -126,66 +146,90 @@ bool tChessMoveFile_Yahoo::GetNextMove (Move &move, bool &GameReset)
 
     GameReset = false;
 
-    if (board.WhiteToMove()) {
+    if (board.WhiteToMove())
+    {
         // Read lines until we find one that begins with the expected move number.
         // Typical example:  "29. c7-c6+ e6xe7"
-        while (fgets (line, sizeof(line), infile)) {
+        while (fgets (line, sizeof(line), infile))
+        {
             num_scanned = sscanf (line, "%d. %s %s", &test_move_number, white_move_string, black_move_string);
-            if (num_scanned >= 2) {
-                if (test_move_number == move_number) {
+            if (num_scanned >= 2)
+            {
+                if (test_move_number == move_number)
+                {
                     // We found the desired move.
                     move_string = white_move_string;
                     break;
                 }
             }
         }
-    } else {
-        if (num_scanned == 3) {
+    }
+    else
+    {
+        if (num_scanned == 3)
+        {
             move_string = black_move_string;
         }
     }
 
-    if (move_string) {
+    if (move_string)
+    {
         int msource = 0;
         int mdest   = 0;
 
         // Special cases:   e2-e4  f3xf6  o-o  o-o-o  e5xg4+  f5-h5++
-        if (0 == memcmp (move_string, "o-o", 3)) {
+        if (0 == memcmp (move_string, "o-o", 3))
+        {
             // We don't know whether it is o-o or o-o-o yet, but we know the king is moving.
             // But is it White's king or Black's king?
-            if (board.WhiteToMove()) {  
+            if (board.WhiteToMove())
+            {
                 msource = OFFSET(6,2);
-            } else {
+            }
+            else
+            {
                 msource = OFFSET(6,9);
             }
-            if (move_string[3]=='-' && move_string[4]=='o') {
+            if (move_string[3]=='-' && move_string[4]=='o')
+            {
                 mdest = msource + (2*WEST);     // o-o-o
-            } else {
+            }
+            else
+            {
                 mdest = msource + (2*EAST);     // o-o
             }
-        } else {
+        }
+        else
+        {
             // not castling, so expect normal coords.
-            if (strlen(move_string) >= 5) {
-                if ((move_string[2] == '-') || (move_string[2] == 'x')) {
+            if (strlen(move_string) >= 5)
+            {
+                if ((move_string[2] == '-') || (move_string[2] == 'x'))
+                {
                     ScanAlgebraic (move_string[0], move_string[1], msource);
                     ScanAlgebraic (move_string[3], move_string[4], mdest  );
                 }
             }
         }
 
-        if (msource && mdest) {
+        if (msource && mdest)
+        {
             int     tsource, tdest;
             MoveList    ml;
             board.GenMoves (ml);
-            for (int i=0; i < ml.num; ++i) {
+            for (int i=0; i < ml.num; ++i)
+            {
                 SQUARE prom = ml.m[i].actualOffsets (board, tsource, tdest);
-                if ((tsource == msource) && (tdest == mdest)) {
+                if ((tsource == msource) && (tdest == mdest))
+                {
                     // Stupid Yahoo game format does not indicate pawn promotion piece!
                     // So we ignore promotions to anything other than queen.
-                    if ((prom == EMPTY) || (prom == WQUEEN) || (prom == BQUEEN)) {
+                    if ((prom == EMPTY) || (prom == WQUEEN) || (prom == BQUEEN))
+                    {
                         move = ml.m[i];
                         board.MakeMove (move, unmove);
-                        if (board.WhiteToMove()) {
+                        if (board.WhiteToMove())
+                        {
                             ++move_number;
                         }
                         return true;
@@ -197,10 +241,10 @@ bool tChessMoveFile_Yahoo::GetNextMove (Move &move, bool &GameReset)
     return false;
 }
 
-//-----------------------------------------------------------------------------------------------  
+//-----------------------------------------------------------------------------------------------
 
 void SavePortableGameNotation (
-    FILE        *outfile, 
+    FILE        *outfile,
     ChessBoard  &refboard,
     const char  *whiteName,
     const char  *blackName )
@@ -212,7 +256,7 @@ void SavePortableGameNotation (
         http://en.wikipedia.org/wiki/Portable_Game_Notation
 
         The following Seven Tag Roster (STR) is mandatory:
-                
+
            1. Event (the name of the tournament or match event)
            2. Site (the location of the event)
            3. Date (the starting date of the game)
@@ -225,7 +269,7 @@ void SavePortableGameNotation (
 
     fprintf (outfile, "[Event \"?\"]\n");
     fprintf (outfile, "[Site \"?\"]\n");
-    
+
     time_t  now = time(NULL);
     tm *date = localtime(&now);
     fprintf (outfile, "[Date \"%04d.%02d.%02d\"]\n", (date->tm_year + 1900), (date->tm_mon + 1), date->tm_mday);
@@ -235,33 +279,48 @@ void SavePortableGameNotation (
     fprintf (outfile, "[White \"%s\"]\n", whiteName);
     fprintf (outfile, "[Black \"%s\"]\n", blackName);
 
-    if (refboard.HasBeenEdited()) {
+    if (refboard.HasBeenEdited())
+    {
         // We need to save the initial position for this board...
         char *initialFEN = refboard.GetInitialForsythEdwardsNotation();
         board.SetForsythEdwardsNotation (initialFEN);       // Must start local board in same state as after any local edits in refboard.
         fprintf (outfile, "[SetUp \"1\"]\n");
         fprintf (outfile, "[FEN \"%s\"]\n", initialFEN);
         delete[] initialFEN;
-    } else {
+    }
+    else
+    {
         fprintf (outfile, "[SetUp \"0\"]\n");
     }
 
     const char *ResultString = NULL;
-    if (refboard.GameIsOver()) {
-        if (refboard.CurrentPlayerCanMove()) {
+    if (refboard.GameIsOver())
+    {
+        if (refboard.CurrentPlayerCanMove())
+        {
             ResultString = "1/2-1/2";   // assume draw by repetition or 50-move rule
-        } else {
-            if (refboard.CurrentPlayerInCheck()) {
-                if (refboard.WhiteToMove()) {
+        }
+        else
+        {
+            if (refboard.CurrentPlayerInCheck())
+            {
+                if (refboard.WhiteToMove())
+                {
                     ResultString = "0-1";   // Black has checkmated White
-                } else {
+                }
+                else
+                {
                     ResultString = "1-0";   // White has checkmated Black
                 }
-            } else {
+            }
+            else
+            {
                 ResultString = "1/2-1/2";   // stalemate
             }
         }
-    } else {
+    }
+    else
+    {
         ResultString = "*";
     }
     assert (ResultString != NULL);
@@ -276,24 +335,32 @@ void SavePortableGameNotation (
     int  moveNumber = 0;
     size_t  length;
 
-    for (int i = refboard.InitialPlyNumber(); i < refboard.GetCurrentPlyNumber(); ++i) {
+    for (int i = refboard.InitialPlyNumber(); i < refboard.GetCurrentPlyNumber(); ++i)
+    {
         UnmoveInfo unmove;
         Move move = refboard.GetPastMove(i);
         FormatChessMove (board, move, movestr);
-        if (board.BlackToMove()) {
+        if (board.BlackToMove())
+        {
             // Black's turn... no prefix string...
             numstr[0] = '\0';
             length = 0;
-        } else {
+        }
+        else
+        {
             // White's turn... prepend move number...
             length = sprintf (numstr, "%d. ", ++moveNumber);
         }
         length += (int) strlen(movestr);
-        if (column + length > 79) {
+        if (column + length > 79)
+        {
             column = 0;
             fprintf (outfile, "\n");
-        } else {
-            if (column > 0) {
+        }
+        else
+        {
+            if (column > 0)
+            {
                 column += fprintf (outfile, " ");
             }
         }
@@ -304,24 +371,28 @@ void SavePortableGameNotation (
     // The result string must appear at the end of every game!
     // Use the same word-wrap algorithm as the rest of the move text...
     length = strlen(ResultString);
-    if (column + length > 79) {
+    if (column + length > 79)
+    {
         column = 0;
         fprintf (outfile, "\n");
-    } else {
+    }
+    else
+    {
         column += fprintf (outfile, " ");
     }
-    column += fprintf (outfile, "%s", ResultString);    
+    column += fprintf (outfile, "%s", ResultString);
 
     fprintf (outfile, "\n");    // A single blank line terminates the movetext.
 }
 
-//-----------------------------------------------------------------------------------------------  
+//-----------------------------------------------------------------------------------------------
 
 bool SaveGamePGN (ChessBoard &board, const char *filename)
 {
     bool saved = false;
     FILE *outfile = fopen (filename, "wt");
-    if (outfile) {
+    if (outfile)
+    {
         SavePortableGameNotation (outfile, board);
         saved = true;
         fclose (outfile);
@@ -339,7 +410,8 @@ inline bool IsPgnSymbolChar (char c)
 
 const int MAX_PGN_TOKEN_LENGTH = 300;   // I believe the spec allows for little more than 255 characters in a token.
 
-enum PGN_TOKEN_TYPE {
+enum PGN_TOKEN_TYPE
+{
     PGNTOKEN_UNDEFINED,
     PGNTOKEN_SYNTAX_ERROR,
     PGNTOKEN_EOF,
@@ -363,33 +435,47 @@ skip_white_space:
     token[0] = '\0';
 
     // Skip any leading white space...
-    for(;;) {
+    for(;;)
+    {
         c = fgetc (file);
-        if (c == EOF) {
+        if (c == EOF)
+        {
             return PGNTOKEN_EOF;   // did not find any non-whitespace before end of file; give up.
-        } else if (!isspace(c)) {
+        }
+        else if (!isspace(c))
+        {
             break;
         }
     }
 
     // Determine whether this character is a token by itself, or whether there may be further characters...
-    if (IsPgnSymbolChar (c)) {
+    if (IsPgnSymbolChar (c))
+    {
         tokencopy (c);
         type = PGNTOKEN_SYMBOL;
-        for(;;) {
+        for(;;)
+        {
             c = fgetc(file);
-            if (c == EOF) {
+            if (c == EOF)
+            {
                 break;      // valid end of symbol
-            } else {
-                if (IsPgnSymbolChar(c)) {
+            }
+            else
+            {
+                if (IsPgnSymbolChar(c))
+                {
                     tokencopy (c);
-                } else {
+                }
+                else
+                {
                     ungetc (c, file);   // push back character for next token scan
                     break;
                 }
             }
         }
-    } else if (c == '"') {
+    }
+    else if (c == '"')
+    {
         /*
             http://www.chessclub.com/help/PGN-spec  says:
                 A string token is a sequence of zero or more printing characters delimited by a
@@ -408,57 +494,83 @@ skip_white_space:
         bool backslashEscape = false;
 
         type = PGNTOKEN_STRING;
-        for(;;) {   // keep going until we find an unescaped double-quote terminator...
+        for(;;)     // keep going until we find an unescaped double-quote terminator...
+        {
             c = fgetc(file);
-            if (c == EOF) {
+            if (c == EOF)
+            {
                 token[0] = '\0';
                 return PGNTOKEN_SYNTAX_ERROR;   // unterminated string constant
-            } else {
-                if (backslashEscape) {
+            }
+            else
+            {
+                if (backslashEscape)
+                {
                     // Treat this character literally, no matter what it is...
                     tokencopy (c);
                     backslashEscape = false;
-                } else {
-                    if (c == '"') {
+                }
+                else
+                {
+                    if (c == '"')
+                    {
                         break;      // end of string!
-                    } else if (c == '\\') {
+                    }
+                    else if (c == '\\')
+                    {
                         backslashEscape = true;
-                    } else {
+                    }
+                    else
+                    {
                         tokencopy (c);
                     }
                 }
             }
         }
-    } else if (c == ';') {
+    }
+    else if (c == ';')
+    {
         // This is the beginning of a comment that spans to the end of this current line...
-        for(;;) {
+        for(;;)
+        {
             c = fgetc(file);
-            if (c == EOF) {
+            if (c == EOF)
+            {
                 return PGNTOKEN_EOF;
-            } else if (c == '\r' || c == '\n') {
+            }
+            else if (c == '\r' || c == '\n')
+            {
                 goto skip_white_space;      // start all over looking for the beginning of a token
             }
         }
-    } else if (c == '{') {
+    }
+    else if (c == '{')
+    {
         // This is the beginning of a comment that does not end until a close brace is encountered.
         // PGN brace comments are not nestable, so we don't need to count nested brace levels...
-        for(;;) {
+        for(;;)
+        {
             c = fgetc(file);
-            if (c == EOF) {
+            if (c == EOF)
+            {
                 return PGNTOKEN_EOF;
-            } else if (c == '}') {
+            }
+            else if (c == '}')
+            {
                 goto skip_white_space;      // start all over looking for the beginning of a token
             }
         }
-    } else if (c == '(') {
+    }
+    else if (c == '(')
+    {
         // http://www.saremba.de/chessgml/standards/pgn/pgn-complete.htm
         // 8.2.5: Movetext RAV (Recursive Annotation Variation)
-        //     "An RAV (Recursive Annotation Variation) is a sequence of movetext 
-        //      containing one or more moves enclosed in parentheses. 
-        //      An RAV is used to represent an alternative variation. 
-        //      The alternate move sequence given by an RAV is one that 
-        //      may be legally played by first unplaying the move that appears 
-        //      immediately prior to the RAV. 
+        //     "An RAV (Recursive Annotation Variation) is a sequence of movetext
+        //      containing one or more moves enclosed in parentheses.
+        //      An RAV is used to represent an alternative variation.
+        //      The alternate move sequence given by an RAV is one that
+        //      may be legally played by first unplaying the move that appears
+        //      immediately prior to the RAV.
         //      Because the RAV is a recursive construct, it may be nested."
         //
         // We skip all annotations.
@@ -478,10 +590,12 @@ skip_white_space:
             case ')':
                 --nesting;
                 break;
-            }            
+            }
         }
         goto skip_white_space;  // start all over looking for the beginning of a token
-    } else {
+    }
+    else
+    {
         // All other characters are tokens by themselves...
         type = PGNTOKEN_PUNCTUATION;
         tokencopy (c);
@@ -498,7 +612,8 @@ skip_white_space:
 
 bool IsPgnTagNameWeCareAbout (const char *tag, int &tagIndex)
 {
-    static const char * const ImportantTags[] = {       // be careful with the order of these strings: their indexes are returned in tagIndex!
+    static const char * const ImportantTags[] =         // be careful with the order of these strings: their indexes are returned in tagIndex!
+    {
         "FEN",              // tagIndex == 0
         "WhiteElo",         // tagIndex == 1
         "BlackElo",         // tagIndex == 2
@@ -506,8 +621,10 @@ bool IsPgnTagNameWeCareAbout (const char *tag, int &tagIndex)
         0
     };
 
-    for (int i=0; ImportantTags[i]; ++i) {
-        if (0 == stricmp (tag, ImportantTags[i])) {
+    for (int i=0; ImportantTags[i]; ++i)
+    {
+        if (0 == stricmp (tag, ImportantTags[i]))
+        {
             tagIndex = i;
             return true;
         }
@@ -522,7 +639,7 @@ bool IsPgnTagNameWeCareAbout (const char *tag, int &tagIndex)
 
 bool GetNextPgnMove (
     FILE            *file,
-    char             movestr[1+MAX_MOVE_STRLEN], 
+    char             movestr[1+MAX_MOVE_STRLEN],
     PGN_FILE_STATE  &state,
     PgnExtraInfo    &info )
 {
@@ -530,112 +647,155 @@ bool GetNextPgnMove (
     state = PGN_FILE_STATE_UNDEFINED;
     memset (&info, 0, sizeof(PgnExtraInfo));
 
-    if (movestr == NULL) {
+    if (movestr == NULL)
+    {
         state = PGN_FILE_STATE_INVALID_PARAMETER;
-    } else {
+    }
+    else
+    {
         state = PGN_FILE_STATE_SAMEGAME;
         movestr[0] = '\0';
 
-        if (file == NULL) {
+        if (file == NULL)
+        {
             state = PGN_FILE_STATE_INVALID_PARAMETER;
-        } else {
-            for(;;) {
+        }
+        else
+        {
+            for(;;)
+            {
                 PGN_TOKEN_TYPE type = ScanPgnToken (file, token);
-                if (type == PGNTOKEN_EOF) {
+                if (type == PGNTOKEN_EOF)
+                {
                     state = PGN_FILE_STATE_EOF;
                     break;
-                } else if (type == PGNTOKEN_SYNTAX_ERROR) {
+                }
+                else if (type == PGNTOKEN_SYNTAX_ERROR)
+                {
                     state = PGN_FILE_STATE_SYNTAX_ERROR;
                     break;
-                } else if (type == PGNTOKEN_SYMBOL) {
-                    if (isalpha (token[0])) {
+                }
+                else if (type == PGNTOKEN_SYMBOL)
+                {
+                    if (isalpha (token[0]))
+                    {
                         // A valid move token will always begin with a letter of the alphabet.
                         size_t length = strlen (token);
-                        if (length >= 1 && length <= 7) {
+                        if (length >= 1 && length <= 7)
+                        {
                             strcpy (movestr, token);
                             return true;
-                        } else {
-                            state = PGN_FILE_STATE_SYNTAX_ERROR; 
+                        }
+                        else
+                        {
+                            state = PGN_FILE_STATE_SYNTAX_ERROR;
                             break;
                         }
-                    } else {
+                    }
+                    else
+                    {
                         // Look for special game terminators: "1-0", "0-1", "1/2-1/2".
-                        if (0 == strcmp(token,"1-0") || 0 == strcmp(token,"0-1") || 0 == strcmp(token,"1/2-1/2")) {
+                        if (0 == strcmp(token,"1-0") || 0 == strcmp(token,"0-1") || 0 == strcmp(token,"1/2-1/2"))
+                        {
                             state = PGN_FILE_STATE_GAMEOVER;
                             break;
                         }
                     }
-                } else if (type == PGNTOKEN_STRING) {
+                }
+                else if (type == PGNTOKEN_STRING)
+                {
                     // Invalid token type for this context!
                     state = PGN_FILE_STATE_SYNTAX_ERROR;
                     break;
-                } else if (type == PGNTOKEN_PUNCTUATION) {
-                    if (0 == strcmp(token, "[")) {
+                }
+                else if (type == PGNTOKEN_PUNCTUATION)
+                {
+                    if (0 == strcmp(token, "["))
+                    {
                         state = PGN_FILE_STATE_NEWGAME;     // We are starting a whole new game.
 
                         // A tag must contain exactly 4 tokens: "[" Symbol String "]".
                         type = ScanPgnToken (file, token);
-                        if (type != PGNTOKEN_SYMBOL) {
+                        if (type != PGNTOKEN_SYMBOL)
+                        {
                             state = PGN_FILE_STATE_SYNTAX_ERROR;
                             break;
                         }
 
                         int tagIndex;
-                        if (IsPgnTagNameWeCareAbout (token, tagIndex)) {
+                        if (IsPgnTagNameWeCareAbout (token, tagIndex))
+                        {
                             type = ScanPgnToken (file, token);
-                            if (type != PGNTOKEN_STRING) {
+                            if (type != PGNTOKEN_STRING)
+                            {
                                 state = PGN_FILE_STATE_SYNTAX_ERROR;
                                 break;
                             }
 
-                            switch (tagIndex) {
-                                case 0:     // FEN
-                                    strncpy (info.fen, token, sizeof(info.fen));
-                                    break;
+                            switch (tagIndex)
+                            {
+                            case 0:     // FEN
+                                strncpy (info.fen, token, sizeof(info.fen));
+                                break;
 
-                                case 1:     // WhiteELO
-                                    info.whiteElo = atoi (token);
-                                    break;
+                            case 1:     // WhiteELO
+                                info.whiteElo = atoi (token);
+                                break;
 
-                                case 2:     // BlackELO
-                                    info.blackElo = atoi (token);
-                                    break;
+                            case 2:     // BlackELO
+                                info.blackElo = atoi (token);
+                                break;
 
-                                case 3:     // Result
-                                    if (0 == strcmp(token, "1-0")) {
-                                        info.result = PGNRESULT_WHITE_WON;
-                                    } else if (0 == strcmp(token, "0-1")) {
-                                        info.result = PGNRESULT_BLACK_WON;
-                                    } else if (0 == strcmp(token, "1/2-1/2")) {
-                                        info.result = PGNRESULT_DRAW;
-                                    } else {
-                                        info.result = PGNRESULT_UNKNOWN;
-                                    }
-                                    break;
+                            case 3:     // Result
+                                if (0 == strcmp(token, "1-0"))
+                                {
+                                    info.result = PGNRESULT_WHITE_WON;
+                                }
+                                else if (0 == strcmp(token, "0-1"))
+                                {
+                                    info.result = PGNRESULT_BLACK_WON;
+                                }
+                                else if (0 == strcmp(token, "1/2-1/2"))
+                                {
+                                    info.result = PGNRESULT_DRAW;
+                                }
+                                else
+                                {
+                                    info.result = PGNRESULT_UNKNOWN;
+                                }
+                                break;
                             }
 
                             type = ScanPgnToken (file, token);
-                            if (0 != strcmp(token, "]")) {
+                            if (0 != strcmp(token, "]"))
+                            {
                                 state = PGN_FILE_STATE_SYNTAX_ERROR;
                                 break;
                             }
-                        } else {
+                        }
+                        else
+                        {
                             // I have run into some software that screws up some tags
                             // with extra quote marks, e.g.:   [Black ""Atak_62.exe"   "]
                             // For tags I don't care about, I am going to skip over everything until I find the end of the line.
                             // I am going to avoid looking for ']', in case some joker puts that character inside the string!
-                            for(;;) {
+                            for(;;)
+                            {
                                 int c = fgetc (file);
-                                if (c == EOF) {
+                                if (c == EOF)
+                                {
                                     state = PGN_FILE_STATE_SYNTAX_ERROR;
                                     goto bail_out;
                                 }
-                                if (c == '\n') {
+                                if (c == '\n')
+                                {
                                     break;
                                 }
                             }
                         }
-                    } else if (0 == strcmp(token,"*")) {
+                    }
+                    else if (0 == strcmp(token,"*"))
+                    {
                         // Symbol for the end of the listing of an unfinished game...
                         state = PGN_FILE_STATE_GAMEOVER;
                         break;

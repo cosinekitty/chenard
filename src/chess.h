@@ -25,10 +25,10 @@
 
 // The Mac OS X build is basically the same as the Linux build,
 // so I define CHENARD_LINUX as a helper for conditional compilation.
-#define CHENARD_LINUX   (defined(__linux__) || defined(__APPLE__))    
+#define CHENARD_LINUX   (defined(__linux__) || defined(__APPLE__))
 
 #if CHENARD_LINUX
-    #define stricmp strcasecmp
+#define stricmp strcasecmp
 #endif
 
 #ifdef _MSC_VER
@@ -328,7 +328,7 @@ struct Move   // A nice 32-bit structure!
     bool operator== ( const Move &other ) const
     {
         return ((source ^ other.source) & BOARD_OFFSET_MASK) == 0 &&
-                dest == other.dest;
+               dest == other.dest;
     }
 
     bool operator!= ( const Move &other ) const
@@ -342,7 +342,7 @@ struct Move   // A nice 32-bit structure!
     bool ShouldIgnore() const
     {
         return dest == SPECIAL_MOVE_NULL ||
-                (dest & SPECIAL_MOVE_MASK) == SPECIAL_MOVE_EDIT;
+               (dest & SPECIAL_MOVE_MASK) == SPECIAL_MOVE_EDIT;
     }
 
     bool isPawnPromotion() const
@@ -351,7 +351,7 @@ struct Move   // A nice 32-bit structure!
             (dest == SPECIAL_MOVE_PROMOTE_NORM)     ||
             (dest == SPECIAL_MOVE_PROMOTE_CAP_EAST) ||
             (dest == SPECIAL_MOVE_PROMOTE_CAP_WEST)
-        ;
+            ;
     }
 
     // actualOffsets returns promotion piece if move is a promotion, or EMPTY if not.
@@ -480,12 +480,12 @@ public:
     //  The move does not have to be legal; if an illegal move
     //  is returned, the caller will repeatedly call until a
     //  legal move is obtained.
-    //  
+    //
     //--------------------------------------------------------------
-    virtual bool ReadMove ( 
-        ChessBoard  &board, 
-        int         &source, 
-        int         &dest, 
+    virtual bool ReadMove (
+        ChessBoard  &board,
+        int         &source,
+        int         &dest,
         SQUARE      &promPieceIndex     // set to 0 (P_INDEX) if no promotion, or call to PromotePawn is needed; set to N_INDEX..Q_INDEX to specify promotion.
     ) = 0;
 
@@ -503,7 +503,7 @@ public:
     //  The parameter 'entering' is true when the computer is
     //  starting to think, and false when the thinking is done.
     //--------------------------------------------------------------
-    virtual void ComputerIsThinking ( 
+    virtual void ComputerIsThinking (
         bool /*entering*/,
         ComputerChessPlayer & ) {}
 
@@ -595,7 +595,7 @@ public:
     virtual void DebugExit ( int /*depth*/, ChessBoard &, SCORE ) {}
 
     virtual void SetAdHocText ( int /*index*/, const char *, ... ) {}
-    virtual bool allowMateAnnounce ( bool ) 
+    virtual bool allowMateAnnounce ( bool )
     {
         return false;   // returns prior state of mate announce.  since default is to do nothing, return false.
     }
@@ -647,7 +647,7 @@ public:
 
     //-------------------------------------------------------------
     //  The following member function was added to support
-    //  class InternetChessPlayer.  When a player resigns, 
+    //  class InternetChessPlayer.  When a player resigns,
     //  this member function is called for the other player.
     //  This way, a remote player will immediately know that
     //  the local player has resigned.
@@ -655,7 +655,7 @@ public:
     virtual void InformResignation() {}
 
     //-------------------------------------------------------------
-    //  The following member function is called whenever the 
+    //  The following member function is called whenever the
     //  game has ended due to the opponent's move.  This was
     //  added so that InternetChessPlayer objects (representing
     //  a remote player) have a way to receive the final move.
@@ -686,7 +686,10 @@ public:
         return automaticSingularMove = newValue;
     }
 
-    bool queryAutoSingular() const { return automaticSingularMove; }
+    bool queryAutoSingular() const
+    {
+        return automaticSingularMove;
+    }
 
 private:
     bool automaticSingularMove;   // make move for user when only 1 exists?
@@ -709,8 +712,8 @@ struct TranspositionEntry
 
 // Utility functions...
 
-    bool scoreIsInsideWindow() const 
-    { 
+    bool scoreIsInsideWindow() const
+    {
         return alpha <= bestReply.score && bestReply.score <= beta;
     }
 
@@ -730,7 +733,7 @@ public:
     void reset();
     void startNewSearch();
 
-    void rememberWhiteMove ( 
+    void rememberWhiteMove (
         ChessBoard &board,
         int level,
         int depth,
@@ -768,8 +771,8 @@ protected:
         ChessBoard &board,
         TranspositionEntry *table );
 
-    bool findEntry ( 
-        UINT32 hashCode, 
+    bool findEntry (
+        UINT32 hashCode,
         TranspositionEntry *table,
         unsigned &index );
 
@@ -804,7 +807,7 @@ struct ChessGeneDefinition
 };
 
 
-// The following constant specifies how many array slots 
+// The following constant specifies how many array slots
 // there are in ChessGene::v[].  This value must exactly
 // match the number of items defined in ChessGene::DefTable[]
 // (excluding terminator element) or a ChessFatal() will occur
@@ -1046,7 +1049,7 @@ private:
     int        level;
     int        maxCheckDepth;     // used in quiescence search to limit check search
     UINT32     visited;
-    UINT32     evaluated; 
+    UINT32     evaluated;
     UINT32     generated;
     UINT32     visnodes [NODES_ARRAY_SIZE];
     UINT32     gennodes [NODES_ARRAY_SIZE];
@@ -1120,7 +1123,7 @@ private:
     bool blunderAlertInstance;  // is this a blunder alert thinker?
 
 public:
-    // Since it uses so much memory, all ComputerChessPlayer 
+    // Since it uses so much memory, all ComputerChessPlayer
     // objects will share a single TranspositionTable object.
 
     static TranspositionTable *XposTable;
@@ -1275,10 +1278,10 @@ public:
 
     void MakeMove ( Move &move, UnmoveInfo &unmove )
     {
-       if ( WhiteToMove() )
-           MakeWhiteMove ( move, unmove, true, true );
-       else
-           MakeBlackMove ( move, unmove, true, true );
+        if ( WhiteToMove() )
+            MakeWhiteMove ( move, unmove, true, true );
+        else
+            MakeBlackMove ( move, unmove, true, true );
     }
 
     void   UnmakeWhiteMove ( Move move, UnmoveInfo &unmove );
@@ -1286,10 +1289,10 @@ public:
 
     void UnmakeMove ( Move move, UnmoveInfo &unmove )
     {
-       if ( WhiteToMove() )
-           UnmakeBlackMove ( move, unmove );
-       else
-           UnmakeWhiteMove ( move, unmove );
+        if ( WhiteToMove() )
+            UnmakeBlackMove ( move, unmove );
+        else
+            UnmakeWhiteMove ( move, unmove );
     }
 
     bool ScanMove (const char *pgn, Move &move);
@@ -1314,10 +1317,10 @@ public:
     char *GetForsythEdwardsNotation (char *buffer, int buffersize) const;
 
     //-------------------------------------------------------------------------
-    //   If the game did not start with the standard opening position, 
-    //   (e.g. the board was edited), this function returns a dynamically-allocated 
-    //   string copy of the position from which subsequent moves are recorded.  
-    //   The caller must use delete[] to free the allocated memory when 
+    //   If the game did not start with the standard opening position,
+    //   (e.g. the board was edited), this function returns a dynamically-allocated
+    //   string copy of the position from which subsequent moves are recorded.
+    //   The caller must use delete[] to free the allocated memory when
     //   finished using the FEN string.
     //   If the board has not been edited, and all moves proceed from the
     //   standard opening position, this function returns NULL.
@@ -1451,9 +1454,9 @@ public:
     // Each of the bool parameters should be set to true iff
     // its respective player is an instance of the C++ class HumanPlayer.
     // Otherwise, the value should be false.
-    ChessGame ( 
-        ChessBoard &, 
-        ChessUI &, 
+    ChessGame (
+        ChessBoard &,
+        ChessUI &,
         bool whiteIsHuman,
         bool blackIsHuman,
         ChessPlayer *_whitePlayer,
@@ -1573,7 +1576,8 @@ void GenerateEndgameDatabases (
     ChessUI &ui );
 
 
-enum PGN_FILE_STATE {
+enum PGN_FILE_STATE
+{
     PGN_FILE_STATE_UNDEFINED,
     PGN_FILE_STATE_NEWGAME,
     PGN_FILE_STATE_SAMEGAME,
@@ -1789,72 +1793,72 @@ void  ReplaceString (char *&target, const char *source);
 
     1993 April ?? [Don Cross]
          Started writing
-    
+
     1993 August 30 [Don Cross]
          Changing pointers to references in the interfaces where
          appropriate.
-    
+
     1993 October 22 [Don Cross]
          Moving all operating system specific stuff into separate
          header files.
-    
+
     1994 January 15 [Don Cross]
          Added ComputerChessPlayer::AbortSearch().  I did this to
          facilitate certain features of the OS/2 Presentation Manager
          version of this chess program.
-    
+
     1994 January 22 [Don Cross]
          Going to change the search so that it uses a pointer to
          member function to call the eval function.  The eval function
          will be changed according to the situation.  This will replace
          my older endgame heuristics.
-    
+
     1994 February 2 [Don Cross]
          Added BestPath stuff.
-    
+
     1994 February 10 [Don Cross]
          Starting implementing keeping of piece offsets.
          This should speed eval greatly!
-    
+
     1995 March 26 [Don Cross]
          Added new constructor ChessGame::ChessGame ( bool, bool ).
          This constructor refrains from creating the players, but is told what
          kind of players to expect.
-    
+
          Added simple learning algorithm.
          The ComputerChessPlayer class remembers every move it makes in
          every game it plays.  The scores assigned to each position is
          based on the time the number of seconds evaluating it was maximized.
          An entire "game tree" is saved to disk in binary form after each
          move generated by a timed search.
-    
+
     1995 July 13 [Don Cross]
          Removed UI dependencies from global functions LoadGame and SaveGame.
          Moved these functions out of UISTDIO into the portable code space
          (game.cpp).
          Added ChessGame::AutoSaveToFile.
-    
+
     1995 December 25 [Don Cross]
          Fixed a bug!  ChessBoard needed a copy constructor and
          an assignment operator.
-    
+
     1996 January 1 [Don Cross]
          Adding the function ParseFancyMove.
          This function recognizes more natural move notation like
          B-c6, PxP, etc.
-    
+
     1996 January 23 [Don Cross]
          Starting to add code to experiment with transposition tables.
-    
+
     1997 January 3 [Don Cross]
          Added ComputerChessPlayer::QueryTimeLimit().
-    
+
     1998 December 25 [Don Cross]
          Started porting to Linux.
-    
+
     1999 January 6 [Don Cross]
          Adding support for InternetChessPlayer.
-    
+
     1999 January 15 [Don Cross]
          Removing '#pragma pack(1)' because it was causing problems
          under SunOS build.  It really turns out to be unnecessary,
@@ -1862,48 +1866,48 @@ void  ReplaceString (char *&target, const char *source);
          to make sure that the Move struct was 4 bytes.  Discovered
          that the structure is still 4 bytes without the pragma,
          so it's history!
-    
+
     1999 January 19 [Don Cross]
          Trying one more time to write code that correctly detects
-         draw by repetition!  If it doesn't work this time, I'm 
+         draw by repetition!  If it doesn't work this time, I'm
          gonna go break something.
-    
+
     1999 January 21 [Don Cross]
          Adding an "oops" mode for the search, where if it sees the
          score drop, the search gets extended to find a way out of
          the mistake instead of just making it because search time elapsed.
-    
+
     1999 February 11 [Don Cross]
          Added 'hashPath[]' array to ComputerChessPlayer, to detect
          a single repetition within a path as being equivalent to a draw.
-         This should prevent time-wasting in timed games which could 
+         This should prevent time-wasting in timed games which could
          otherwise delay avoidance or forcing of a draw by repetition.
-    
+
     1999 February 17 [Don Cross]
          Creating a 'gene' for Chenard's evaluation and move ordering
          heuristics that can be read/written to a file, to replace
          static #defined constants.  This will allow a genetic algorithm
          to automatically search for better heuristics.
-    
+
     1999 February 19 [Don Cross]
          Adding ChessUI::SetAdHocText() as a way to set special text
          in graphical environments.
-    
+
     1999 March 9 [Don Cross]
          Adding a new search type: max nodes evaluated.
          This required changing boolean variable to
          a new enumerated type.
-    
+
     1999 August 4 [Don Cross]
          Adding ChessBoard::isLegal(Move) to stomp out a bug!
-    
+
     1999 August 5 [Don Cross]
          Added utility function ChessBoard::GameIsOver().
-    
+
     2001 January 4 [Don Cross]
          Making KingPosTable... arrays member variables, so that
          the correct one can be chosen when using EndgameEval1.
-    
+
     2001 January 5 [Don Cross]
          Adding support for generation of endgame databases,
          specifically for K+R vs K, K+Q vs K, K+P vs K.
@@ -1911,22 +1915,22 @@ void  ReplaceString (char *&target, const char *source);
          an upper limit of 64*63*62 = 249984 possible positions.
          We can pre-compute a file of optimal moves for these
          situations.
-    
+
     2001 January 6 [Don Cross]
          Adding virtual ChessUI::allowMateAnnounce hook for pre-existing
          allowMateAnnounce in the win32 version of the ChessUI.
-    
+
     2001 January 13 [Don Cross]
          Adding support for thinking on opponent's turn.
          This will be handled by the ChessUI abstract class, because
          some UIs will support multi-threading and some won't, and
          the ones that do will do so in OS-specific ways.
-         
+
     2002 November 21 [Don Cross]
          Drinking beer due to loss of version 1.044 source code.
          I still have the 1.044 binary in \\zaphod\bin\winchen.exe.
          Thinking about WinDiff-ing that binary with this source
          code's binary.
-    
+
 */
 

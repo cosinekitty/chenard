@@ -102,7 +102,7 @@ ComputerChessPlayer::~ComputerChessPlayer()
 }
 
 
-static void InsertPrediction ( 
+static void InsertPrediction (
     ChessBoard  &board,
     BestPath    &path,
     ChessUI     &userInterface )
@@ -124,7 +124,8 @@ static void InsertPrediction (
         for ( ply=pastPath.depth; ply>=0; --ply )
             pastPath.m[ply+2] = pastPath.m[ply];
 
-        for ( ply=0; ply<stopPly; ++ply ) {
+        for ( ply=0; ply<stopPly; ++ply )
+        {
             Move pastMove = board.GetPastMove(ply);
             pastBoard.MakeMove (pastMove, unmove);
         }
@@ -141,7 +142,7 @@ static void InsertPrediction (
 }
 
 
-static int NumPiecesOnGivenColor ( 
+static int NumPiecesOnGivenColor (
     const SQUARE *board,
     SQUARE pieceMask,
     int colorBit  /*white=1, black=0*/ )
@@ -163,7 +164,7 @@ static int NumPiecesOnGivenColor (
 }
 
 
-static inline int NumPiecesOnWhite ( 
+static inline int NumPiecesOnWhite (
     const SQUARE *board,
     SQUARE pieceMask )
 {
@@ -171,7 +172,7 @@ static inline int NumPiecesOnWhite (
 }
 
 
-static inline int NumPiecesOnBlack ( 
+static inline int NumPiecesOnBlack (
     const SQUARE *board,
     SQUARE pieceMask )
 {
@@ -269,8 +270,7 @@ void ComputerChessPlayer::ResetHistoryBuffers()
 }
 
 
-void ComputerChessPlayer::setResignThreshold ( 
-    unsigned _resignThreshold )
+void ComputerChessPlayer::setResignThreshold(unsigned _resignThreshold)
 {
     if ( _resignThreshold < 400 )
         resignThreshold = 400;
@@ -804,7 +804,7 @@ void ComputerChessPlayer::FoundBestMove (
 
         // Copy best path from layer below to this layer.
 
-        int copyDepth = 
+        int copyDepth =
             nextBestPath[depth].depth =
             nextBestPath[depth+1].depth;
 
@@ -1147,7 +1147,7 @@ SCORE ComputerChessPlayer::WhiteSearch (
         && xpos->searchedDepth >= level-depth 
         && numReps < 2
         && ml.IsLegal(xpos->bestReply) )
-    {                                   /*||*/
+    {
         if ( xpos->scoreIsInsideWindow() && xpos->compatibleWindow(alpha,beta) )
         {
             if ( depth < MAX_BESTPATH_DEPTH )
@@ -1399,8 +1399,8 @@ SCORE ComputerChessPlayer::WhiteQSearch (
     int         i;
     Move       *move;
 
-    const bool escapeCheck = 
-        (board.flags & SF_WCHECK) 
+    const bool escapeCheck =
+        (board.flags & SF_WCHECK)
         && depth <= level + ESCAPE_CHECK_DEPTH;
 
     if ( bestscore < beta || escapeCheck )
@@ -1495,7 +1495,7 @@ SCORE ComputerChessPlayer::BlackQSearch (
     Move       *move;
 
     const bool escapeCheck =
-        (board.flags & SF_BCHECK) 
+        (board.flags & SF_BCHECK)
         && depth <= level + ESCAPE_CHECK_DEPTH;
 
     if ( bestscore > alpha || escapeCheck )
@@ -1640,7 +1640,7 @@ void ComputerChessPlayer::SetSearchDepth ( int NewSearchDepth )
 void ComputerChessPlayer::SetTimeLimit ( INT32 hundredthsOfSeconds )
 {
     maxlevel = NODES_ARRAY_SIZE/4 - 1;
-    searchType = CCPST_TIMED_SEARCH; 
+    searchType = CCPST_TIMED_SEARCH;
     searchAborted = false;
     timeLimit = (hundredthsOfSeconds >= 10) ? hundredthsOfSeconds : 10; // enforce minimum reasonable think time: 0.1 seconds.
     stopTime = ChessTime() + timeLimit;
@@ -1687,8 +1687,7 @@ bool ComputerChessPlayer::CheckTimeLimit()
                 if ( extendSearchFlag )
                 {
                     // See if the expected score got "worse" suddenly...
-                    INT32 deltaScore = 
-                        INT32(expectedScoreNow) - INT32(expectedScorePrev);
+                    INT32 deltaScore = INT32(expectedScoreNow) - INT32(expectedScorePrev);
 
                     if ( computerPlayingWhite )
                         deltaScore = -deltaScore;
@@ -1815,119 +1814,119 @@ void ComputerChessPlayer::SetSearchBias ( SCORE newSearchBias )
 
 
          Revision history:
-    
+
     1993 August 30 [Don Cross]
          Changing pointers to references in the interfaces where
          appropriate.
-    
+
     1993 October 16 [Don Cross]
          Fixed bug where I had a MakeBlackMove() paired with
          UnmakeWhiteMove().
-    
+
     1993 October 18 [Don Cross]
          Added the 'searchBias' stuff.  This is an attempt to allow
          some randomization of move selection.
-    
+
     1993 October 23 [Don Cross]
          Implemented timed search.
          Added check for draw by repetition of moves:
          {W+, B+, W-, B-} plies repeated 3 times.
-    
+
     1993 October 24 [Don Cross]
          Added call to ChessBoard::IsDefiniteDraw() to WhiteSearch() and
          BlackSearch() to make sure that draws by repetition are found
          anywhere in the search.
-    
+
          Created a MoveList::AddMove(Move) function, and changed the
          pg.AddMove() line of code in the searchBias conditional to
          use it instead.  The old way was clobbering the bestmove.score,
          so searches were continuing even after a forced win was found.
-    
+
     1993 October 25 [Don Cross]
          Making the ComputerChessPlayer::CheckTimeLimit() member function
          adaptive to the processor speed.  It does this by increasing
          the timeCheckLimit until successive calls to ChessTime() always
          report a difference of at least 0.1 seconds.
-    
+
     1994 January 15 [Don Cross]
          Added ComputerChessPlayer::AbortSearch().
          This required a little reworking of logic in the CheckTimeLimit
          member function too.
-    
+
     1994 January 22 [Don Cross]
          Adding support for variable eval functions.
-    
+
     1994 February 2 [Don Cross]
          Split off from search.cpp to add BestPath stuff.
-    
+
     1994 February 7 [Don Cross]
          Improving search behavior for time limits, and preparing
          to add search windows.
-    
+
     1994 February 14 [Don Cross]
          Made quiescence search call regular search when a side is
          in check.
-    
+
     1994 February 24 [Don Cross]
          Added "killer history" idea.
-    
+
     1994 March 1 [Don Cross]
          Added hash function and code to help find repeated board positions.
-    
+
     1994 March 2 [Don Cross]
          Adding conditional code to dump search to a text file.
          Need to tell the compiler to define DUMP_SEARCH to do this.
-    
+
     1996 July 27 [Don Cross]
          Adding experiment with looking at moves which cause check in the
          quiescence search.
-    
+
     1996 August 4 [Don Cross]
          Adding code to recycle best path from previous search so that
          we can start at a deeper search.
-    
+
     1996 August 8 [Don Cross]
          Adding "obvious move" code to shorten search when one move is
          much better than all others after a certain fraction of the
          total search time.
-    
+
     1996 August 23 [Don Cross]
          Replacing old memory-based learning tree with disk-based
          class LearnTree.
-    
+
     1996 August 26 [Don Cross]
          Extending quiescence search when own side is in check to a
          full width search at that depth, with a cutoff extended
          depth of 'ESCAPE_CHECK_DEPTH' to avoid infinite recursion
          from perpetual checks.
-    
+
          Bugs in extended quiescence search which cause infinite recursion,
-         which in turn uncovered bugs with checking array indices in best 
+         which in turn uncovered bugs with checking array indices in best
          path stuff.  Fixed 'em!
-    
+
     1999 January 21 [Don Cross]
          Adding ability for ComputerChessPlayer to extend a timed search
          when the expected min-max score gets unexpectedly worse from
          one level to the next.
-    
+
     1999 January 24 [Don Cross]
          Extended search was setting maxlevel to level+1 when delta-score
-         was greater than 120.  This turned out to cause too extreme a 
-         variation in think time.  Now it sets to level always, causing 
+         was greater than 120.  This turned out to cause too extreme a
+         variation in think time.  Now it sets to level always, causing
          the existing search depth to be finished in hopes of finding a
          better move.
          Made expectedScoreNow be updated in WhiteSearchRoot and BlackSearchRoot
          after each top-level branch search is completed, instead of in
          GetBlackMove and GetWhiteMove after each level is completed.
-         Before, two sibling searhes (same full-width depth but differing 
-         moves) could set expectedSearchNow and expectedSearchPrev to 
+         Before, two sibling searhes (same full-width depth but differing
+         moves) could set expectedSearchNow and expectedSearchPrev to
          similar values, even though both were a negative surprise compared
          to the previous search.  This would cause the search to not be
          extended when it really should have been.
-    
+
     1999 January 26 [Don Cross]
          Made tactical benchmark score 20% faster using transposition tables!
-    
+
     1999 January 27 [Don Cross]
          Made search even faster by careful short-circuiting of minmax
          when node retrieved from transposition table meets certain
@@ -1938,52 +1937,52 @@ void ComputerChessPlayer::SetSearchBias ( SCORE newSearchBias )
          me to believe that a lot of my previous optimzation attempts were
          possibly skewed.  (Need to re-try various combinations of parameters
          to see if Chenard has been mis-tuned!)
-    
+
     1999 January 29 [Don Cross]
          Added AdjustCheckmateScore().  This is called whenever the
          transposition table suggests a move to short-circuit recursion
-         and that move's score indicates a forced mate.  
-         I realized that the win-postponement score modifier would 
-         not always work to ensure that checkmates are executed as quickly 
+         and that move's score indicates a forced mate.
+         I realized that the win-postponement score modifier would
+         not always work to ensure that checkmates are executed as quickly
          as possible without it.
          This function modifies the score to correct for the depth at which
          the move was originally found with respect to the depth that it was
          found again by transposition.
-    
+
     1999 February 5 [Don Cross]
          Modified the search's use of transposition tables.
-         Now we do not short-circuit the search with transposition 
+         Now we do not short-circuit the search with transposition
          when there is any indication that a repeated position exists
          on the board.  This ensures that the search will find forcible
          draws by repetition.
-    
+
     1999 February 11 [Don Cross]
          Adding support for "search repetition shortcut", which is an attempt
          to (a) speed up the search, and more importantly (b) to expedite
          finding/avoiding forced draws during the search.  The idea is that
          whenever any board position occurs more than once in a given search
          path, that the position should be scored as an immediate draw.
-    
+
     1999 February 14 [Don Cross]
          I have reason to believe that occasional Chenard crashes might be
          due to the "pretty good move" randomizer code passing 0 to
          ChessRandom().  I am adding code to make sure that this never
          happens.
-    
+
     1999 April 7 [Don Cross]
          Adding support for loading gene(s) from disk for the computer
          player(s).  The files 'black.gen' and 'white.gen' are loaded if
          either or both exist into the respective computer player(s).
          If either file does not exist, the default gene is used, just
          as always before.
-    
+
     1999 July 21 [Don Cross]
          Changing tolerance for extended search from 30 to 60.
-    
+
     2001 January 3 [Don Cross]
          Now use endgame eval when lone king confronted by bishops+knights>=2.
          (Before, only rook(s) and/or queen(s) invoked endgame eval.)
-    
+
     2001 January 10 [Don Cross]
          Wow!  Fixed bug in search code that must have been there a long time.
          The bestpath depth needed to be chopped before any possibility
@@ -1991,17 +1990,17 @@ void ComputerChessPlayer::SetSearchBias ( SCORE newSearchBias )
          being copied into later searches.  This only showed up during
          tree trainer, and I don't know why, other than the 90-second think
          times.
-    
+
     2001 January 13 [Don Cross]
          Adding support for thinking on opponent's turn.
          This will be handled by the ChessUI abstract class, because
          some UIs will support multi-threading and some won't, and
          the ones that do will do so in OS-specific ways.
-    
+
     2001 January 17 [Don Cross]
          In InsertPrediction(), needed to copy score from actual search
          to top move so that it gets displayed properly.
          Disabled mate-in-n prediction to UI for opp time thinkers.
-    
+
 */
 

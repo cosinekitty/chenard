@@ -58,105 +58,105 @@ int ETEC_xpos       ( int argc, const char *argv[] );
 //-------------------------------------------------------------------------
 
 const char *HTXT_help =
-"help [Command]\n"
-"\n"
-"If 'Command' is missing, lists all commands available.\n"
-"If 'Command' is present, describes usage of that command.\n";
+    "help [Command]\n"
+    "\n"
+    "If 'Command' is missing, lists all commands available.\n"
+    "If 'Command' is present, describes usage of that command.\n";
 
 //-------------------------------------------------------------------------
 
 const char *HTXT_quit =
-"quit\n"
-"\n"
-"Ends the edit session and exits the Chenard program.\n";
+    "quit\n"
+    "\n"
+    "Ends the edit session and exits the Chenard program.\n";
 
 //-------------------------------------------------------------------------
 
 const char *HTXT_list =
-"list\n"
-"\n"
-"Display the board and available moves for current position.\n";
+    "list\n"
+    "\n"
+    "Display the board and available moves for current position.\n";
 
 //-------------------------------------------------------------------------
 
-const char *HTXT_move = 
-"move Ordinal\n"
-"\n"
-"Make the move with the given sibling Ordinal.\n"
-"Use 'list' command to see all moves and their ordinals.\n";
+const char *HTXT_move =
+    "move Ordinal\n"
+    "\n"
+    "Make the move with the given sibling Ordinal.\n"
+    "Use 'list' command to see all moves and their ordinals.\n";
 
 //-------------------------------------------------------------------------
 
 const char *HTXT_root =
-"root\n"
-"\n"
-"Return to the root of the experience tree\n"
-"(i.e., the beginning of the game).\n";
+    "root\n"
+    "\n"
+    "Return to the root of the experience tree\n"
+    "(i.e., the beginning of the game).\n";
 
 //-------------------------------------------------------------------------
 
 const char *HTXT_up =
-"up\n"
-"\n"
-"Undo move and return to parent of this node in tree.\n";
+    "up\n"
+    "\n"
+    "Undo move and return to parent of this node in tree.\n";
 
 //-------------------------------------------------------------------------
 
-const char *HTXT_integrity = 
-"integrity\n"
-"\n"
-"Perform integrity check of this node and all children.\n";
+const char *HTXT_integrity =
+    "integrity\n"
+    "\n"
+    "Perform integrity check of this node and all children.\n";
 
 //-------------------------------------------------------------------------
 
 const char *HTXT_delete =
-"delete Ordinal\n"
-"\n"
-"Delete the subtree from the given position with the\n"
-"specified Ordinal.  Be careful -- no undo is available!\n";
+    "delete Ordinal\n"
+    "\n"
+    "Delete the subtree from the given position with the\n"
+    "specified Ordinal.  Be careful -- no undo is available!\n";
 
 //-------------------------------------------------------------------------
 
 const char *HTXT_path =
-"path\n"
-"\n"
-"Displays the path of moves leading up to the current node.\n";
+    "path\n"
+    "\n"
+    "Displays the path of moves leading up to the current node.\n";
 
 //-------------------------------------------------------------------------
 
 const char *HTXT_jump =
-"jump Offset\n"
-"\n"
-"Searches for the path which leads to given offset and\n"
-"enters that state.\n";
+    "jump Offset\n"
+    "\n"
+    "Searches for the path which leads to given offset and\n"
+    "enters that state.\n";
 
 //-------------------------------------------------------------------------
 
 const char *HTXT_parents =
-"parents Offset\n"
-"\n"
-"Tries to find all nodes claiming to be parents of the\n"
-"node at the given offset.  This is useful for detecting\n"
-"munged branches in the tree.\n";
+    "parents Offset\n"
+    "\n"
+    "Tries to find all nodes claiming to be parents of the\n"
+    "node at the given offset.  This is useful for detecting\n"
+    "munged branches in the tree.\n";
 
 //-------------------------------------------------------------------------
 
 const char *HTXT_import =
-"import game_file_spec\n"
-"\n"
-"Reads the game(s) listed in the file and\n"
-"absorbs them into the tree.\n"
-"The file may be PGN, Yahoo email text, or GAM.\n"
-"Wildcards (e.g. '*.pgn') may be used.\n";
+    "import game_file_spec\n"
+    "\n"
+    "Reads the game(s) listed in the file and\n"
+    "absorbs them into the tree.\n"
+    "The file may be PGN, Yahoo email text, or GAM.\n"
+    "Wildcards (e.g. '*.pgn') may be used.\n";
 
 //-------------------------------------------------------------------------
 
 const char *HTXT_xpos =
-"xpos\n"
-"\n"
-"Scans the entire experience tree and looks for\n"
-"multiple paths that lead to transposed positions.\n"
-;
+    "xpos\n"
+    "\n"
+    "Scans the entire experience tree and looks for\n"
+    "multiple paths that lead to transposed positions.\n"
+    ;
 
 //-------------------------------------------------------------------------
 
@@ -191,8 +191,10 @@ TreeEditCommandEntry TreeEditTable[] =
 
 TreeEditCommandEntry *LocateCommand ( const char *verb )
 {
-    for ( int i=0; TreeEditTable[i].verb; ++i ) {
-        if ( strcmp(verb,TreeEditTable[i].verb) == 0 ) {
+    for ( int i=0; TreeEditTable[i].verb; ++i )
+    {
+        if ( strcmp(verb,TreeEditTable[i].verb) == 0 )
+        {
             return &TreeEditTable[i];
         }
     }
@@ -226,7 +228,7 @@ void IllegalMoveFormat ( Move move, char *string )
     char src[64], dest[64];
     IllegalSquareFormat ( move.source & BOARD_OFFSET_MASK, src );
     IllegalSquareFormat ( move.dest, dest );
-    sprintf ( string, "?(%s,%s)", src, dest );  
+    sprintf ( string, "?(%s,%s)", src, dest );
 }
 
 
@@ -341,9 +343,9 @@ int OpenForRead ( LearnTree &tree )
 {
     if ( !tree.open(DEFAULT_CHENARD_TREE_FILENAME) )
     {
-        fprintf ( stderr, 
-            "Error opening tree file '%s' for read\n", 
-            DEFAULT_CHENARD_TREE_FILENAME );
+        fprintf ( stderr,
+                  "Error opening tree file '%s' for read\n",
+                  DEFAULT_CHENARD_TREE_FILENAME );
 
         return 0;
     }
@@ -505,19 +507,19 @@ void ListBranches()
 
         if ( branch.move.source == 0 )
         {
-            printf ( "[deleted]     %09ld\n", long(offset) );             
+            printf ( "[deleted]     %09ld\n", long(offset) );
         }
         else
         {
             printf ( "%c %-10s  %09ld: s=%-6d t=%-5.1lf WL=%-5d e=%-8ld a=%-4ld\n",
-                (branch.child == -1) ? ' ' : '*',
-                temp, 
-                long(offset), 
-                int(branch.move.score),
-                double(branch.timeAnalyzed) / 100.0,
-                long(branch.winsAndLosses),
-                long(branch.nodesEvaluated),
-                long(branch.numAccesses) );
+                     (branch.child == -1) ? ' ' : '*',
+                     temp,
+                     long(offset),
+                     int(branch.move.score),
+                     double(branch.timeAnalyzed) / 100.0,
+                     long(branch.winsAndLosses),
+                     long(branch.nodesEvaluated),
+                     long(branch.numAccesses) );
         }
 
         offset = branch.sibling;
@@ -596,8 +598,8 @@ int ETEC_move ( int argc, const char *argv[] )
                 char temp [64];
                 IllegalMoveFormat ( branch.move, temp );
                 fprintf ( stderr, "!!! Error: illegal move %s at offset %ld\n",
-                    temp,
-                    long(offset) );
+                          temp,
+                          long(offset) );
             }
             break;
         }
@@ -635,8 +637,8 @@ int ETEC_up ( int argc, const char *argv[] )
 }
 
 
-void PerformIntegrityCheck ( 
-    LearnTree &tree, 
+void PerformIntegrityCheck (
+    LearnTree &tree,
     INT32 baseOffset )
 {
     char temp [256];
@@ -671,8 +673,8 @@ void PerformIntegrityCheck (
             if ( branch.move.source != 0 )
             {
                 IllegalMoveFormat ( branch.move, temp );
-                lprintf ( "Illegal move=%s offset=%ld path=", 
-                    temp, long(offset) );
+                lprintf ( "Illegal move=%s offset=%ld path=",
+                          temp, long(offset) );
                 DumpMovePath();
                 lprintf ( "\n" );
             }
@@ -702,8 +704,8 @@ int ETEC_integrity ( int argc, const char *argv[] )
     if ( !OpenForRead(tree) )
         return 1;
 
-    lprintf ( ">>> Starting depth-first integrity check at offset %ld...\n", 
-        long(EditOffset[EditPly]) );
+    lprintf ( ">>> Starting depth-first integrity check at offset %ld...\n",
+              long(EditOffset[EditPly]) );
 
     PerformIntegrityCheck ( tree, EditOffset[EditPly] );
 
@@ -723,8 +725,8 @@ int ETEC_integrity ( int argc, const char *argv[] )
             if ( branch.reserved[0] > 1 )
             {
                 lprintf ( ">>> Branch at offset %ld has %ld referents!\n",
-                    long(offset),
-                    long(branch.reserved[0]) );
+                          long(offset),
+                          long(branch.reserved[0]) );
             }
 
             branch.reserved[0] = 0;
@@ -760,8 +762,8 @@ int ETEC_delete ( int argc, const char *argv[] )
         return 1;
 
     LearnBranch branch;
-    
-    int ordinal = 0;    
+
+    int ordinal = 0;
     for ( INT32 offset = EditOffset[EditPly]; offset >= 0; ++ordinal )
     {
         if ( !tree.read(offset,branch) )
@@ -784,7 +786,7 @@ int ETEC_delete ( int argc, const char *argv[] )
 
             return 0;
         }
-        
+
         offset = branch.sibling;
     }
 
@@ -835,9 +837,9 @@ int FindPathToOffset ( LearnTree &tree, INT32 current, INT32 target )
                 return 1;
 
             --EditPly;
-            EditBoard->UnmakeMove ( branch.move, UnmoveTable[EditPly] );            
+            EditBoard->UnmakeMove ( branch.move, UnmoveTable[EditPly] );
         }
-    }   
+    }
 
     return 0;
 }
@@ -865,7 +867,7 @@ int ETEC_parents ( int argc, const char *argv[] )
     LearnTree tree;
     if ( !OpenForRead(tree) )
         return 1;
-    
+
     int numMatches = 0;
     LearnBranch branch;
     INT32 numNodes = tree.numNodes();
@@ -944,44 +946,62 @@ LearnBranch *LoadEntireTree (int &tablesize)
     LearnBranch *table = NULL;
 
     FILE *infile = fopen (DEFAULT_CHENARD_TREE_FILENAME, "rb");
-    if (infile) {
+    if (infile)
+    {
         // Figure out how many total branches there are in the file...
-        if (0 == fseek (infile, 0, SEEK_END)) {
+        if (0 == fseek (infile, 0, SEEK_END))
+        {
             long pos = ftell (infile);
-            if (pos > 0) {
-                if (pos % sizeof(LearnBranch) == 0) {
+            if (pos > 0)
+            {
+                if (pos % sizeof(LearnBranch) == 0)
+                {
                     tablesize = pos / sizeof(LearnBranch);
                     printf("There are %d branches in %s\n", tablesize, DEFAULT_CHENARD_TREE_FILENAME);
                     // Now the scary part... allocating all that memory!
                     table = new LearnBranch [tablesize];
-                    if (table) {
+                    if (table)
+                    {
                         rewind (infile);
                         size_t numread = fread (table, sizeof(LearnBranch), tablesize, infile);
-                        if (tablesize == numread) {
+                        if (tablesize == numread)
+                        {
                             printf("Successfully loaded file.\n");
-                        } else {
+                        }
+                        else
+                        {
                             printf("Error: Could read only %d branches.\n", numread);
                             delete[] table;
                             table = NULL;
                             tablesize = 0;
                         }
-                    } else {
+                    }
+                    else
+                    {
                         printf("Out of memory!\n");
                         tablesize = 0;
                     }
-                } else {
+                }
+                else
+                {
                     printf("File %s is not a multiple of sizeof(LearnBranch) == %d\n", DEFAULT_CHENARD_TREE_FILENAME, sizeof(LearnBranch));
                 }
-            } else {
+            }
+            else
+            {
                 printf("Zero byte file %s\n", DEFAULT_CHENARD_TREE_FILENAME);
             }
-        } else {
+        }
+        else
+        {
             printf("Error seeking to EOF %s\n", DEFAULT_CHENARD_TREE_FILENAME);
         }
 
         fclose (infile);
         infile = NULL;
-    } else {
+    }
+    else
+    {
         printf("Cannot open file %s\n", DEFAULT_CHENARD_TREE_FILENAME);
     }
 
@@ -1001,10 +1021,12 @@ void CalculatePositionHashes (LearnBranch *table, int tablesize, ChessBoard &boa
 
     int myhash = board.Hash();
 
-    do {
+    do
+    {
         ++NumHashPositions;
         table[node].reserved[0] = myhash;
-        if (table[node].child >= 0) {
+        if (table[node].child >= 0)
+        {
             board.MakeMove (table[node].move, unmove);
             CalculatePositionHashes (table, tablesize, board, table[node].child);
             board.UnmakeMove (table[node].move, unmove);
@@ -1012,7 +1034,8 @@ void CalculatePositionHashes (LearnBranch *table, int tablesize, ChessBoard &boa
             assert (checkhash == myhash);
         }
         node = table[node].sibling;
-    } while (node >= 0);
+    }
+    while (node >= 0);
 
     assert (node == -1);
 }
@@ -1030,8 +1053,10 @@ int BranchTableCompare (const void *aptr, const void *bptr)
 int CountDuplicateHashes (const LearnBranch *table, int tablesize)
 {
     int count = 0;
-    for (int i=1; i<tablesize; ++i) {
-        if (table[i-1].reserved[0] == table[i].reserved[0]) {
+    for (int i=1; i<tablesize; ++i)
+    {
+        if (table[i-1].reserved[0] == table[i].reserved[0])
+        {
             ++count;
         }
     }
@@ -1052,7 +1077,8 @@ void SearchForTranspositions (LearnBranch *table, int tablesize)
 
     // Store index of each position in reserved[1].
     // This allows us to unsort the table back later.
-    for (i=0; i<tablesize; ++i) {
+    for (i=0; i<tablesize; ++i)
+    {
         table[i].reserved[1] = i;
     }
 
@@ -1071,7 +1097,8 @@ void SearchForTranspositions (LearnBranch *table, int tablesize)
     HackTableSortIndex = 1;
     qsort (table, tablesize, sizeof(LearnBranch), BranchTableCompare);
 
-    for (i=0; i<tablesize; ++i) {
+    for (i=0; i<tablesize; ++i)
+    {
         assert (table[i].reserved[1] == i);
     }
 
@@ -1082,15 +1109,21 @@ void SearchForTranspositions (LearnBranch *table, int tablesize)
 
     const char * const OUTFILENAME = "hash.trx";
     FILE *outfile = fopen (OUTFILENAME, "wb");
-    if (outfile) {
-        if (tablesize == (int) fwrite (table, sizeof(LearnBranch), tablesize, outfile)) {
+    if (outfile)
+    {
+        if (tablesize == (int) fwrite (table, sizeof(LearnBranch), tablesize, outfile))
+        {
             printf("Saved table with hash values to %s\n", OUTFILENAME);
-        } else {
+        }
+        else
+        {
             printf("!!! Could not write table to %s\n", OUTFILENAME);
         }
         fclose (outfile);
         outfile = NULL;
-    } else {
+    }
+    else
+    {
         printf("Could not open %s for write.\n", OUTFILENAME);
     }
 }
@@ -1100,7 +1133,8 @@ int ETEC_xpos ( int argc, const char *argv[] )
 {
     int           tablesize;
     LearnBranch  *table = LoadEntireTree (tablesize);
-    if (table) {
+    if (table)
+    {
         SearchForTranspositions (table, tablesize);
         delete[] table;
         table = NULL;
@@ -1114,10 +1148,12 @@ bool bscat (char *fullpath, int fullpathsize, const char *dir, const char *name)
 {
     bool success = false;
     int dirlen = (int) strlen(dir);
-    if ((int)(2 + dirlen + strlen(name)) < fullpathsize) {
+    if ((int)(2 + dirlen + strlen(name)) < fullpathsize)
+    {
         strcpy (fullpath, dir);
 
-        if ((dirlen > 0) && (dir[dirlen-1] != '\\')) {
+        if ((dirlen > 0) && (dir[dirlen-1] != '\\'))
+        {
             fullpath[dirlen++] = '\\';
         }
 
@@ -1136,27 +1172,40 @@ bool ImportGameFile (LearnTree &tree, const char *filename)
     bool success  = false;
 
     tChessMoveStream *stream = tChessMoveStream::OpenFileForRead (filename);
-    if (!stream) {
+    if (!stream)
+    {
         printf("Cannot open file for read: '%s'\n", filename);
-    } else {
+    }
+    else
+    {
         ChessBoard  board;
         Move        move;
         UnmoveInfo  unmove;
 
-        while (stream->GetNextMove (move, reset)) {
-            if (reset) {
+        while (stream->GetNextMove (move, reset))
+        {
+            if (reset)
+            {
                 board.Init();
             }
-            if (board.GetCurrentPlyNumber() < (int)MaxLearnDepth) {
+            if (board.GetCurrentPlyNumber() < (int)MaxLearnDepth)
+            {
                 int result = tree.rememberPosition (board, move, 0, 0, 1, 0);
-                if (result == 0) {
+                if (result == 0)
+                {
                     printf ("??? Could not add move to tree ???\n");
                     break;
-                } else if (result == 1) {
+                }
+                else if (result == 1)
+                {
                     ++updates;
-                } else if (result == 2) {
+                }
+                else if (result == 2)
+                {
                     ++branches;
-                } else {
+                }
+                else
+                {
                     printf ("??? tree.RememberPosition returned %d\n", result);
                     break;
                 }
@@ -1180,15 +1229,20 @@ bool ExtractDir (char *dir, int dirsize, const char *filespec)
     bool success = false;
 
     const char *finalbs = strrchr (filespec, '\\');
-    if (finalbs) {
+    if (finalbs)
+    {
         int length = (int) (finalbs - filespec);     // number of characters up to, but excluding, final backslash
-        if (length < dirsize) {
+        if (length < dirsize)
+        {
             memcpy (dir, filespec, length);
             dir[length] = '\0';
             success = true;
         }
-    } else {
-        if (dirsize >= 2) {
+    }
+    else
+    {
+        if (dirsize >= 2)
+        {
             strcpy (dir, ".");
             success = true;
         }
@@ -1200,46 +1254,65 @@ bool ExtractDir (char *dir, int dirsize, const char *filespec)
 
 int ETEC_import ( int argc, const char *argv[] )
 {
-    if (argc != 2) {
+    if (argc != 2)
+    {
         printf("Missing filespec parameter.\n");
         return 1;
     }
 
     LearnTree tree;
-    if ( OpenForRead(tree) ) {     // actually, this opens existing file for modification
-        try {
+    if ( OpenForRead(tree) )       // actually, this opens existing file for modification
+    {
+        try
+        {
             char            dir [512];
             char            fullpath [512];
             int             numfiles = 0;
             _finddata_t     finfo;
 
-            if (ExtractDir (dir, sizeof(dir), argv[1])) {
+            if (ExtractDir (dir, sizeof(dir), argv[1]))
+            {
                 intptr_t handle = _findfirst (argv[1], &finfo);
-                if (handle != -1) {
-                    do {
-                        if (!(finfo.attrib & _A_SUBDIR)) {
-                            if (bscat (fullpath, sizeof(fullpath), dir, finfo.name)) {
-                                if (ImportGameFile (tree, fullpath)) {
+                if (handle != -1)
+                {
+                    do
+                    {
+                        if (!(finfo.attrib & _A_SUBDIR))
+                        {
+                            if (bscat (fullpath, sizeof(fullpath), dir, finfo.name))
+                            {
+                                if (ImportGameFile (tree, fullpath))
+                                {
                                     ++numfiles;
                                 }
-                            } else {
+                            }
+                            else
+                            {
                                 printf("!!! ERROR forming full path !!!\n");
                                 break;
                             }
                         }
-                    } while (0 == _findnext(handle,&finfo));
+                    }
+                    while (0 == _findnext(handle,&finfo));
                     _findclose (handle);
                 }
 
-                if (numfiles == 0) {
+                if (numfiles == 0)
+                {
                     printf ("!!! ERROR importing files using '%s' as filespec.\n", argv[1]);
-                } else {
+                }
+                else
+                {
                     printf ("Imported %d game files.\n", numfiles);
                 }
-            } else {
+            }
+            else
+            {
                 printf("!!! ERROR extracting dir from filespec.\n");
             }
-        } catch (const char *message) {
+        }
+        catch (const char *message)
+        {
             printf (">>> %s\n", message);
         }
     }
@@ -1314,9 +1387,9 @@ int ETEC_import ( int argc, const char *argv[] )
 
 
         Revision history:
-    
+
     1999 March 3 [Don Cross]
         Started writing.
-    
+
 */
 

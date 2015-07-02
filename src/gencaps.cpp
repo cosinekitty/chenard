@@ -10,7 +10,7 @@
 #include "chess.h"
 #include "profiler.h"
 
-int ChessBoard::GenWhiteCaptures ( 
+int ChessBoard::GenWhiteCaptures (
     MoveList &ml,
     ComputerChessPlayer *player )
 {
@@ -30,33 +30,33 @@ int ChessBoard::GenWhiteCaptures (
             {
                 switch ( UPIECE_INDEX(piece) )
                 {
-                    case P_INDEX:
-                        GenCaps_WP ( ml, ofs, ybase );
-                        break;
+                case P_INDEX:
+                    GenCaps_WP ( ml, ofs, ybase );
+                    break;
 
-                    case N_INDEX:
-                        GenCaps_WN ( ml, ofs );
-                        break;
+                case N_INDEX:
+                    GenCaps_WN ( ml, ofs );
+                    break;
 
-                    case B_INDEX:
-                        GenCaps_WB ( ml, ofs );
-                        break;
+                case B_INDEX:
+                    GenCaps_WB ( ml, ofs );
+                    break;
 
-                    case R_INDEX:
-                        GenCaps_WR ( ml, ofs );
-                        break;
+                case R_INDEX:
+                    GenCaps_WR ( ml, ofs );
+                    break;
 
-                    case Q_INDEX:
-                        GenCaps_WQ ( ml, ofs );
-                        break;
+                case Q_INDEX:
+                    GenCaps_WQ ( ml, ofs );
+                    break;
 
-                    case K_INDEX:
-                        GenCaps_WK ( ml, ofs );
-                        break;
+                case K_INDEX:
+                    GenCaps_WK ( ml, ofs );
+                    break;
 
-                    default:
-                        ChessFatal ( "Invalid piece in ChessBoard::GenWhiteCaptures" );
-                        break;
+                default:
+                    ChessFatal ( "Invalid piece in ChessBoard::GenWhiteCaptures" );
+                    break;
                 }
             }
         }
@@ -75,15 +75,15 @@ void ChessBoard::GenCaps_WP ( MoveList &ml, int ofs, int ybase )
         if ( board [ofs + NORTHEAST] & BLACK_MASK )
             ml.AddMove ( ofs, ofs + NORTHEAST );
         else if ( (prev_move.source & BOARD_OFFSET_MASK) == ofs + OFFSET(1,2) &&
-                prev_move.dest == ofs + OFFSET(1,0) &&
-                (board [prev_move.dest] & BP_MASK) )
+                  prev_move.dest == ofs + OFFSET(1,0) &&
+                  (board [prev_move.dest] & BP_MASK) )
             ml.AddMove ( ofs, SPECIAL_MOVE_EP_EAST );
 
         if ( board [ofs + NORTHWEST] & BLACK_MASK )
             ml.AddMove ( ofs, ofs + NORTHWEST );
         else if ( (prev_move.source & BOARD_OFFSET_MASK) == ofs + OFFSET(-1,2) &&
-                prev_move.dest == ofs + OFFSET(-1,0) &&
-                (board [prev_move.dest] & BP_MASK) )
+                  prev_move.dest == ofs + OFFSET(-1,0) &&
+                  (board [prev_move.dest] & BP_MASK) )
             ml.AddMove ( ofs, SPECIAL_MOVE_EP_WEST );
     }
     else if ( ybase == OFFSET(2,8) )
@@ -281,33 +281,33 @@ int ChessBoard::GenBlackCaptures ( MoveList &ml, ComputerChessPlayer *player )
             {
                 switch ( UPIECE_INDEX(piece) )
                 {
-                    case P_INDEX:
-                        GenCaps_BP ( ml, ofs, ybase );
-                        break;
+                case P_INDEX:
+                    GenCaps_BP ( ml, ofs, ybase );
+                    break;
 
-                    case N_INDEX:
-                        GenCaps_BN ( ml, ofs );
-                        break;
+                case N_INDEX:
+                    GenCaps_BN ( ml, ofs );
+                    break;
 
-                    case B_INDEX:
-                        GenCaps_BB ( ml, ofs );
-                        break;
+                case B_INDEX:
+                    GenCaps_BB ( ml, ofs );
+                    break;
 
-                    case R_INDEX:
-                        GenCaps_BR ( ml, ofs );
-                        break;
+                case R_INDEX:
+                    GenCaps_BR ( ml, ofs );
+                    break;
 
-                    case Q_INDEX:
-                        GenCaps_BQ ( ml, ofs );
-                        break;
+                case Q_INDEX:
+                    GenCaps_BQ ( ml, ofs );
+                    break;
 
-                    case K_INDEX:
-                        GenCaps_BK ( ml, ofs );
-                        break;
+                case K_INDEX:
+                    GenCaps_BK ( ml, ofs );
+                    break;
 
-                    default:
-                        ChessFatal ( "Invalid piece in ChessBoard::GenBlackCaptures" );
-                        break;
+                default:
+                    ChessFatal ( "Invalid piece in ChessBoard::GenBlackCaptures" );
+                    break;
                 }
             }
         }
@@ -326,15 +326,15 @@ void ChessBoard::GenCaps_BP ( MoveList &ml, int ofs, int ybase )
         if ( board [ofs + SOUTHEAST] & WHITE_MASK )
             ml.AddMove ( ofs, ofs + SOUTHEAST );
         else if ( (prev_move.source & BOARD_OFFSET_MASK) == ofs + OFFSET(1,-2) &&
-                prev_move.dest == ofs + OFFSET(1,0) &&
-                (board [prev_move.dest] & WP_MASK) )
+                  prev_move.dest == ofs + OFFSET(1,0) &&
+                  (board [prev_move.dest] & WP_MASK) )
             ml.AddMove ( ofs, SPECIAL_MOVE_EP_EAST );
 
         if ( board [ofs + SOUTHWEST] & WHITE_MASK )
             ml.AddMove ( ofs, ofs + SOUTHWEST );
         else if ( (prev_move.source & BOARD_OFFSET_MASK) == ofs + OFFSET(-1,-2) &&
-                prev_move.dest == ofs + OFFSET(-1,0) &&
-                (board [prev_move.dest] & WP_MASK) )
+                  prev_move.dest == ofs + OFFSET(-1,0) &&
+                  (board [prev_move.dest] & WP_MASK) )
             ml.AddMove ( ofs, SPECIAL_MOVE_EP_WEST );
     }
     else if ( ybase == OFFSET(2,3) )   // check for pawn promotion
@@ -527,16 +527,16 @@ void ChessBoard::GenCaps_BK ( MoveList &ml, int source )
 
 
           Revision history:
-    
+
     1999 August 4 [Don Cross]
          Adding debug code.
-    
+
     1999 January 4 [Don Cross]
          Updated coding style.
-    
+
     1994 February 10 [Don Cross]
          Adding piece indexing.
-    
+
     1993 August 30 [Don Cross]
          Changing pointers to references in the interfaces where
          appropriate.

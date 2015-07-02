@@ -175,7 +175,7 @@ int ChessGene::load ( const char *filename )
             int index = ChessGene::Locate(line,i);
             if ( index >= 0 && index < NUM_CHESS_GENES )
                 v[index] = atoi(p);
-        }       
+        }
     }
 
     fclose(f);
@@ -234,9 +234,9 @@ int ChessGene::Locate ( const char *name, int expectedIndex )
 
 
         Revision history:
-    
+
     1999 February 17 [Don Cross]
          Started writing.
-    
+
 */
 

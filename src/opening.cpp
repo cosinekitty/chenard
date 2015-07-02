@@ -25,8 +25,8 @@ extern big OpeningData[];
 #define  BAD_MOVE_SCORE   (-100)
 
 
-void Move::Fix ( 
-    unsigned long openBookData, 
+void Move::Fix (
+    unsigned long openBookData,
     ChessBoard &board )
 {
     source = BYTE ( (openBookData >> 8) & 0x7F );
@@ -49,16 +49,16 @@ void Move::Fix (
 
             switch ( dest - source )
             {
-                case NORTH:      dest = SPECIAL_MOVE_PROMOTE_NORM;       break;
-                case NORTHEAST:  dest = SPECIAL_MOVE_PROMOTE_CAP_EAST;   break;
-                case NORTHWEST:  dest = SPECIAL_MOVE_PROMOTE_CAP_WEST;   break;
+            case NORTH:      dest = SPECIAL_MOVE_PROMOTE_NORM;       break;
+            case NORTHEAST:  dest = SPECIAL_MOVE_PROMOTE_CAP_EAST;   break;
+            case NORTHWEST:  dest = SPECIAL_MOVE_PROMOTE_CAP_WEST;   break;
             }
 
             dest |= Q_INDEX;
         }
         else if ( (dest - source) != NORTH &&
-                (dest - source) != 2*NORTH &&
-                board.GetSquareContents(dest) == EMPTY )
+                  (dest - source) != 2*NORTH &&
+                  board.GetSquareContents(dest) == EMPTY )
         {
             // assume e.p. capture
 
@@ -76,9 +76,9 @@ void Move::Fix (
 
             switch ( dest - source )
             {
-                case SOUTH:      dest = SPECIAL_MOVE_PROMOTE_NORM;       break;
-                case SOUTHEAST:  dest = SPECIAL_MOVE_PROMOTE_CAP_EAST;   break;
-                case SOUTHWEST:  dest = SPECIAL_MOVE_PROMOTE_CAP_WEST;   break;
+            case SOUTH:      dest = SPECIAL_MOVE_PROMOTE_NORM;       break;
+            case SOUTHEAST:  dest = SPECIAL_MOVE_PROMOTE_CAP_EAST;   break;
+            case SOUTHWEST:  dest = SPECIAL_MOVE_PROMOTE_CAP_WEST;   break;
             }
 
             dest |= Q_INDEX;
@@ -100,9 +100,9 @@ void Move::Fix (
 }
 
 
-bool OB_FindMove ( 
-    Move move, 
-    big &oindex, 
+bool OB_FindMove (
+    Move move,
+    big &oindex,
     ChessBoard &board )
 {
     // Start with oindex given, and try to find this move.
@@ -134,8 +134,8 @@ bool OB_FindMove (
 }
 
 
-bool OB_FindContinuation ( 
-    ChessBoard &board, 
+bool OB_FindContinuation (
+    ChessBoard &board,
     big &oindex )
 {
     // Start from beginning of game and try to find the continuation
@@ -169,9 +169,9 @@ bool OB_FindContinuation (
 }
 
 
-bool OB_PickMove ( 
-    big oindex, 
-    Move &move, 
+bool OB_PickMove (
+    big oindex,
+    Move &move,
     ChessBoard &board )
 {
     MoveList ml;
@@ -206,7 +206,7 @@ bool OB_PickMove (
 }
 
 
-bool ComputerChessPlayer::WhiteOpening ( 
+bool ComputerChessPlayer::WhiteOpening (
     ChessBoard &board,
     Move       &bestmove )
 {
@@ -236,7 +236,7 @@ bool ComputerChessPlayer::WhiteOpening (
 }
 
 
-bool ComputerChessPlayer::BlackOpening ( 
+bool ComputerChessPlayer::BlackOpening (
     ChessBoard &board,
     Move       &bestmove )
 {
@@ -284,16 +284,16 @@ bool ComputerChessPlayer::BlackOpening (
 
 
          Revision history:
-    
+
     1999 January 5 [Don Cross]
          Updating coding style.
-    
+
     1994 February 15 [Don Cross]
          Implementing true opening library using OBT (Open Book Translator).
-    
+
     1993 October 19 [Don Cross]
          Started writing.  The first version just knows about P-K4, P-K4
          kind of stuff.
-    
+
 */
 

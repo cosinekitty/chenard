@@ -28,10 +28,10 @@ void StartProfiler()
     for ( int i=0; i<PROFILE_ARRAY_SIZE; i++ )
         ProfilerHitCount[i] = ProfilerCallCount[i] = 0;
 
-    ProfilerIndex = PX_UNDEFINED;       
+    ProfilerIndex = PX_UNDEFINED;
 
     // start the Win32 timer...
-    
+
     TimerEnabledFlag = (SetTimer(HwndMain,1,55,NULL) != NULL);
 }
 
@@ -60,9 +60,9 @@ void StopProfiler()
 
 
         Revision history:
-    
+
     1997 June 10 [Don Cross]
         Started writing.
-    
+
 */
 

@@ -7,8 +7,8 @@
 ===========================================================================*/
 
 #ifdef _WIN32
-    // needed for setting process priority
-    #include <windows.h>
+// needed for setting process priority
+#include <windows.h>
 #endif
 
 #include <stdio.h>
@@ -35,7 +35,7 @@ int Global_EndgameDatabaseMode = 0;
 bool EGDB_IsLegal ( ChessBoard & );
 
 
-SCORE EGDB_WhiteSearch ( 
+SCORE EGDB_WhiteSearch (
     ChessBoard  &board,
     int         depth,
     Move        *whiteTable,
@@ -44,7 +44,7 @@ SCORE EGDB_WhiteSearch (
     SQUARE      whitePiece );
 
 
-SCORE EGDB_BlackSearch ( 
+SCORE EGDB_BlackSearch (
     ChessBoard  &board,
     int         depth,
     Move        *whiteTable,
@@ -54,23 +54,23 @@ SCORE EGDB_BlackSearch (
 
 //-------------------------------------------------------------------------
 
-SCORE EGDB_WhiteSearchBB ( 
+SCORE EGDB_WhiteSearchBB (
     ChessBoard  &board,
     int         depth,
     Move        *whiteTable,
     Move        *blackTable,
     ChessUI     &ui,
-    int          required_mate_plies 
+    int          required_mate_plies
 );
 
 
-SCORE EGDB_BlackSearchBB ( 
+SCORE EGDB_BlackSearchBB (
     ChessBoard  &board,
     int         depth,
     Move        *whiteTable,
     Move        *blackTable,
     ChessUI     &ui,
-    int          required_mate_plies 
+    int          required_mate_plies
 );
 
 //-------------------------------------------------------------------------
@@ -123,7 +123,7 @@ bool ConsultEndgameDatabase (
 
 typedef unsigned (* TABLE_INDEX_FUNC)  ( ChessBoard & );
 
-void CalcEndgameBestPath ( 
+void CalcEndgameBestPath (
     ChessBoard          &board,
     BestPath            &bp,
     const Move          *whiteTable,
@@ -137,7 +137,7 @@ bool FetchMoveFromDatabase (
 
 
 void DumpEndgameDatabaseBN (
-    const char          *inDatabaseFileName, 
+    const char          *inDatabaseFileName,
     const char          *outTextFileName
 );
 
@@ -180,7 +180,7 @@ unsigned LocateNonKingPiece (
     ChessBoard &board )
 {
     const SQUARE *bptr = board.queryBoardPointer();
-    const SQUARE nonking = 
+    const SQUARE nonking =
         WP_MASK | WN_MASK | WB_MASK | WR_MASK | WQ_MASK |
         BP_MASK | BN_MASK | BB_MASK | BR_MASK | BQ_MASK;
 
@@ -255,7 +255,7 @@ bool LocateBishops (
 }
 
 
-void ValidateBB ( 
+void ValidateBB (
     ChessBoard  &board,
     unsigned    wbwOffset,
     unsigned    wbbOffset )
@@ -285,8 +285,8 @@ unsigned CalcTableIndex (
     unsigned blackKingOffset )
 {
     unsigned ti = CalcPieceIndex(whiteKingOffset) +
-           64 * (CalcPieceIndex(whitePieceOffset) +
-                 64 * CalcPieceIndex(blackKingOffset));
+                  64 * (CalcPieceIndex(whitePieceOffset) +
+                        64 * CalcPieceIndex(blackKingOffset));
 
     if ( ti >= MOVE_TABLE_SIZE )
     {
@@ -314,9 +314,9 @@ unsigned CalcTableIndexBB (
     unsigned wbbOffset )
 {
     unsigned ti = (CalcPieceIndex(wbbOffset)/2) +
-        32 * ((CalcPieceIndex(wbwOffset)/2) +
-            32 * (CalcPieceIndex(blackKingOffset) +
-                64 * CalcPieceIndex(whiteKingOffset)));
+                  32 * ((CalcPieceIndex(wbwOffset)/2) +
+                        32 * (CalcPieceIndex(blackKingOffset) +
+                              64 * CalcPieceIndex(whiteKingOffset)));
 
     if ( ti >= MOVE_TABLE_SIZE_BB )
     {
@@ -339,7 +339,8 @@ unsigned CalcTableIndexBN (
     ti = (64*ti) +  CalcPieceIndex (whiteKnightOffset);
     ti = (32*ti) + (CalcPieceIndex (whiteBishopOffset) / 2);
 
-    if ( ti >= MOVE_TABLE_SIZE_BN ) {
+    if ( ti >= MOVE_TABLE_SIZE_BN )
+    {
         ChessFatal ( "Table index too big in CalcTableIndexBN" );
         return 0;
     }
@@ -355,12 +356,16 @@ void CalcPiecePositionsBN (     // inverse function of CalcTableIndexBN
     unsigned    &whiteBishopOffset,
     unsigned    &whiteKnightOffset )
 {
-    if (ti >= MOVE_TABLE_SIZE_BN) {
+    if (ti >= MOVE_TABLE_SIZE_BN)
+    {
         ChessFatal ( "Table index too big in CalcTableIndexBN" );
         whiteKingOffset = blackKingOffset = whiteBishopOffset = whiteKnightOffset = 0;
-    } else {
+    }
+    else
+    {
         whiteBishopOffset = CalcPieceOffset (2 * (ti%32));  // always lands on files a,c,e,g
-        if (SquareIsBlack (whiteBishopOffset)) {
+        if (SquareIsBlack (whiteBishopOffset))
+        {
             ++whiteBishopOffset;    // correct for odd/even ranks
         }
 
@@ -382,30 +387,31 @@ bool LocateBishopAndKnight (ChessBoard &board, unsigned &wbOffset, unsigned &wnO
 unsigned CalcTableIndexBN (ChessBoard &board)
 {
     unsigned wnOffset, wbOffset;
-    if (!LocateBishopAndKnight (board, wbOffset, wnOffset)) {
+    if (!LocateBishopAndKnight (board, wbOffset, wnOffset))
+    {
         ChessFatal ("Cannot find Bishop and Knight in CalcTableIndexBN");
         return 0;
     }
 
     return CalcTableIndexBN (
-        board.GetWhiteKingOffset(),
-        board.GetBlackKingOffset(),
-        wbOffset,
-        wnOffset
-    );
+               board.GetWhiteKingOffset(),
+               board.GetBlackKingOffset(),
+               wbOffset,
+               wnOffset
+           );
 }
 
 
-inline unsigned CalcTableIndexBB ( 
-    ChessBoard  &board, 
-    unsigned    wbwOffset, 
+inline unsigned CalcTableIndexBB (
+    ChessBoard  &board,
+    unsigned    wbwOffset,
     unsigned    wbbOffset )
 {
     return CalcTableIndexBB (
-        board.GetWhiteKingOffset(),
-        board.GetBlackKingOffset(),
-        wbwOffset,
-        wbbOffset );
+               board.GetWhiteKingOffset(),
+               board.GetBlackKingOffset(),
+               wbwOffset,
+               wbbOffset );
 }
 
 
@@ -436,15 +442,18 @@ int Symmetry (int n, int ofs)
     int x = XPART(ofs);
     int y = YPART(ofs);
 
-    if (n & 1) {
+    if (n & 1)
+    {
         x = 11 - x;
     }
 
-    if (n & 2) {
+    if (n & 2)
+    {
         y = 11 - y;
     }
 
-    if (n & 4) {
+    if (n & 4)
+    {
         int t = x;
         x = y;
         y = t;
@@ -459,17 +468,20 @@ int AntiSymmetry (int n, int ofs)
     int x = XPART(ofs);
     int y = YPART(ofs);
 
-    if (n & 4) {
+    if (n & 4)
+    {
         int t = x;
         x = y;
         y = t;
     }
 
-    if (n & 2) {
+    if (n & 2)
+    {
         y = 11 - y;
     }
 
-    if (n & 1) {
+    if (n & 1)
+    {
         x = 11 - x;
     }
 
@@ -508,7 +520,8 @@ bool SymmetryPreservesSquareColor (int n)
 
 #define LeftRightMirror(ofs)    Symmetry(SYMMETRY_LEFT_RIGHT_MIRROR,(ofs))
 
-const int PRESERVE_SQUARE_COLOR [4] = {
+const int PRESERVE_SQUARE_COLOR [4] =
+{
     SYMMETRY_IDENTITY,
     SYMMETRY_ROTATE_180,
     SYMMETRY_FLIP_SLASH,
@@ -544,9 +557,11 @@ unsigned FindEquivalentPositionBN (unsigned ti, int &sym)
     unsigned    wkOffset, bkOffset, wbOffset, wnOffset;
     CalcPiecePositionsBN (ti, wkOffset, bkOffset, wbOffset, wnOffset);
 
-    for (int n=1; n<=3; ++n) {
+    for (int n=1; n<=3; ++n)
+    {
         unsigned index = SymmetryBN (wkOffset, bkOffset, wbOffset, wnOffset, PRESERVE_SQUARE_COLOR[n]);
-        if (index < mi) {
+        if (index < mi)
+        {
             mi  = index;
             sym = PRESERVE_SQUARE_COLOR[n];
         }
@@ -563,17 +578,23 @@ void AnalyzeSymmetriesBN (
     int identical = 0;
     int sym;
 
-    for (unsigned ti=0; ti < MOVE_TABLE_SIZE_BN; ++ti) {
+    for (unsigned ti=0; ti < MOVE_TABLE_SIZE_BN; ++ti)
+    {
         unsigned mi = FindEquivalentPositionBN (ti, sym);
-        if (mi == ti) {
+        if (mi == ti)
+        {
             ++identical;
-        } else {
-            if (mi >= MOVE_TABLE_SIZE_BN) {
+        }
+        else
+        {
+            if (mi >= MOVE_TABLE_SIZE_BN)
+            {
                 fprintf (outfile, "!!! ti=%d, mi=%d, MOVE_TABLE_SIZE_BN=%d\n", ti, mi, MOVE_TABLE_SIZE_BN);
                 break;
             }
 
-            if (table[ti].score != table[mi].score) {
+            if (table[ti].score != table[mi].score)
+            {
                 fprintf (outfile, "!!! ti=%d, mi=%d, sym=%d, score[ti]=%d, score[mi]=%d\n", ti, mi, sym, table[ti].score, table[mi].score);
                 unsigned    wkOffset, bkOffset, wbOffset, wnOffset;
                 CalcPiecePositionsBN (ti, wkOffset, bkOffset, wbOffset, wnOffset);
@@ -596,26 +617,36 @@ void AnalyzeSymmetriesBN (
     const char *outTextFileName )
 {
     FILE *outfile = fopen (outTextFileName, "wt");
-    if (outfile) {
+    if (outfile)
+    {
         FILE *infile = fopen (inDatabaseFileName, "rb");
-        if (infile) {
+        if (infile)
+        {
             Move *table = new Move [MOVE_TABLE_SIZE_BN];
-            if (table) {
-                if (1 == fread (table, sizeof(Move)*MOVE_TABLE_SIZE_BN, 1, infile)) {
+            if (table)
+            {
+                if (1 == fread (table, sizeof(Move)*MOVE_TABLE_SIZE_BN, 1, infile))
+                {
                     AnalyzeSymmetriesBN (outfile, table);
-                } else {
+                }
+                else
+                {
                     fprintf (outfile, "Error reading table from file '%s'\n", inDatabaseFileName);
                 }
 
                 delete[] table;
                 table = NULL;
-            } else {
+            }
+            else
+            {
                 fprintf (outfile, "Out of memory!\n");
             }
 
             fclose (infile);
             infile = NULL;
-        } else {
+        }
+        else
+        {
             fprintf (outfile, "Cannot open database file '%s'\n", inDatabaseFileName);
         }
 
@@ -631,47 +662,51 @@ void GenerateEndgameDatabases (
     ChessBoard  &board,
     ChessUI     &ui )
 {
-    switch (Global_EndgameDatabaseMode) {
-        case 0: {   // generate endgame databases
-            #ifdef _WIN32
-                // Set thread priority to IDLE...
-            
-                HANDLE hProcess = GetCurrentProcess();
-                SetPriorityClass(hProcess,IDLE_PRIORITY_CLASS);
-            #endif
-            INT32  timeBefore = ChessTime();
-            ui.SetAdHocText ( 3, "Starting endgame database calculation..." );
+    switch (Global_EndgameDatabaseMode)
+    {
+    case 0:     // generate endgame databases
+    {
+#ifdef _WIN32
+        // Set thread priority to IDLE...
 
-            GenerateEndgameDatabase ( EDB_ROOK_FILENAME, WROOK, board, ui );
-            GenerateEndgameDatabase ( EDB_QUEEN_FILENAME, WQUEEN, board, ui );
+        HANDLE hProcess = GetCurrentProcess();
+        SetPriorityClass(hProcess,IDLE_PRIORITY_CLASS);
+#endif
+        INT32  timeBefore = ChessTime();
+        ui.SetAdHocText ( 3, "Starting endgame database calculation..." );
 
-            // IMPORTANT:  To generate the pawn database, the rook and queen
-            // databases must already be finished.  This is because the database
-            // generator needs to consult the rook and/or queen databases when
-            // a pawn is promoted, in order to tell how many moves it will mate in.
-            GenerateEndgameDatabase ( EDB_PAWN_FILENAME, WPAWN, board, ui );
+        GenerateEndgameDatabase ( EDB_ROOK_FILENAME, WROOK, board, ui );
+        GenerateEndgameDatabase ( EDB_QUEEN_FILENAME, WQUEEN, board, ui );
 
-            GenerateEndgameDatabaseBB ( EDB_BB_FILENAME, board, ui );
-            GenerateEndgameDatabaseBN ( EDB_BN_FILENAME, board, ui );
+        // IMPORTANT:  To generate the pawn database, the rook and queen
+        // databases must already be finished.  This is because the database
+        // generator needs to consult the rook and/or queen databases when
+        // a pawn is promoted, in order to tell how many moves it will mate in.
+        GenerateEndgameDatabase ( EDB_PAWN_FILENAME, WPAWN, board, ui );
 
-            board.Init();   // signal that endgame stuff is done
-            ui.DrawBoard (board);
+        GenerateEndgameDatabaseBB ( EDB_BB_FILENAME, board, ui );
+        GenerateEndgameDatabaseBN ( EDB_BN_FILENAME, board, ui );
 
-            UINT32  timeAfter = ChessTime();
-            double minutes = double(timeAfter - timeBefore) / 6000.0;
-            ui.SetAdHocText ( 3, "Done calculating endgame databases (%0.3lf minutes)", minutes );
-            break;
-        }
+        board.Init();   // signal that endgame stuff is done
+        ui.DrawBoard (board);
 
-        case 1: {       // dump endgame databases
-            DumpEndgameDatabaseBN (EDB_BN_FILENAME, "bnedb.txt");
-            break;
-        }
+        UINT32  timeAfter = ChessTime();
+        double minutes = double(timeAfter - timeBefore) / 6000.0;
+        ui.SetAdHocText ( 3, "Done calculating endgame databases (%0.3lf minutes)", minutes );
+        break;
+    }
 
-        case 2: {       // study symmetries
-            AnalyzeSymmetriesBN (EDB_BN_FILENAME, "bnsym.txt");
-            break;
-        }
+    case 1:         // dump endgame databases
+    {
+        DumpEndgameDatabaseBN (EDB_BN_FILENAME, "bnedb.txt");
+        break;
+    }
+
+    case 2:         // study symmetries
+    {
+        AnalyzeSymmetriesBN (EDB_BN_FILENAME, "bnsym.txt");
+        break;
+    }
     }
 }
 
@@ -794,11 +829,11 @@ void GenerateEndgameDatabase (
 
                 ++passCounter;
 
-                ui.SetAdHocText ( 3, "%s pass %u: found %u legal, %u new wins", 
-                    filename,
-                    passCounter,
-                    numLegalPositions,
-                    incrementalWins );
+                ui.SetAdHocText ( 3, "%s pass %u: found %u legal, %u new wins",
+                                  filename,
+                                  passCounter,
+                                  numLegalPositions,
+                                  incrementalWins );
 
                 if ( incrementalWins == 0 )
                     break;
@@ -807,7 +842,7 @@ void GenerateEndgameDatabase (
             // When we get here, we are done, so write the white table to disk.
 
             unsigned numWritten = fwrite (
-                whiteTable, sizeof(Move), MOVE_TABLE_SIZE, outfile );
+                                      whiteTable, sizeof(Move), MOVE_TABLE_SIZE, outfile );
 
             if ( numWritten != MOVE_TABLE_SIZE )
             {
@@ -892,9 +927,9 @@ bool EGDB_IsLegal ( ChessBoard &board )
 
 //--------------------------------------------------------------------------
 
-SCORE EGDB_WhiteSearch ( 
+SCORE EGDB_WhiteSearch (
     ChessBoard  &board,
-    int         depth, 
+    int         depth,
     Move        *whiteTable,
     Move        *blackTable,
     ChessUI     &ui,
@@ -910,9 +945,9 @@ SCORE EGDB_WhiteSearch (
     }
 
     unsigned ti = CalcTableIndex (
-        whiteKingOffset,
-        whitePieceOffset,
-        blackKingOffset );      
+                      whiteKingOffset,
+                      whitePieceOffset,
+                      blackKingOffset );
 
     if ( whiteTable[ti].source != 0 )
     {
@@ -952,7 +987,7 @@ SCORE EGDB_WhiteSearch (
         Move *move = &ml.m[0];
         UnmoveInfo unmove;
         Move *bestmove = 0;
-        for ( int i=0; i<ml.num; ++i, ++move ) 
+        for ( int i=0; i<ml.num; ++i, ++move )
         {
             board.MakeMove ( *move, unmove );
             SCORE score = EGDB_BlackSearch ( board, 1+depth, whiteTable, blackTable, ui, whitePiece );
@@ -997,9 +1032,9 @@ SCORE EGDB_WhiteSearch (
 
 //--------------------------------------------------------------------------
 
-SCORE EGDB_BlackSearch ( 
+SCORE EGDB_BlackSearch (
     ChessBoard  &board,
-    int         depth, 
+    int         depth,
     Move        *whiteTable,
     Move        *blackTable,
     ChessUI     &ui,
@@ -1015,9 +1050,9 @@ SCORE EGDB_BlackSearch (
     }
 
     unsigned ti = CalcTableIndex (
-        whiteKingOffset,
-        whitePieceOffset,
-        blackKingOffset );
+                      whiteKingOffset,
+                      whitePieceOffset,
+                      blackKingOffset );
 
     // Before doing anything else, see if this position has already been handled...
     if ( blackTable[ti].source != 0 )
@@ -1048,7 +1083,7 @@ SCORE EGDB_BlackSearch (
     Move *move = &ml.m[0];
     UnmoveInfo unmove;
     Move *bestmove = 0;
-    for ( int i=0; i<ml.num; ++i, ++move ) 
+    for ( int i=0; i<ml.num; ++i, ++move )
     {
         board.MakeMove ( *move, unmove );
         SCORE score = EGDB_WhiteSearch ( board, 1+depth, whiteTable, blackTable, ui, whitePiece );
@@ -1068,7 +1103,8 @@ SCORE EGDB_BlackSearch (
         {
             bestscore = score;
             bestmove = move;
-            if (score < FORCED_WIN) {   // A kind of pruning:  no need to continue if we won't store this result!
+            if (score < FORCED_WIN)     // A kind of pruning:  no need to continue if we won't store this result!
+            {
                 break;
             }
         }
@@ -1112,16 +1148,20 @@ bool ConsultEndgameDatabaseBN (
     bool moveIsValid = false;
 
     unsigned winnerBishopOffset, winnerKnightOffset;
-    if (!LocateBishopAndKnight (board, winnerBishopOffset, winnerKnightOffset)) {
+    if (!LocateBishopAndKnight (board, winnerBishopOffset, winnerKnightOffset))
+    {
         return false;
     }
 
     unsigned winnerKingOffset, loserKingOffset;
-    if (board.BlackToMove()) {
+    if (board.BlackToMove())
+    {
         // Black is winning, so his king is the winner king, and White's is the loser king
         winnerKingOffset = board.GetBlackKingOffset();
         loserKingOffset  = board.GetWhiteKingOffset();
-    } else {
+    }
+    else
+    {
         // White is winning
         winnerKingOffset = board.GetWhiteKingOffset();
         loserKingOffset  = board.GetBlackKingOffset();
@@ -1132,7 +1172,8 @@ bool ConsultEndgameDatabaseBN (
     // The rotation trick of (ofs=143-ofs) will NOT work, because that preserves square color!
 
     bool flip = SquareIsBlack (winnerBishopOffset);
-    if (flip) {
+    if (flip)
+    {
         winnerBishopOffset = LeftRightMirror (winnerBishopOffset);
         winnerKnightOffset = LeftRightMirror (winnerKnightOffset);
         winnerKingOffset   = LeftRightMirror (winnerKingOffset);
@@ -1140,24 +1181,29 @@ bool ConsultEndgameDatabaseBN (
     }
 
     unsigned ti = CalcTableIndexBN (
-        winnerKingOffset, 
-        loserKingOffset, 
-        winnerBishopOffset, 
-        winnerKnightOffset
-    );
+                      winnerKingOffset,
+                      loserKingOffset,
+                      winnerBishopOffset,
+                      winnerKnightOffset
+                  );
 
-    if (FetchMoveFromDatabase (EDB_BN_FILENAME, ti, move)) {
-        if (move.source != 0) {
+    if (FetchMoveFromDatabase (EDB_BN_FILENAME, ti, move))
+    {
+        if (move.source != 0)
+        {
             move.source &= BOARD_OFFSET_MASK;
-            if (flip) {
+            if (flip)
+            {
                 move.source = LeftRightMirror (move.source);
                 move.dest   = LeftRightMirror (move.dest);
             }
             MoveList ml;
             board.GenMoves (ml);
-            if (ml.IsLegal (move)) {
+            if (ml.IsLegal (move))
+            {
                 moveIsValid = true;
-                if (board.BlackToMove()) {
+                if (board.BlackToMove())
+                {
                     move.score = -move.score;
                 }
             }
@@ -1170,13 +1216,13 @@ bool ConsultEndgameDatabaseBN (
 //--------------------------------------------------------------------------
 
 
-bool ConsultEndgameDatabaseBB ( 
-    ChessBoard  &board, 
+bool ConsultEndgameDatabaseBB (
+    ChessBoard  &board,
     Move        &move )
 {
     const bool blackToMove = board.BlackToMove();
     bool moveIsValid = false;
-    
+
     unsigned winnerKingOffset = 0;
     unsigned loserKingOffset = 0;
     unsigned wbwOffset=0, wbbOffset=0;
@@ -1197,11 +1243,11 @@ bool ConsultEndgameDatabaseBB (
     }
 
     unsigned ti = CalcTableIndexBB (
-        winnerKingOffset,
-        loserKingOffset,
-        wbwOffset,
-        wbbOffset );
-    
+                      winnerKingOffset,
+                      loserKingOffset,
+                      wbwOffset,
+                      wbbOffset );
+
     if ( FetchMoveFromDatabase(EDB_BB_FILENAME,ti,move) )
     {
         if ( move.source != 0 )
@@ -1258,9 +1304,9 @@ bool ConsultEndgameDatabase (
     }
 
     unsigned ti = CalcTableIndex (
-        winnerKingOffset,
-        winnerPieceOffset,
-        loserKingOffset );
+                      winnerKingOffset,
+                      winnerPieceOffset,
+                      loserKingOffset );
 
     if ( FetchMoveFromDatabase(databaseFilename,ti,move) )
     {
@@ -1277,21 +1323,21 @@ bool ConsultEndgameDatabase (
                     // We have to calculate the rotated destination square.
                     switch ( move.dest & 0xf0 )
                     {
-                        case SPECIAL_MOVE_PROMOTE_NORM:
-                            // do nothing
-                            break;
+                    case SPECIAL_MOVE_PROMOTE_NORM:
+                        // do nothing
+                        break;
 
-                        case SPECIAL_MOVE_PROMOTE_CAP_EAST:
-                            move.dest = (move.dest & PIECE_MASK) | SPECIAL_MOVE_PROMOTE_CAP_WEST;   // change east to west
-                            break;
+                    case SPECIAL_MOVE_PROMOTE_CAP_EAST:
+                        move.dest = (move.dest & PIECE_MASK) | SPECIAL_MOVE_PROMOTE_CAP_WEST;   // change east to west
+                        break;
 
-                        case SPECIAL_MOVE_PROMOTE_CAP_WEST:
-                            move.dest = (move.dest & PIECE_MASK) | SPECIAL_MOVE_PROMOTE_CAP_EAST;   // change west to east
-                            break;
+                    case SPECIAL_MOVE_PROMOTE_CAP_WEST:
+                        move.dest = (move.dest & PIECE_MASK) | SPECIAL_MOVE_PROMOTE_CAP_EAST;   // change west to east
+                        break;
 
-                        default:
-                            giveup = true;     // must be en passant or something?  but that should not be in the database!
-                            break;
+                    default:
+                        giveup = true;     // must be en passant or something?  but that should not be in the database!
+                        break;
                     }
                 }
                 else
@@ -1322,41 +1368,57 @@ bool ConsultEndgameDatabase (
 // The following function is for consulting the endgame databases
 // during appropriate circumstances.
 
-bool  ComputerChessPlayer::WhiteDbEndgame ( 
-    ChessBoard &board, 
+bool  ComputerChessPlayer::WhiteDbEndgame (
+    ChessBoard &board,
     Move &move )
 {
     // See if this is one of the circumstances we know about...
 
     const INT16 *inv = board.inventory;
-    if (inv[BP_INDEX]==0 && inv[BN_INDEX]==0 && inv[BB_INDEX]==0 && inv[BR_INDEX]==0 && inv[BQ_INDEX]==0) {
+    if (inv[BP_INDEX]==0 && inv[BN_INDEX]==0 && inv[BB_INDEX]==0 && inv[BR_INDEX]==0 && inv[BQ_INDEX]==0)
+    {
         // Getting here means that Black has only his king left.
 
-        if (inv[WB_INDEX]==0 && inv[WN_INDEX]==0) {
+        if (inv[WB_INDEX]==0 && inv[WN_INDEX]==0)
+        {
             // White has no bishops or knights
 
-            if (inv[WQ_INDEX] == 1) {
-                if (inv[WR_INDEX]==0 && inv[WP_INDEX]==0) {
+            if (inv[WQ_INDEX] == 1)
+            {
+                if (inv[WR_INDEX]==0 && inv[WP_INDEX]==0)
+                {
                     return ConsultEndgameDatabase ( board, move, EDB_QUEEN_FILENAME );
                 }
-            } else if (inv[WR_INDEX] == 1) {
-                if (inv[WQ_INDEX]==0 && inv[WP_INDEX]==0) {
+            }
+            else if (inv[WR_INDEX] == 1)
+            {
+                if (inv[WQ_INDEX]==0 && inv[WP_INDEX]==0)
+                {
                     return ConsultEndgameDatabase ( board, move, EDB_ROOK_FILENAME );
                 }
-            } else if (inv[WP_INDEX] == 1) {
-                if (inv[WR_INDEX]==0 && inv[WQ_INDEX]==0) {
+            }
+            else if (inv[WP_INDEX] == 1)
+            {
+                if (inv[WR_INDEX]==0 && inv[WQ_INDEX]==0)
+                {
                     return ConsultEndgameDatabase ( board, move, EDB_PAWN_FILENAME );
                 }
             }
-        } else {
+        }
+        else
+        {
             // White has bishops and/or knights
 
-            if (inv[WP_INDEX]==0 && inv[WR_INDEX]==0 && inv[WQ_INDEX]==0) {
+            if (inv[WP_INDEX]==0 && inv[WR_INDEX]==0 && inv[WQ_INDEX]==0)
+            {
                 // White has ONLY bishops and/or knights
 
-                if (inv[WB_INDEX]==2 && inv[WN_INDEX]==0) {
+                if (inv[WB_INDEX]==2 && inv[WN_INDEX]==0)
+                {
                     return ConsultEndgameDatabaseBB ( board, move );    // White has only 2 bishops
-                } else if (inv[WB_INDEX]==1 && inv[WN_INDEX]==1) {
+                }
+                else if (inv[WB_INDEX]==1 && inv[WN_INDEX]==1)
+                {
                     return ConsultEndgameDatabaseBN ( board, move );    // White has only 1 bishop and 1 knight
                 }
             }
@@ -1367,41 +1429,57 @@ bool  ComputerChessPlayer::WhiteDbEndgame (
 }
 
 
-bool  ComputerChessPlayer::BlackDbEndgame ( 
-    ChessBoard &board, 
+bool  ComputerChessPlayer::BlackDbEndgame (
+    ChessBoard &board,
     Move &move )
 {
     // See if this is one of the circumstances we know about...
 
     const INT16 *inv = board.inventory;
-    if (inv[WP_INDEX]==0 && inv[WN_INDEX]==0 && inv[WB_INDEX]==0 && inv[WR_INDEX]==0 && inv[WQ_INDEX]==0) {
+    if (inv[WP_INDEX]==0 && inv[WN_INDEX]==0 && inv[WB_INDEX]==0 && inv[WR_INDEX]==0 && inv[WQ_INDEX]==0)
+    {
         // Getting here means that White has only his king left.
 
-        if (inv[BB_INDEX]==0 && inv[BN_INDEX]==0) {
+        if (inv[BB_INDEX]==0 && inv[BN_INDEX]==0)
+        {
             // Black has no bishops or knights
 
-            if (inv[BQ_INDEX] == 1) {
-                if (inv[BR_INDEX]==0 && inv[BP_INDEX]==0) {
+            if (inv[BQ_INDEX] == 1)
+            {
+                if (inv[BR_INDEX]==0 && inv[BP_INDEX]==0)
+                {
                     return ConsultEndgameDatabase ( board, move, EDB_QUEEN_FILENAME );
                 }
-            } else if (inv[BR_INDEX] == 1) {
-                if (inv[BQ_INDEX]==0 && inv[BP_INDEX]==0) {
+            }
+            else if (inv[BR_INDEX] == 1)
+            {
+                if (inv[BQ_INDEX]==0 && inv[BP_INDEX]==0)
+                {
                     return ConsultEndgameDatabase ( board, move, EDB_ROOK_FILENAME );
                 }
-            } else if (inv[BP_INDEX] == 1) {
-                if (inv[BR_INDEX]==0 && inv[BQ_INDEX]==0) {
+            }
+            else if (inv[BP_INDEX] == 1)
+            {
+                if (inv[BR_INDEX]==0 && inv[BQ_INDEX]==0)
+                {
                     return ConsultEndgameDatabase ( board, move, EDB_PAWN_FILENAME );
                 }
             }
-        } else {
+        }
+        else
+        {
             // Black has bishops and/or knights
 
-            if (inv[BP_INDEX]==0 && inv[BR_INDEX]==0 && inv[BQ_INDEX]==0) {
+            if (inv[BP_INDEX]==0 && inv[BR_INDEX]==0 && inv[BQ_INDEX]==0)
+            {
                 // Black has ONLY bishops and/or knights
 
-                if (inv[BB_INDEX]==2 && inv[BN_INDEX]==0) {
+                if (inv[BB_INDEX]==2 && inv[BN_INDEX]==0)
+                {
                     return ConsultEndgameDatabaseBB ( board, move );    // Black has only 2 bishops
-                } else if (inv[BB_INDEX]==1 && inv[BN_INDEX]==1) {
+                }
+                else if (inv[BB_INDEX]==1 && inv[BN_INDEX]==1)
+                {
                     return ConsultEndgameDatabaseBN ( board, move );    // Black has only 1 bishop and 1 knight
                 }
             }
@@ -1414,7 +1492,7 @@ bool  ComputerChessPlayer::BlackDbEndgame (
 
 //--------------------------------------------------------------------------
 
-void CalcEndgameBestPath ( 
+void CalcEndgameBestPath (
     ChessBoard          &board,
     BestPath            &bp,
     const Move          *whiteTable,
@@ -1425,7 +1503,7 @@ void CalcEndgameBestPath (
 
     bp.depth = 0;
     int i;
-    for ( i=0; i<MAX_BESTPATH_DEPTH; ++i ) 
+    for ( i=0; i<MAX_BESTPATH_DEPTH; ++i )
     {
         unsigned ti = (*tableIndexFunc)(board);
         const Move *table = board.WhiteToMove() ? whiteTable : blackTable;
@@ -1434,7 +1512,7 @@ void CalcEndgameBestPath (
 
         if ( !board.isLegal(table[ti]) )
         {
-            ChessFatal ("bogus move in CalcEndgameBestPath");       
+            ChessFatal ("bogus move in CalcEndgameBestPath");
             break;
         }
 
@@ -1443,9 +1521,9 @@ void CalcEndgameBestPath (
         board.MakeMove ( bp.m[i], unmove[i] );
 
         /*!!!*/
-        if ( i==0 && 
-             bp.m[0].score == 29990 && 
-             !(!board.BlackCanMove() && board.BlackInCheck()) )
+        if ( i==0 &&
+                bp.m[0].score == 29990 &&
+                !(!board.BlackCanMove() && board.BlackInCheck()) )
         {
             ChessFatal ("bogus checkmate score");
         }
@@ -1473,7 +1551,7 @@ char *GetAlgebraic (char *buffer, int offset)
 
 
 void DumpEndgameDatabaseBN (
-    const char          *inDatabaseFileName, 
+    const char          *inDatabaseFileName,
     const char          *outTextFileName )
 {
     unsigned    wkOffset, bkOffset, wbOffset, wnOffset;
@@ -1481,32 +1559,43 @@ void DumpEndgameDatabaseBN (
     char        ssource[3], sdest[3];
 
     FILE *outfile = fopen (outTextFileName, "wt");
-    if (outfile) {
+    if (outfile)
+    {
         // First make sure the entire file appears to be there...
         Move    move;
-        if (!FetchMoveFromDatabase (inDatabaseFileName, MOVE_TABLE_SIZE_BN-1, move)) {
+        if (!FetchMoveFromDatabase (inDatabaseFileName, MOVE_TABLE_SIZE_BN-1, move))
+        {
             fprintf (outfile, "Database file '%s' is missing or truncated.\n", inDatabaseFileName);
-        } else {
+        }
+        else
+        {
             FILE *dbfile = fopen (inDatabaseFileName, "rb");
-            if (dbfile) {
+            if (dbfile)
+            {
                 // The database file is just an array of Move structures.
                 // The position is encoded implicitly as the offset in the file.
                 // We will iterate through all positions, impossible or not.
 
-                for (int ti=0; ti < MOVE_TABLE_SIZE_BN; ++ti) {
-                    if (1 == fread (&move, sizeof(move), 1, dbfile)) {
+                for (int ti=0; ti < MOVE_TABLE_SIZE_BN; ++ti)
+                {
+                    if (1 == fread (&move, sizeof(move), 1, dbfile))
+                    {
                         move.source &= BOARD_OFFSET_MASK;
-                        if (move.source >= OFFSET(2,2)) {
+                        if (move.source >= OFFSET(2,2))
+                        {
                             int mate_in;
-                            if (move.score >= FORCED_WIN) {
+                            if (move.score >= FORCED_WIN)
+                            {
                                 mate_in = ((WHITE_WINS - move.score) / WIN_DELAY_PENALTY) / 2;
-                            } else {
+                            }
+                            else
+                            {
                                 mate_in = -1;   // should never happen
                             }
 
                             CalcPiecePositionsBN (ti, wkOffset, bkOffset, wbOffset, wnOffset);
                             fprintf (
-                                outfile, 
+                                outfile,
                                 "%s %s %s %s %s%s %02d\n",
                                 GetAlgebraic (wk, wkOffset),
                                 GetAlgebraic (bk, bkOffset),
@@ -1517,7 +1606,9 @@ void DumpEndgameDatabaseBN (
                                 mate_in
                             );
                         }
-                    } else {
+                    }
+                    else
+                    {
                         fprintf (outfile, "Failure to read at table index %d\n", ti);
                         break;
                     }
@@ -1527,7 +1618,7 @@ void DumpEndgameDatabaseBN (
                 dbfile = NULL;
             }
         }
-        
+
         fclose (outfile);
         outfile = NULL;
     }
@@ -1547,7 +1638,8 @@ void GenerateEndgameDatabaseBN (
 {
     // Do not generate the database if it is already complete...
     Move tempMove;
-    if (FetchMoveFromDatabase (filename, MOVE_TABLE_SIZE_BN-1, tempMove)) {
+    if (FetchMoveFromDatabase (filename, MOVE_TABLE_SIZE_BN-1, tempMove))
+    {
         return;
     }
 
@@ -1556,9 +1648,11 @@ void GenerateEndgameDatabaseBN (
     Move *blackTable = new Move [MOVE_TABLE_SIZE_BN];
     bool firstTimeDisplay = true;
     INT32 lastDisplayTime = ChessTime();
-    if (whiteTable && blackTable) {
+    if (whiteTable && blackTable)
+    {
         FILE *outfile = fopen (filename, "wb");
-        if (outfile) {
+        if (outfile)
+        {
             memset (whiteTable, 0, sizeof(Move) * MOVE_TABLE_SIZE_BN);
             memset (blackTable, 0, sizeof(Move) * MOVE_TABLE_SIZE_BN);
             ui.SetAdHocText (3, "Creating endgame database '%s'", filename);
@@ -1571,42 +1665,57 @@ void GenerateEndgameDatabaseBN (
             unsigned numWinningPositions = 0;
             unsigned passCounter = 0;
             unsigned incrementalWins = 0;
-            do {
+            do
+            {
                 prevNumWinningPositions = numWinningPositions;
                 numWinningPositions = 0;
                 incrementalWins = 0;
-                for (unsigned wkIndex=0; wkIndex<64; ++wkIndex) {
+                for (unsigned wkIndex=0; wkIndex<64; ++wkIndex)
+                {
                     unsigned wkOffset = CalcPieceOffset (wkIndex);
                     board.SetOffsetContents ( WKING, wkOffset, true );
                     unsigned lastDisplayedBkOffset = 0;
-                    for (unsigned bkIndex=0; bkIndex<64; ++bkIndex) {
-                        if (bkIndex != wkIndex) {
+                    for (unsigned bkIndex=0; bkIndex<64; ++bkIndex)
+                    {
+                        if (bkIndex != wkIndex)
+                        {
                             unsigned bkOffset = CalcPieceOffset (bkIndex);
                             board.SetOffsetContents ( BKING, bkOffset, true );
-                            if (EGDB_IsLegal(board)) {  // optimization
-                                for (unsigned wbIndex=0; wbIndex<32; ++wbIndex) {
+                            if (EGDB_IsLegal(board))    // optimization
+                            {
+                                for (unsigned wbIndex=0; wbIndex<32; ++wbIndex)
+                                {
                                     unsigned wbOffset = CalcBishopWhiteOffset(wbIndex);
-                                    if (wbOffset!=wkOffset && wbOffset!=bkOffset) {
+                                    if (wbOffset!=wkOffset && wbOffset!=bkOffset)
+                                    {
                                         board.SetOffsetContents (WBISHOP, wbOffset, true);
-                                        for (unsigned wnIndex=0; wnIndex<64; ++wnIndex) {
+                                        for (unsigned wnIndex=0; wnIndex<64; ++wnIndex)
+                                        {
                                             unsigned wnOffset = CalcPieceOffset(wnIndex);
-                                            if (wnOffset!=wkOffset && wnOffset!=bkOffset && wnOffset!=wbOffset) {
+                                            if (wnOffset!=wkOffset && wnOffset!=bkOffset && wnOffset!=wbOffset)
+                                            {
                                                 board.SetOffsetContents (WKNIGHT, wnOffset, true);
-                                                if (EGDB_IsLegal(board)) {
-                                                    if (passCounter == 0) {
+                                                if (EGDB_IsLegal(board))
+                                                {
+                                                    if (passCounter == 0)
+                                                    {
                                                         ++numLegalPositions;
                                                     }
 
                                                     int ti = CalcTableIndexBN (wkOffset, bkOffset, wbOffset, wnOffset);
                                                     SCORE prevScore = whiteTable[ti].score;
                                                     score = EGDB_WhiteSearchBN (board, 0, passCounter*2, whiteTable, blackTable, ui, wbOffset, wnOffset);
-                                                    if (score >= FORCED_WIN) {
+                                                    if (score >= FORCED_WIN)
+                                                    {
                                                         ++numWinningPositions;
-                                                        if (prevScore != score) {
+                                                        if (prevScore != score)
+                                                        {
                                                             ++incrementalWins;
-                                                            if (lastDisplayedBkOffset != bkOffset) {
+                                                            if (lastDisplayedBkOffset != bkOffset)
+                                                            {
                                                                 INT32 currentTime = ChessTime();
-                                                                if (currentTime - lastDisplayTime > 50) {
+                                                                if (currentTime - lastDisplayTime > 50)
+                                                                {
                                                                     lastDisplayTime = currentTime;
                                                                     lastDisplayedBkOffset = bkOffset;
                                                                     if (!SquareIsWhite(wbOffset))
@@ -1637,25 +1746,29 @@ void GenerateEndgameDatabaseBN (
                 }
                 ++passCounter;
 
-                ui.SetAdHocText ( 
-                    3, "%s pass %u: found %u legal, %u new wins", 
+                ui.SetAdHocText (
+                    3, "%s pass %u: found %u legal, %u new wins",
                     filename,
                     passCounter,
                     numLegalPositions,
-                    incrementalWins 
+                    incrementalWins
                 );
-            } while (incrementalWins > 0);
+            }
+            while (incrementalWins > 0);
 
             // When we get here, we are done, so write the white table to disk.
 
             unsigned numWritten = fwrite (whiteTable, sizeof(Move), MOVE_TABLE_SIZE_BN, outfile);
-            if (numWritten != MOVE_TABLE_SIZE_BN) {
+            if (numWritten != MOVE_TABLE_SIZE_BN)
+            {
                 ui.SetAdHocText (3, "egdb: Cannot write move table to '%s'", filename);
             }
 
             fclose (outfile);
             outfile = NULL;
-        } else {
+        }
+        else
+        {
             ui.SetAdHocText (3, "egdb: Cannot open '%s' for write", filename);
         }
     }
@@ -1666,7 +1779,7 @@ void GenerateEndgameDatabaseBN (
 
 
 //--------------------------------------------------------------------------
-// GenerateEndgameDatabaseBB  generates a 16-MB endgame database for 
+// GenerateEndgameDatabaseBB  generates a 16-MB endgame database for
 // a king and two bishops (opposite square colors) vs a lone king.
 // The indexing takes advantage of the fact that a given bishop can
 // be only on one of 32 squares instead of 64.  The bishop on white
@@ -1781,7 +1894,7 @@ void GenerateEndgameDatabaseBB (
                                                                 }
                                                             }
                                                         }
-                                                    } 
+                                                    }
                                                 }
                                                 board.SetOffsetContents ( EMPTY, wbbOffset, true );
                                             }
@@ -1793,11 +1906,11 @@ void GenerateEndgameDatabaseBB (
                         }
                     }
                 }
-                ui.SetAdHocText ( 3, "%s pass %u: found %u legal, %u new wins", 
-                    filename,
-                    1+passCounter,
-                    numLegalPositions,
-                    incrementalWins );
+                ui.SetAdHocText ( 3, "%s pass %u: found %u legal, %u new wins",
+                                  filename,
+                                  1+passCounter,
+                                  numLegalPositions,
+                                  incrementalWins );
 
                 if ( incrementalWins == 0 )
                     break;
@@ -1806,7 +1919,7 @@ void GenerateEndgameDatabaseBB (
             // When we get here, we are done, so write the white table to disk.
 
             unsigned numWritten = fwrite (
-                whiteTable, sizeof(Move), MOVE_TABLE_SIZE_BB, outfile );
+                                      whiteTable, sizeof(Move), MOVE_TABLE_SIZE_BB, outfile );
 
             if ( numWritten != MOVE_TABLE_SIZE_BB )
             {
@@ -1853,38 +1966,43 @@ bool LocateBishopAndKnight (ChessBoard &board, unsigned &wbOffset, unsigned &wnO
 
     wbOffset = wnOffset = 0;
 
-    for ( int y=OFFSET(2,2); y <= OFFSET(2,9); y += NORTH ) {
-        for ( int x=0; x<8; ++x ) {
+    for ( int y=OFFSET(2,2); y <= OFFSET(2,9); y += NORTH )
+    {
+        for ( int x=0; x<8; ++x )
+        {
             int ofs = x + y;
-            switch (bptr[ofs]) {
-                case BKING:
-                case WKING:
-                case EMPTY:
-                    break;
+            switch (bptr[ofs])
+            {
+            case BKING:
+            case WKING:
+            case EMPTY:
+                break;
 
-                case WBISHOP:
-                case BBISHOP:
-                    wbOffset = ofs;
-                    ++wbCount;
-                    break;
+            case WBISHOP:
+            case BBISHOP:
+                wbOffset = ofs;
+                ++wbCount;
+                break;
 
-                case WKNIGHT:
-                case BKNIGHT:
-                    wnOffset = ofs;
-                    ++wnCount;
-                    break;
+            case WKNIGHT:
+            case BKNIGHT:
+                wnOffset = ofs;
+                ++wnCount;
+                break;
 
-                default:
-                    ChessFatal ("Unexpected piece found in LocateBishopAndKnight");
+            default:
+                ChessFatal ("Unexpected piece found in LocateBishopAndKnight");
             }
         }
     }
 
-    if (wbCount > 1) {
+    if (wbCount > 1)
+    {
         ChessFatal ("More than one bishop in LocateBishopAndKnight");
     }
 
-    if (wnCount > 1) {
+    if (wnCount > 1)
+    {
         ChessFatal ("More than one knight in LocateBishopAndKnight");
     }
 
@@ -1921,7 +2039,8 @@ SCORE EGDB_WhiteSearchBN (
 {
     // If either the bishop or the knight have been captured, this position is a draw...
     const SQUARE *bptr = board.queryBoardPointer();
-    if ((bptr[wbOffset] != WBISHOP) || (bptr[wnOffset] != WKNIGHT)) {
+    if ((bptr[wbOffset] != WBISHOP) || (bptr[wnOffset] != WKNIGHT))
+    {
         return 0;
     }
 
@@ -1947,7 +2066,7 @@ SCORE EGDB_WhiteSearchBN (
         UnmoveInfo unmove;
         Move *bestmove = 0;
 
-        for ( int i=0; i<ml.num; ++i, ++move ) 
+        for ( int i=0; i<ml.num; ++i, ++move )
         {
             // We must pass the correct bishop/knight offsets to EGDB_BlackSearchBN.
             // This method is much faster than searching the whole board for them...
@@ -1960,7 +2079,8 @@ SCORE EGDB_WhiteSearchBN (
             SCORE score = EGDB_BlackSearchBN ( board, 1+depth, required_mate_plies, whiteTable, blackTable, ui, updated_wbOffset, updated_wnOffset);
             board.UnmakeMove ( *move, unmove );
 
-            if ( score >= WON_FOR_WHITE ) {
+            if ( score >= WON_FOR_WHITE )
+            {
                 score -= WIN_DELAY_PENALTY;
             }
 
@@ -1974,7 +2094,8 @@ SCORE EGDB_WhiteSearchBN (
         }
 
         int required_score = WHITE_WINS - WIN_POSTPONEMENT(required_mate_plies);
-        if ( bestscore >= required_score ) {
+        if ( bestscore >= required_score )
+        {
             // use rotational symmetry to prevent doing twice as much work as needed
             unsigned ri = CalcTableIndexBN (143-whiteKingOffset, 143-blackKingOffset, 143-wbOffset, 143-wnOffset);
             whiteTable[ti] = *bestmove;
@@ -1988,7 +2109,7 @@ SCORE EGDB_WhiteSearchBN (
 //-----------------------------------------------------------------------------
 
 
-SCORE EGDB_BlackSearchBN ( 
+SCORE EGDB_BlackSearchBN (
     ChessBoard  &board,
     int         depth,
     int         required_mate_plies,
@@ -2000,7 +2121,8 @@ SCORE EGDB_BlackSearchBN (
 {
     // If either the bishop or the knight have been captured, this position is a draw...
     const SQUARE *bptr = board.queryBoardPointer();
-    if ((bptr[wbOffset] != WBISHOP) || (bptr[wnOffset] != WKNIGHT)) {
+    if ((bptr[wbOffset] != WBISHOP) || (bptr[wnOffset] != WKNIGHT))
+    {
         return 0;
     }
 
@@ -2040,7 +2162,7 @@ SCORE EGDB_BlackSearchBN (
     Move *move = &ml.m[0];
     UnmoveInfo unmove;
     Move *bestmove = 0;
-    for ( int i=0; i<ml.num; ++i, ++move ) 
+    for ( int i=0; i<ml.num; ++i, ++move )
     {
         // We must pass the correct bishop/knight offsets to EGDB_WhiteSearchBN.
         // This method is much faster than searching the whole board for them...
@@ -2053,7 +2175,8 @@ SCORE EGDB_BlackSearchBN (
         SCORE score = EGDB_WhiteSearchBN (board, 1+depth, required_mate_plies, whiteTable, blackTable, ui, updated_wbOffset, updated_wnOffset);
         board.UnmakeMove ( *move, unmove );
 
-        if ( score >= WON_FOR_WHITE ) {
+        if ( score >= WON_FOR_WHITE )
+        {
             score -= WIN_DELAY_PENALTY;
         }
 
@@ -2063,13 +2186,15 @@ SCORE EGDB_BlackSearchBN (
         {
             bestscore = score;
             bestmove = move;
-            if (score < required_score) {   // A kind of pruning:  no need to continue if we won't store this result!
+            if (score < required_score)     // A kind of pruning:  no need to continue if we won't store this result!
+            {
                 break;
             }
         }
     }
 
-    if ( bestscore >= required_score ) {
+    if ( bestscore >= required_score )
+    {
         // use rotational symmetry to prevent doing twice as much work as needed
         unsigned ri = CalcTableIndexBN (143-whiteKingOffset, 143-blackKingOffset, 143-wbOffset, 143-wnOffset);
         blackTable[ti] = *bestmove;
@@ -2083,7 +2208,7 @@ SCORE EGDB_BlackSearchBN (
 //-----------------------------------------------------------------------------
 
 
-SCORE EGDB_WhiteSearchBB ( 
+SCORE EGDB_WhiteSearchBB (
     ChessBoard  &board,
     int         depth,
     Move        *whiteTable,
@@ -2095,7 +2220,7 @@ SCORE EGDB_WhiteSearchBB (
     if ( !LocateBishops(board,wbwOffset,wbbOffset) )
     {
         return 0;   // Black captured White's only means of winning, so it's a draw.
-    }   
+    }
 
     unsigned whiteKingOffset  = board.GetWhiteKingOffset();
     unsigned blackKingOffset  = board.GetBlackKingOffset();
@@ -2140,7 +2265,7 @@ SCORE EGDB_WhiteSearchBB (
         Move *move = &ml.m[0];
         UnmoveInfo unmove;
         Move *bestmove = 0;
-        for ( int i=0; i<ml.num; ++i, ++move ) 
+        for ( int i=0; i<ml.num; ++i, ++move )
         {
             board.MakeMove ( *move, unmove );
             SCORE score = EGDB_BlackSearchBB ( board, 1+depth, whiteTable, blackTable, ui, required_mate_plies );
@@ -2175,7 +2300,7 @@ SCORE EGDB_WhiteSearchBB (
 
 
 
-SCORE EGDB_BlackSearchBB ( 
+SCORE EGDB_BlackSearchBB (
     ChessBoard  &board,
     int         depth,
     Move        *whiteTable,
@@ -2187,7 +2312,7 @@ SCORE EGDB_BlackSearchBB (
     if ( !LocateBishops(board,wbwOffset,wbbOffset) )
     {
         return 0;   // Black captured White's only means of winning, so it's a draw.
-    }   
+    }
 
     unsigned whiteKingOffset  = board.GetWhiteKingOffset();
     unsigned blackKingOffset  = board.GetBlackKingOffset();
@@ -2223,7 +2348,7 @@ SCORE EGDB_BlackSearchBB (
     Move *move = &ml.m[0];
     UnmoveInfo unmove;
     Move *bestmove = 0;
-    for ( int i=0; i<ml.num; ++i, ++move ) 
+    for ( int i=0; i<ml.num; ++i, ++move )
     {
         board.MakeMove ( *move, unmove );
         SCORE score = EGDB_WhiteSearchBB ( board, 1+depth, whiteTable, blackTable, ui, required_mate_plies );
@@ -2243,7 +2368,8 @@ SCORE EGDB_BlackSearchBB (
         {
             bestscore = score;
             bestmove = move;
-            if (score < FORCED_WIN) {   // A kind of pruning:  no need to continue if we won't store this result!
+            if (score < FORCED_WIN)     // A kind of pruning:  no need to continue if we won't store this result!
+            {
                 break;
             }
         }
@@ -2329,19 +2455,19 @@ SCORE EGDB_BlackSearchBB (
 
 
          Revision history:
-    
+
     2001 January 8 [Don Cross]
          Adding support for K+B+B vs K database.
          No longer generate a database if it appears to be complete.
-    
+
     2001 January 7 [Don Cross]
          Finished rook, queen, and pawn endgame databases.
-         They are tested and seem to work.  There is still some 
+         They are tested and seem to work.  There is still some
          weirdness about 'numWinningPositions' not changing at
          random times from pass to pass in GenerateEndgameDatabase,
          but I have reworked the logic so this doesn't matter.
          Still, there is something troubling about this.
-    
+
     2001 January 5 [Don Cross]
          Started writing.
          Adding support for generation of endgame databases,
@@ -2350,6 +2476,6 @@ SCORE EGDB_BlackSearchBB (
          an upper limit of 64*63*62 = 249984 possible positions.
          We can pre-compute a file of optimal moves for these
          situations.
-    
+
 */
 

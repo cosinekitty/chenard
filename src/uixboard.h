@@ -1,6 +1,6 @@
 /*
     uixboard.h  -  Don Cross  -  http://cosinekitty.com/chenard
-    
+
     An adaptation of Chenard for xboard version 2.
     See:   http://www.tim-mann.org/xboard.html
 */
@@ -61,12 +61,12 @@ public:
     void NotifyUser ( const char *message );
 
     void ReportComputerStats ( INT32   thinkTime,
-                              UINT32  nodesVisited,
-                              UINT32  nodesEvaluated,
-                              UINT32  nodesGenerated,
-                              int     fwSearchDepth,
-                              UINT32  vis [NODES_ARRAY_SIZE],
-                              UINT32  gen [NODES_ARRAY_SIZE] );
+                               UINT32  nodesVisited,
+                               UINT32  nodesEvaluated,
+                               UINT32  nodesGenerated,
+                               int     fwSearchDepth,
+                               UINT32  vis [NODES_ARRAY_SIZE],
+                               UINT32  gen [NODES_ARRAY_SIZE] );
 
     virtual void ReportSpecial ( const char *msg );
     virtual void SetAdHocText ( int index, const char *, ... );
@@ -89,9 +89,18 @@ public:
     void OnStartSearch();
     void StartPondering (const char *_predictedAlgebraic, const char *_predictedPgn);
     void FinishPondering (char opponentMoveWhilePonderingAlgebraic [6]);
-    int  MyPonderClock() const { return myPonderClock; }
-    const char *PendingVerb() const { return pendingVerb; }
-    const char *PendingRest() const { return pendingRest; }
+    int  MyPonderClock() const
+    {
+        return myPonderClock;
+    }
+    const char *PendingVerb() const
+    {
+        return pendingVerb;
+    }
+    const char *PendingRest() const
+    {
+        return pendingRest;
+    }
 
 protected:
     void OnIncomingUserMove (const char *string);

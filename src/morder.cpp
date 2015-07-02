@@ -29,7 +29,7 @@
     #pragma argsused
 #endif
 
-void ComputerChessPlayer::WhiteMoveOrdering ( 
+void ComputerChessPlayer::WhiteMoveOrdering (
     const ChessBoard &board,
     Move &move,
     const UnmoveInfo &unmove,
@@ -97,8 +97,8 @@ void ComputerChessPlayer::WhiteMoveOrdering (
     else
     {
         int special = move.dest & SPECIAL_MOVE_MASK;
-        if (   special == SPECIAL_MOVE_KCASTLE 
-            || special == SPECIAL_MOVE_QCASTLE )
+        if ( special == SPECIAL_MOVE_KCASTLE || 
+             special == SPECIAL_MOVE_QCASTLE )
         {
             move.score += CASTLE_BONUS;
         }
@@ -115,7 +115,7 @@ void ComputerChessPlayer::WhiteMoveOrdering (
     #pragma argsused
 #endif
 
-void ComputerChessPlayer::BlackMoveOrdering ( 
+void ComputerChessPlayer::BlackMoveOrdering (
     const ChessBoard &board,
     Move &move,
     const UnmoveInfo &unmove,
@@ -183,8 +183,8 @@ void ComputerChessPlayer::BlackMoveOrdering (
     else
     {
         int special = move.dest & SPECIAL_MOVE_MASK;
-        if (   special == SPECIAL_MOVE_KCASTLE 
-            || special == SPECIAL_MOVE_QCASTLE )
+        if ( special == SPECIAL_MOVE_KCASTLE ||
+             special == SPECIAL_MOVE_QCASTLE )
         {
             move.score -= CASTLE_BONUS;
         }
@@ -239,7 +239,7 @@ void MoveList::WhiteSort()
 void MoveList::BlackSort()
 {
 #ifndef NO_SEARCH
-   PROFILER_ENTER(PX_MOVEORDER)
+    PROFILER_ENTER(PX_MOVEORDER)
 
     if ( num > 1 )
     {
@@ -268,16 +268,18 @@ void MoveList::BlackSort()
         }
     }
 
-   PROFILER_EXIT();
+    PROFILER_EXIT();
 #endif
 }
 
 
 void MoveList::Shuffle()
 {
-    for (int i=1; i < num; ++i) {
+    for (int i=1; i < num; ++i)
+    {
         int r = ChessRandom (i+1);
-        if (r < i) {
+        if (r < i)
+        {
             Move t = m[r];
             m[r]   = m[i];
             m[i]   = t;
@@ -314,35 +316,35 @@ void MoveList::Shuffle()
     2. Moved old manual revision history after cvs log tag.
     3. Made sure each source file has extra blank line at end so gcc under Linux won't fuss!
 
-    
+
 
          Revision history:
-    
+
     1999 February 16 [Don Cross]
          Added CASTLE_BONUS.
-    
+
     1999 January 5 [Don Cross]
          Updated coding style.
-    
+
     1997 June 18 [Don Cross]
          Added PAWN_CAPTURE_PENALTY and FORWARD_BONUS move ordering
          heuristics.  These improved benchmark score by 13%.
-    
+
     1995 April 5 [Don Cross]
          Added experiment with shuffling move list before sorting it.
-    
+
     1994 February 20 [Don Cross]
          Adding most-probable capture combination min-maxing.
-    
+
     1994 February 10 [Don Cross]
          Adding piece indexing.
-    
+
     1994 February 5 [Don Cross]
          Added "killer move" heuristics.
-    
+
     1994 February 3 [Don Cross]
          Adding BestPath support.
-    
+
     1993 August 30 [Don Cross]
          Changing pointers to references in the interfaces where
          appropriate.

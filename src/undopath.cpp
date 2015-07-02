@@ -12,7 +12,7 @@ MoveUndoPath Global_MoveUndoPath;
 
 MoveUndoPath::~MoveUndoPath()
 {
-    if ( moveList ) 
+    if ( moveList )
     {
         delete[] moveList;
         moveList = 0;
@@ -29,7 +29,8 @@ void MoveUndoPath::resetFromBoard ( const ChessBoard &board )
     if ( !moveList )
     {
         size = 1024;    // arbitrary but larger than necessary
-        if (size < length) {
+        if (size < length)
+        {
             size = 2 * length;
         }
 
@@ -115,9 +116,9 @@ void MoveUndoPath::redo ( ChessBoard &board )
 
 
         Revision history:
-    
+
     1997 January 30 [Don Cross]
         Started writing.
-    
+
 */
 

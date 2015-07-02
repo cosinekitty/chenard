@@ -15,7 +15,7 @@ INT32 ProgStartTime = 0;
 
 INT32 ChessTime()
 {
-   return (INT32(time(0)) - ProgStartTime) * INT32(100);
+    return (INT32(time(0)) - ProgStartTime) * INT32(100);
 }
 
 
@@ -24,7 +24,7 @@ class StdChessTimeInit
 public:
     StdChessTimeInit()
     {
-       ProgStartTime = time(0);
+        ProgStartTime = time(0);
     }
 };
 

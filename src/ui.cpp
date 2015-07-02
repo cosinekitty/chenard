@@ -34,9 +34,9 @@ void ChessUI::PredictMate ( int )
 }
 
 
-void ChessUI::ReportComputerStats ( 
+void ChessUI::ReportComputerStats (
     INT32, UINT32, UINT32, UINT32,
-    int, UINT32[NODES_ARRAY_SIZE], 
+    int, UINT32[NODES_ARRAY_SIZE],
     UINT32[NODES_ARRAY_SIZE] )
 {
 }
@@ -56,8 +56,8 @@ void ChessUI::ReportComputerStats (
 
 
         Revision history:
-    
+
     1999 January 5 [Don Cross]
         Updating coding style.
-    
+
 */

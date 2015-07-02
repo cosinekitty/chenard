@@ -25,55 +25,55 @@ int Distance2 ( int ofs1, int ofs2 )
 // If will checkmate with queen or rook, force king toward any corner.
 const int ComputerChessPlayer::KingPosTableQR [144] =
 {
-     0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
-     0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+    0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+    0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
 
-     0,   0,   100,  90,  70,  50,  50,  70,  90, 100,     0,   0,
-     0,   0,    90,  70,  35,  20,  20,  35,  70,  90,     0,   0,
-     0,   0,    70,  35,  15,  10,  10,  15,  35,  70,     0,   0,
-     0,   0,    50,  20,  10,   0,   0,  10,  20,  50,     0,   0,
-     0,   0,    50,  20,  10,   0,   0,  10,  20,  50,     0,   0,
-     0,   0,    70,  35,  15,  10,  10,  15,  35,  70,     0,   0,
-     0,   0,    90,  70,  35,  20,  20,  35,  70,  90,     0,   0,
-     0,   0,   100,  90,  70,  50,  50,  70,  90, 100
+    0,   0,   100,  90,  70,  50,  50,  70,  90, 100,     0,   0,
+    0,   0,    90,  70,  35,  20,  20,  35,  70,  90,     0,   0,
+    0,   0,    70,  35,  15,  10,  10,  15,  35,  70,     0,   0,
+    0,   0,    50,  20,  10,   0,   0,  10,  20,  50,     0,   0,
+    0,   0,    50,  20,  10,   0,   0,  10,  20,  50,     0,   0,
+    0,   0,    70,  35,  15,  10,  10,  15,  35,  70,     0,   0,
+    0,   0,    90,  70,  35,  20,  20,  35,  70,  90,     0,   0,
+    0,   0,   100,  90,  70,  50,  50,  70,  90, 100
 };
 
 
 // If will checkmate with bishop on white, force toward white corner
 const int ComputerChessPlayer::KingPosTableBW [144] =
 {
-     0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
-     0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+    0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+    0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
 
-     0,   0,  -100, -90, -70, -50,  50,  70,  90, 100,     0,   0,
-     0,   0,   -90, -70, -35, -20,  20,  35,  70,  90,     0,   0,
-     0,   0,   -70, -35, -15, -10,  10,  15,  35,  70,     0,   0,
-     0,   0,   -50, -20, -10,  -5,   0,  10,  20,  50,     0,   0,
-     0,   0,    50,  20,  10,   0,  -5, -10, -20, -50,     0,   0,
-     0,   0,    70,  35,  15,  10, -10, -15, -35, -70,     0,   0,
-     0,   0,    90,  70,  35,  20, -20, -35, -70, -90,     0,   0,
-     0,   0,   100,  90,  70,  50, -50, -70, -90,-100
+    0,   0,  -100, -90, -70, -50,  50,  70,  90, 100,     0,   0,
+    0,   0,   -90, -70, -35, -20,  20,  35,  70,  90,     0,   0,
+    0,   0,   -70, -35, -15, -10,  10,  15,  35,  70,     0,   0,
+    0,   0,   -50, -20, -10,  -5,   0,  10,  20,  50,     0,   0,
+    0,   0,    50,  20,  10,   0,  -5, -10, -20, -50,     0,   0,
+    0,   0,    70,  35,  15,  10, -10, -15, -35, -70,     0,   0,
+    0,   0,    90,  70,  35,  20, -20, -35, -70, -90,     0,   0,
+    0,   0,   100,  90,  70,  50, -50, -70, -90,-100
 };
 
 
 // If will checkmate with bishop on black, force toward black corner
 const int ComputerChessPlayer::KingPosTableBB [144] =
 {
-     0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
-     0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+    0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+    0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
 
-     0,   0,   100,  90,  70,  50, -50, -70, -90,-100,     0,   0,
-     0,   0,    90,  70,  35,  20, -20, -35, -70, -90,     0,   0,
-     0,   0,    70,  35,  15,  10, -10, -15, -35, -70,     0,   0,
-     0,   0,    50,  20,  10,   0,  -5, -10, -20, -50,     0,   0,
-     0,   0,   -50, -20, -10,  -5,   0,  10,  20,  50,     0,   0,
-     0,   0,   -70, -35, -15, -10,  10,  15,  35,  70,     0,   0,
-     0,   0,   -90, -70, -35, -20,  20,  35,  70,  90,     0,   0,
-     0,   0,  -100, -90, -70, -50,  50,  70,  90, 100
+    0,   0,   100,  90,  70,  50, -50, -70, -90,-100,     0,   0,
+    0,   0,    90,  70,  35,  20, -20, -35, -70, -90,     0,   0,
+    0,   0,    70,  35,  15,  10, -10, -15, -35, -70,     0,   0,
+    0,   0,    50,  20,  10,   0,  -5, -10, -20, -50,     0,   0,
+    0,   0,   -50, -20, -10,  -5,   0,  10,  20,  50,     0,   0,
+    0,   0,   -70, -35, -15, -10,  10,  15,  35,  70,     0,   0,
+    0,   0,   -90, -70, -35, -20,  20,  35,  70,  90,     0,   0,
+    0,   0,  -100, -90, -70, -50,  50,  70,  90, 100
 };
 
 
-SCORE ComputerChessPlayer::EndgameEval1 ( 
+SCORE ComputerChessPlayer::EndgameEval1 (
     ChessBoard &board,
     int depth,
     SCORE, SCORE )
@@ -132,7 +132,7 @@ SCORE ComputerChessPlayer::EndgameEval1 (
 }
 
 
-SCORE ComputerChessPlayer::ProximityBonus ( 
+SCORE ComputerChessPlayer::ProximityBonus (
     ChessBoard &board,
     int         target_ofs,
     int         mask )
@@ -169,10 +169,10 @@ SCORE ComputerChessPlayer::ProximityBonus (
 
 
          Revision History:
-    
+
     1994 January 19 [Don Cross]
          Started adding real endgame algorithms!
-    
+
     1994 January 22 [Don Cross]
          I have decided to try something different, and abandon
          the Chester-esque use of special endgame heuristics.
@@ -181,19 +181,19 @@ SCORE ComputerChessPlayer::ProximityBonus (
          Before starting a search, the ComputerChessPlayer object
          will determine which evaluation function is appropriate
          and use it throughout the search.
-    
+
     1994 January 25 [Don Cross]
          Adding small bonus for getting pieces other than strong king
          close to weak king in EndgameEval1.
-    
+
     1999 January 14 [Don Cross]
          Updated coding style.
-    
+
     2001 January 4 [Don Cross]
          Proximity bonus for bishops and knights too (but 1/12 as much).
          Now use special KingPos tables when checkmate must be performed
          with a bishop.  This way, we don't accidentally force the king
          into the wrong color corner.
-    
+
 */
 

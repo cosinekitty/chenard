@@ -63,10 +63,10 @@
 
 
         Revision history:
-    
+
     1998 December 5 [Don Cross]
         Updated comments to be more understandable.
-    
+
     1997 June 10 [Don Cross]
         Started writing.
 */

@@ -36,7 +36,7 @@ int InitializeNetwork ( int &mySocket )
     if ( gethostname(MyHostName,sizeof(MyHostName)) != 0 )
     {
         fprintf ( stderr, "Could not determine local host name!  errno=%d\n\n",
-            errno );
+                  errno );
 
         return 0;
     }
@@ -45,9 +45,9 @@ int InitializeNetwork ( int &mySocket )
     hostent *myHostInfo = gethostbyname (MyHostName);
     if ( !myHostInfo )
     {
-        fprintf ( stderr, 
-            "Could not obtain local host information!  errno=%d\n\n",
-            errno );
+        fprintf ( stderr,
+                  "Could not obtain local host information!  errno=%d\n\n",
+                  errno );
 
         return 0;
     }
@@ -57,8 +57,8 @@ int InitializeNetwork ( int &mySocket )
     if ( mySocket == INVALID_SOCKET )
     {
         fprintf ( stderr,
-            "Error %d creating socket\n",
-            errno );
+                  "Error %d creating socket\n",
+                  errno );
 
         return 0;
     }
@@ -98,7 +98,7 @@ InternetChessPlayer::~InternetChessPlayer()
         ::close ( commSocket );
         commSocket = INVALID_SOCKET;
     }
-    
+
     if ( listenSocket != INVALID_SOCKET )
     {
         ::close ( listenSocket );
@@ -113,7 +113,7 @@ int InternetChessPlayer::serverConnect ( ChessSide remoteSide )
         return 0;
 
     printf ( "Successfully opened socket %d\n", listenSocket );
-    
+
     sockaddr_in localAddress;
     memset ( &localAddress, 0, sizeof(localAddress) );
     localAddress.sin_family = AF_INET;
@@ -140,9 +140,7 @@ int InternetChessPlayer::serverConnect ( ChessSide remoteSide )
     rc = listen ( listenSocket, 16 );
     if ( rc != 0 )
     {
-        fprintf ( stderr, "listen() returned %d, errno=%d\n\n",
-            rc, errno );
-
+        fprintf(stderr, "listen() returned %d, errno=%d\n\n", rc, errno);
         return 0;
     }
 
@@ -153,10 +151,7 @@ int InternetChessPlayer::serverConnect ( ChessSide remoteSide )
 
     if ( commSocket == INVALID_SOCKET )
     {
-        fprintf ( stderr, 
-            "Error %d accepting connection from listening socket!\n",
-            errno );
-
+        fprintf(stderr, "Error %d accepting connection from listening socket!\n", errno);
         return 0;
     }
 
@@ -187,7 +182,7 @@ int InternetChessPlayer::serverConnect ( ChessSide remoteSide )
     {
         fprintf ( stderr, "Error %d sending player definitions!\n", errno );
         return 0;
-    } 
+    }
 
     printf ( "Successfully established connection with remote client!\n\n" );
 
@@ -195,9 +190,9 @@ int InternetChessPlayer::serverConnect ( ChessSide remoteSide )
 }
 
 
-bool InternetChessPlayer::GetMove ( 
-    ChessBoard &board, 
-    Move &move, 
+bool InternetChessPlayer::GetMove (
+    ChessBoard &board,
+    Move &move,
     INT32 &timeSpent )
 {
     timeSpent = 0;
@@ -227,7 +222,7 @@ bool InternetChessPlayer::send ( const ChessBoard &board )
         // send him the complete state of the game as it exists locally.
 
         // Send an 8-byte string to specify what kind of message this is.
-        // In this case, it is "history", because we are sending the entire 
+        // In this case, it is "history", because we are sending the entire
         // history of moves in the game history so far...
 
         UINT32 plyBytes = numPlies * sizeof(Move);
@@ -316,8 +311,8 @@ bool InternetChessPlayer::receive ( ChessBoard &board, Move &move )
 
             if ( result != sizeof(int) )
             {
-                sprintf ( tempString, "recv(numPlies): size=%d err=%d", 
-                    result, errno );
+                sprintf ( tempString, "recv(numPlies): size=%d err=%d",
+                          result, errno );
 
                 userInterface.ReportSpecial (tempString);
                 return false;
@@ -344,18 +339,18 @@ bool InternetChessPlayer::receive ( ChessBoard &board, Move &move )
 
                 if ( result != plyBytes )
                 {
-                    sprintf ( tempString, "recv: size=%d err=%d", 
-                        result, errno );
+                    sprintf ( tempString, "recv: size=%d err=%d",
+                              result, errno );
                     userInterface.ReportSpecial (tempString);
                     return false;
                 }
 
                 // Now that we safely have the game history from the opponent,
-                // we can reset the board and apply all but the final ply to 
+                // we can reset the board and apply all but the final ply to
                 // the board.
 
-                // The final ply is returned as the move made by the 
-                // InternetChessPlayer so that it can be animated on 
+                // The final ply is returned as the move made by the
+                // InternetChessPlayer so that it can be animated on
                 // the board display.
 
                 UnmoveInfo unmove;

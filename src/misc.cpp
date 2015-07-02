@@ -93,26 +93,26 @@ int Move::whiteHash() const
     {
         switch ( dest & SPECIAL_MOVE_MASK )
         {
-            case SPECIAL_MOVE_PROMOTE_NORM:
-                ofs2 = ofs1 + NORTH;
-                break;
+        case SPECIAL_MOVE_PROMOTE_NORM:
+            ofs2 = ofs1 + NORTH;
+            break;
 
-            case SPECIAL_MOVE_PROMOTE_CAP_EAST:
-            case SPECIAL_MOVE_EP_EAST:
-                ofs2 = ofs1 + NORTHEAST;
-                break;
+        case SPECIAL_MOVE_PROMOTE_CAP_EAST:
+        case SPECIAL_MOVE_EP_EAST:
+            ofs2 = ofs1 + NORTHEAST;
+            break;
 
-            case SPECIAL_MOVE_PROMOTE_CAP_WEST:
-            case SPECIAL_MOVE_EP_WEST:
-                ofs2 = ofs1 + NORTHWEST;
-                break;
+        case SPECIAL_MOVE_PROMOTE_CAP_WEST:
+        case SPECIAL_MOVE_EP_WEST:
+            ofs2 = ofs1 + NORTHWEST;
+            break;
 
-            case SPECIAL_MOVE_KCASTLE:
-                ofs2 = ofs1 + 2*EAST;
-                break;
+        case SPECIAL_MOVE_KCASTLE:
+            ofs2 = ofs1 + 2*EAST;
+            break;
 
-            default:
-                ofs1 = ofs2 = 0;
+        default:
+            ofs1 = ofs2 = 0;
         }
     }
     else
@@ -133,26 +133,26 @@ int Move::blackHash() const
     {
         switch ( dest & SPECIAL_MOVE_MASK )
         {
-            case SPECIAL_MOVE_PROMOTE_NORM:
-                ofs2 = ofs1 + SOUTH;
-                break;
+        case SPECIAL_MOVE_PROMOTE_NORM:
+            ofs2 = ofs1 + SOUTH;
+            break;
 
-            case SPECIAL_MOVE_PROMOTE_CAP_EAST:
-            case SPECIAL_MOVE_EP_EAST:
-                ofs2 = ofs1 + SOUTHEAST;
-                break;
+        case SPECIAL_MOVE_PROMOTE_CAP_EAST:
+        case SPECIAL_MOVE_EP_EAST:
+            ofs2 = ofs1 + SOUTHEAST;
+            break;
 
-            case SPECIAL_MOVE_PROMOTE_CAP_WEST:
-            case SPECIAL_MOVE_EP_WEST:
-                ofs2 = ofs1 + SOUTHWEST;
-                break;
+        case SPECIAL_MOVE_PROMOTE_CAP_WEST:
+        case SPECIAL_MOVE_EP_WEST:
+            ofs2 = ofs1 + SOUTHWEST;
+            break;
 
-            case SPECIAL_MOVE_KCASTLE:
-                ofs2 = ofs1 + 2*EAST;
-                break;
+        case SPECIAL_MOVE_KCASTLE:
+            ofs2 = ofs1 + 2*EAST;
+            break;
 
-            default:
-                ofs1 = ofs2 = 0;
+        default:
+            ofs1 = ofs2 = 0;
         }
     }
     else
@@ -172,26 +172,26 @@ void Move::whiteOffsets ( int &ofs1, int &ofs2 ) const
     {
         switch ( dest & SPECIAL_MOVE_MASK )
         {
-            case SPECIAL_MOVE_PROMOTE_NORM:
-                ofs2 = ofs1 + NORTH;
-                break;
+        case SPECIAL_MOVE_PROMOTE_NORM:
+            ofs2 = ofs1 + NORTH;
+            break;
 
-            case SPECIAL_MOVE_PROMOTE_CAP_EAST:
-            case SPECIAL_MOVE_EP_EAST:
-                ofs2 = ofs1 + NORTHEAST;
-                break;
+        case SPECIAL_MOVE_PROMOTE_CAP_EAST:
+        case SPECIAL_MOVE_EP_EAST:
+            ofs2 = ofs1 + NORTHEAST;
+            break;
 
-            case SPECIAL_MOVE_PROMOTE_CAP_WEST:
-            case SPECIAL_MOVE_EP_WEST:
-                ofs2 = ofs1 + NORTHWEST;
-                break;
+        case SPECIAL_MOVE_PROMOTE_CAP_WEST:
+        case SPECIAL_MOVE_EP_WEST:
+            ofs2 = ofs1 + NORTHWEST;
+            break;
 
-            case SPECIAL_MOVE_KCASTLE:
-                ofs2 = ofs1 + 2*EAST;
-                break;
+        case SPECIAL_MOVE_KCASTLE:
+            ofs2 = ofs1 + 2*EAST;
+            break;
 
-            default:
-                ofs1 = ofs2 = 0;
+        default:
+            ofs1 = ofs2 = 0;
         }
     }
     else
@@ -212,26 +212,26 @@ void Move::blackOffsets ( int &ofs1, int &ofs2 ) const
     {
         switch ( dest & SPECIAL_MOVE_MASK )
         {
-            case SPECIAL_MOVE_PROMOTE_NORM:
-                ofs2 = ofs1 + SOUTH;
-                break;
+        case SPECIAL_MOVE_PROMOTE_NORM:
+            ofs2 = ofs1 + SOUTH;
+            break;
 
-            case SPECIAL_MOVE_PROMOTE_CAP_EAST:
-            case SPECIAL_MOVE_EP_EAST:
-                ofs2 = ofs1 + SOUTHEAST;
-                break;
+        case SPECIAL_MOVE_PROMOTE_CAP_EAST:
+        case SPECIAL_MOVE_EP_EAST:
+            ofs2 = ofs1 + SOUTHEAST;
+            break;
 
-            case SPECIAL_MOVE_PROMOTE_CAP_WEST:
-            case SPECIAL_MOVE_EP_WEST:
-                ofs2 = ofs1 + SOUTHWEST;
-                break;
+        case SPECIAL_MOVE_PROMOTE_CAP_WEST:
+        case SPECIAL_MOVE_EP_WEST:
+            ofs2 = ofs1 + SOUTHWEST;
+            break;
 
-            case SPECIAL_MOVE_KCASTLE:
-                ofs2 = ofs1 + 2*EAST;
-                break;
+        case SPECIAL_MOVE_KCASTLE:
+            ofs2 = ofs1 + 2*EAST;
+            break;
 
-            default:
-                ofs1 = ofs2 = 0;
+        default:
+            ofs1 = ofs2 = 0;
         }
     }
     else
@@ -251,7 +251,7 @@ SQUARE Move::actualOffsets ( const ChessBoard &board, int &ofs1, int &ofs2 ) con
 
 
 
-SQUARE Move::actualOffsets ( 
+SQUARE Move::actualOffsets (
     bool     white_to_move,
     int     &ofs1,
     int     &ofs2 ) const
@@ -266,39 +266,39 @@ SQUARE Move::actualOffsets (
 
         switch ( dest & SPECIAL_MOVE_MASK )
         {
-            case SPECIAL_MOVE_PROMOTE_NORM:
-                ofs2 = ofs1 + pawndir;
-                promotion = PROM_PIECE (dest, side);
-                break;
+        case SPECIAL_MOVE_PROMOTE_NORM:
+            ofs2 = ofs1 + pawndir;
+            promotion = PROM_PIECE (dest, side);
+            break;
 
-            case SPECIAL_MOVE_PROMOTE_CAP_EAST:
-                ofs2 = ofs1 + pawndir + EAST;
-                promotion = PROM_PIECE (dest, side);
-                break;
+        case SPECIAL_MOVE_PROMOTE_CAP_EAST:
+            ofs2 = ofs1 + pawndir + EAST;
+            promotion = PROM_PIECE (dest, side);
+            break;
 
-            case SPECIAL_MOVE_PROMOTE_CAP_WEST:
-                ofs2 = ofs1 + pawndir + WEST;
-                promotion = PROM_PIECE (dest, side);
-                break;
+        case SPECIAL_MOVE_PROMOTE_CAP_WEST:
+            ofs2 = ofs1 + pawndir + WEST;
+            promotion = PROM_PIECE (dest, side);
+            break;
 
-            case SPECIAL_MOVE_EP_EAST:
-                ofs2 = ofs1 + pawndir + EAST;
-                break;
+        case SPECIAL_MOVE_EP_EAST:
+            ofs2 = ofs1 + pawndir + EAST;
+            break;
 
-            case SPECIAL_MOVE_EP_WEST:
-                ofs2 = ofs1 + pawndir + WEST;
-                break;
+        case SPECIAL_MOVE_EP_WEST:
+            ofs2 = ofs1 + pawndir + WEST;
+            break;
 
-            case SPECIAL_MOVE_KCASTLE:
-                ofs2 = ofs1 + 2*EAST;
-                break;
+        case SPECIAL_MOVE_KCASTLE:
+            ofs2 = ofs1 + 2*EAST;
+            break;
 
-            case SPECIAL_MOVE_QCASTLE:
-                ofs2 = ofs1 + 2*WEST;
-                break;
+        case SPECIAL_MOVE_QCASTLE:
+            ofs2 = ofs1 + 2*WEST;
+            break;
 
-            default:
-                ofs1 = ofs2 = 0;
+        default:
+            ofs1 = ofs2 = 0;
         }
     }
     else
@@ -310,9 +310,9 @@ SQUARE Move::actualOffsets (
 }
 
 
-bool Move::Fix ( 
+bool Move::Fix (
     const ChessBoard    &Board,
-    int                  Source, 
+    int                  Source,
     int                  Dest,
     SQUARE               OptionalProm,
     ChessUI             &Ui )
@@ -329,9 +329,9 @@ bool Move::Fix (
     // --- end of Suggest Move code.
 
     if ( Source<OFFSET(2,2) || Source>OFFSET(9,9) ||
-         Dest<OFFSET(2,2) || Dest>OFFSET(9,9) ||
-         Board.GetSquareContents(Source) == OFFBOARD ||
-         Board.GetSquareContents(Dest) == OFFBOARD )
+            Dest<OFFSET(2,2) || Dest>OFFSET(9,9) ||
+            Board.GetSquareContents(Source) == OFFBOARD ||
+            Board.GetSquareContents(Dest) == OFFBOARD )
     {
         return false;
     }
@@ -357,17 +357,17 @@ bool Move::Fix (
         dest = SPECIAL_MOVE_KCASTLE;
     }
     else if ( Source == OFFSET(6,2) && Dest == OFFSET(4,2) &&
-             (move_piece & WK_MASK) )
+              (move_piece & WK_MASK) )
     {
         dest = SPECIAL_MOVE_QCASTLE;
     }
     else if ( Source == OFFSET(6,9) && Dest == OFFSET(8,9) &&
-             (move_piece & BK_MASK) )
+              (move_piece & BK_MASK) )
     {
         dest = SPECIAL_MOVE_KCASTLE;
     }
     else if ( Source == OFFSET(6,9) && Dest == OFFSET(4,9) &&
-             (move_piece & BK_MASK) )
+              (move_piece & BK_MASK) )
     {
         dest = SPECIAL_MOVE_QCASTLE;
     }
@@ -385,9 +385,9 @@ bool Move::Fix (
                     dest = SPECIAL_MOVE_EP_WEST;
             }
             else if ( (pawn_dir==SOUTH && YPART(Dest)==2) ||
-                   (pawn_dir==NORTH && YPART(Dest)==9) )
+                      (pawn_dir==NORTH && YPART(Dest)==9) )
             {
-                if (OptionalProm == 0) 
+                if (OptionalProm == 0)
                 {
                     if ( (Board.GetSquareContents(Dest) & enemyMask) == 0 )
                     {
@@ -400,7 +400,7 @@ bool Move::Fix (
                         prom = Ui.PromotePawn ( Dest, side );
                     }
                 }
-                else 
+                else
                 {
                     prom = OptionalProm;
                 }
@@ -418,7 +418,8 @@ bool Move::Fix (
             if ( (pawn_dir==SOUTH && YPART(Dest)==2) ||
                  (pawn_dir==NORTH && YPART(Dest)==9) )
             {
-                if (OptionalProm == 0) {
+                if (OptionalProm == 0)
+                {
                     if ( Board.GetSquareContents(Dest) != EMPTY )
                     {
                         // We know this isn't a legal move already, because
@@ -430,7 +431,9 @@ bool Move::Fix (
                     }
                     else
                         prom = Ui.PromotePawn ( Dest, side );
-                } else {
+                }
+                else
+                {
                     prom = OptionalProm;
                 }
 
@@ -449,19 +452,19 @@ SQUARE ConvertNybbleToSquare ( int nybble )
 
     switch ( nybble )
     {
-        case EMPTY_NYBBLE:  s = EMPTY;     break;
-        case WP_NYBBLE:     s = WPAWN;     break;
-        case WN_NYBBLE:     s = WKNIGHT;   break;
-        case WB_NYBBLE:     s = WBISHOP;   break;
-        case WR_NYBBLE:     s = WROOK;     break;
-        case WQ_NYBBLE:     s = WQUEEN;    break;
-        case WK_NYBBLE:     s = WKING;     break;
-        case BP_NYBBLE:     s = BPAWN;     break;
-        case BN_NYBBLE:     s = BKNIGHT;   break;
-        case BB_NYBBLE:     s = BBISHOP;   break;
-        case BR_NYBBLE:     s = BROOK;     break;
-        case BQ_NYBBLE:     s = BQUEEN;    break;
-        case BK_NYBBLE:     s = BKING;     break;
+    case EMPTY_NYBBLE:  s = EMPTY;     break;
+    case WP_NYBBLE:     s = WPAWN;     break;
+    case WN_NYBBLE:     s = WKNIGHT;   break;
+    case WB_NYBBLE:     s = WBISHOP;   break;
+    case WR_NYBBLE:     s = WROOK;     break;
+    case WQ_NYBBLE:     s = WQUEEN;    break;
+    case WK_NYBBLE:     s = WKING;     break;
+    case BP_NYBBLE:     s = BPAWN;     break;
+    case BN_NYBBLE:     s = BKNIGHT;   break;
+    case BB_NYBBLE:     s = BBISHOP;   break;
+    case BR_NYBBLE:     s = BROOK;     break;
+    case BQ_NYBBLE:     s = BQUEEN;    break;
+    case BK_NYBBLE:     s = BKING;     break;
     }
 
     return s;
@@ -474,19 +477,19 @@ int ConvertSquareToNybble ( SQUARE s )
 
     switch ( s )
     {
-        case EMPTY:     n = EMPTY_NYBBLE;  break;
-        case WPAWN:     n = WP_NYBBLE;     break;
-        case WKNIGHT:   n = WN_NYBBLE;     break;
-        case WBISHOP:   n = WB_NYBBLE;     break;
-        case WROOK:     n = WR_NYBBLE;     break;
-        case WQUEEN:    n = WQ_NYBBLE;     break;
-        case WKING:     n = WK_NYBBLE;     break;
-        case BPAWN:     n = BP_NYBBLE;     break;
-        case BKNIGHT:   n = BN_NYBBLE;     break;
-        case BBISHOP:   n = BB_NYBBLE;     break;
-        case BROOK:     n = BR_NYBBLE;     break;
-        case BQUEEN:    n = BQ_NYBBLE;     break;
-        case BKING:     n = BK_NYBBLE;     break;
+    case EMPTY:     n = EMPTY_NYBBLE;  break;
+    case WPAWN:     n = WP_NYBBLE;     break;
+    case WKNIGHT:   n = WN_NYBBLE;     break;
+    case WBISHOP:   n = WB_NYBBLE;     break;
+    case WROOK:     n = WR_NYBBLE;     break;
+    case WQUEEN:    n = WQ_NYBBLE;     break;
+    case WKING:     n = WK_NYBBLE;     break;
+    case BPAWN:     n = BP_NYBBLE;     break;
+    case BKNIGHT:   n = BN_NYBBLE;     break;
+    case BBISHOP:   n = BB_NYBBLE;     break;
+    case BROOK:     n = BR_NYBBLE;     break;
+    case BQUEEN:    n = BQ_NYBBLE;     break;
+    case BKING:     n = BK_NYBBLE;     break;
     }
 
     return n;
@@ -499,29 +502,35 @@ const char *ConvertDateToVersion (const char *compileDateString)
     //  012345678901
 
     static char buffer[40] = "????.??.??";
-    static const char * const Month[] = {
+    static const char * const Month[] =
+    {
         "Jan", "Feb", "Mar", "Apr", "May", "Jun",
         "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
     };
-    
-    if (buffer[0] == '?') {
-        // This is either the first time the function has been called, 
+
+    if (buffer[0] == '?')
+    {
+        // This is either the first time the function has been called,
         // or compileDateString was not what we expected the last time(s).
-        
-        if (strlen(compileDateString) == 11) {
+
+        if (strlen(compileDateString) == 11)
+        {
             int y = atoi(compileDateString + 7);
             int d = isspace(compileDateString[4]) ? atoi(compileDateString + 5) : atoi(compileDateString + 4);
-            if (y >= 2008 && d >= 1) {
-                for (int m=0; m < 12; ++m) {
-                    if (memcmp (Month[m], compileDateString, 3) == 0) {
+            if (y >= 2008 && d >= 1)
+            {
+                for (int m=0; m < 12; ++m)
+                {
+                    if (memcmp (Month[m], compileDateString, 3) == 0)
+                    {
                         sprintf (buffer, "%04d.%02d.%02d", y, 1+m, d);
                         break;
                     }
                 }
-            }        
+            }
         }
     }
-    
+
     return buffer;
 }
 
@@ -529,10 +538,13 @@ const char *ConvertDateToVersion (const char *compileDateString)
 char *CopyString (const char *string)
 {
     char *copy;
-    if (string) {
+    if (string)
+    {
         copy = new char [1 + strlen(string)];
         strcpy (copy, string);
-    } else {
+    }
+    else
+    {
         copy = 0;
     }
     return copy;
@@ -541,7 +553,8 @@ char *CopyString (const char *string)
 
 void FreeString (char *&string)
 {
-    if (string) {
+    if (string)
+    {
         delete[] string;
         string = 0;
     }
@@ -618,34 +631,34 @@ void ReplaceString (char *&target, const char *source)
     2. Moved old manual revision history after cvs log tag.
     3. Made sure each source file has extra blank line at end so gcc under Linux won't fuss!
 
-    
-    
+
+
     Revision history:
 
     1999 March 13 [Don Cross]
-         The new Game | Suggest Move command in the Win32 version of 
+         The new Game | Suggest Move command in the Win32 version of
          Chenard caused a bug to occur because the Move::Fix() function
-         was incorrectly rejecting the source and dest.  This could 
+         was incorrectly rejecting the source and dest.  This could
          happen whenever a move caused check or was a "special" move
          like castling, en passant, or pawn promotion.
          This has been fixed by adding code to Move::Fix() to leave
          the move alone if the high bit is set in either the Source
-         or Dest parameters, and just to trust that they already 
+         or Dest parameters, and just to trust that they already
          represent a valid Move structure.
-    
+
     1999 January 5 [Don Cross]
          Updating coding style.
-    
+
     1994 February 9 [Don Cross]
          Adding Move::actualOffsets().
          This is useful for UIs that want to display moves graphically.
-    
+
     1994 January 30 [Don Cross]
          Added ConvertNybbleToSquare, ConvertSquareToNybble.
-    
+
     1993 August 30 [Don Cross]
          Changing pointers to references in the interfaces where
          appropriate.
-    
+
 */
 

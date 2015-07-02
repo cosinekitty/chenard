@@ -21,7 +21,8 @@ static INT16 _ChessRandom ()
 {
     Seed = MULTIPLIER * Seed + INCREMENT;
     INT16 r = INT16(Seed >> 16) & 0x7fff;
-    if (r < 0) {
+    if (r < 0)
+    {
         ChessFatal ("Negative value returned by _ChessRandom");
     }
     return r;
@@ -36,7 +37,7 @@ int ChessRandom ( int n )
         firstTime = 0;
         Seed = INT32 ( time(NULL) );
     }
-    
+
     if ( n <= 0 )
     {
         ChessFatal ( "Non-positive argument to ChessRandom()!" );
@@ -44,7 +45,8 @@ int ChessRandom ( int n )
     }
 
     int r = int(_ChessRandom()) % n;
-    if (r<0 || r>=n) {
+    if (r<0 || r>=n)
+    {
         ChessFatal ("ChessRandom is broken!");
     }
     return r;
@@ -73,12 +75,12 @@ int ChessRandom ( int n )
 
 
     Revision history:
-    
+
     1999 February 14 [Don Cross]
          Added code to call ChessFatal() if argument to ChessRandom()
          is non-positive.
          Changing time-based seed initializer from global variable's
          constructor to first time flag.
-    
+
 */
 

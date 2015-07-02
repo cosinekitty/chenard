@@ -1,6 +1,6 @@
 /*
     npchess.h  -  Copyright (C) 2006 Don Cross.  All Rights Reserved.
-    
+
     class NamedPipeChessPlayer.
 */
 
@@ -23,29 +23,34 @@ NamedPipeChessPlayer::NamedPipeChessPlayer (ChessUI &_ui, const char *_MachineNa
 
     SetQuitReason(qgr_lostConnection);
 
-    if (_MachineName && strlen(_MachineName) < sizeof(MachineName)) {
-        if (_MachineName[0]) {
+    if (_MachineName && strlen(_MachineName) < sizeof(MachineName))
+    {
+        if (_MachineName[0])
+        {
             strcpy (MachineName, _MachineName);
-        } else {
+        }
+        else
+        {
             strcpy (MachineName, ".");
         }
         sprintf (PipeName, "\\\\%s\\pipe\\flywheel_chess_thinker", MachineName);
         NamedPipe = CreateFileA (
-            PipeName,
-            GENERIC_READ | GENERIC_WRITE,
-            0,      // no sharing
-            NULL,   // default security
-            OPEN_EXISTING,
-            0,      // default attributes
-            NULL    // no template
-        );
+                        PipeName,
+                        GENERIC_READ | GENERIC_WRITE,
+                        0,      // no sharing
+                        NULL,   // default security
+                        OPEN_EXISTING,
+                        0,      // default attributes
+                        NULL    // no template
+                    );
     }
 }
 
 
 NamedPipeChessPlayer::~NamedPipeChessPlayer()
 {
-    if (NamedPipe != INVALID_HANDLE_VALUE) {
+    if (NamedPipe != INVALID_HANDLE_VALUE)
+    {
         CloseHandle (NamedPipe);
         NamedPipe = INVALID_HANDLE_VALUE;
     }
@@ -60,57 +65,68 @@ NamedPipeChessPlayer::~NamedPipeChessPlayer()
 //-------------------------------------------------------------
 bool NamedPipeChessPlayer::GetMove (ChessBoard &board, Move &move, INT32 &timeSpent)
 {
-    if (NamedPipe != INVALID_HANDLE_VALUE) {
+    if (NamedPipe != INVALID_HANDLE_VALUE)
+    {
         INT32 StartTime = ChessTime();
 
         char request [256];
         char fen [128];
-        if (board.GetForsythEdwardsNotation (fen, sizeof(fen))) {
+        if (board.GetForsythEdwardsNotation (fen, sizeof(fen)))
+        {
             sprintf (request, "5:%s", fen);     // 5 second think time hardcoded for now
 
             DWORD num_bytes_written;
             DWORD request_size = (DWORD) (1 + strlen(request));
 
             BOOL happy = WriteFile (
-                NamedPipe,
-                request,
-                request_size,
-                &num_bytes_written,
-                NULL
-            );
+                             NamedPipe,
+                             request,
+                             request_size,
+                             &num_bytes_written,
+                             NULL
+                         );
 
-            if (happy) {
-                if (num_bytes_written == request_size) {
+            if (happy)
+            {
+                if (num_bytes_written == request_size)
+                {
                     // wait for response...
                     char reply [16];
                     DWORD num_bytes_read;
                     happy = ReadFile (
-                        NamedPipe,
-                        reply,
-                        sizeof(reply),
-                        &num_bytes_read,
-                        NULL
-                    );
+                                NamedPipe,
+                                reply,
+                                sizeof(reply),
+                                &num_bytes_read,
+                                NULL
+                            );
 
                     timeSpent = ChessTime() - StartTime;
 
-                    if (happy) {
-                        if (num_bytes_read >= 5) {
-                            if (reply[0] >= 'a' && reply[0] <= 'h') {
-                                if (reply[1] >= '1' && reply[1] <= '8') {
-                                    if (reply[2] >= 'a' && reply[2] <= 'h') {
-                                        if (reply[3] >= '1' && reply[3] <= '8') {
+                    if (happy)
+                    {
+                        if (num_bytes_read >= 5)
+                        {
+                            if (reply[0] >= 'a' && reply[0] <= 'h')
+                            {
+                                if (reply[1] >= '1' && reply[1] <= '8')
+                                {
+                                    if (reply[2] >= 'a' && reply[2] <= 'h')
+                                    {
+                                        if (reply[3] >= '1' && reply[3] <= '8')
+                                        {
                                             int rsource = OFFSET (reply[0] - 'a' + 2, reply[1] - '1' + 2);
                                             int rdest   = OFFSET (reply[2] - 'a' + 2, reply[3] - '1' + 2);
 
                                             SQUARE rprom;
-                                            switch (reply[4]) {
-                                                case '\0': rprom = EMPTY;  break;
-                                                case 'Q':  rprom = board.WhiteToMove() ? WQUEEN  : BQUEEN;  break;
-                                                case 'R':  rprom = board.WhiteToMove() ? WROOK   : BROOK;   break;
-                                                case 'B':  rprom = board.WhiteToMove() ? WBISHOP : BBISHOP; break;
-                                                case 'N':  rprom = board.WhiteToMove() ? WKNIGHT : BKNIGHT; break;
-                                                default:    return false;
+                                            switch (reply[4])
+                                            {
+                                            case '\0': rprom = EMPTY;  break;
+                                            case 'Q':  rprom = board.WhiteToMove() ? WQUEEN  : BQUEEN;  break;
+                                            case 'R':  rprom = board.WhiteToMove() ? WROOK   : BROOK;   break;
+                                            case 'B':  rprom = board.WhiteToMove() ? WBISHOP : BBISHOP; break;
+                                            case 'N':  rprom = board.WhiteToMove() ? WKNIGHT : BKNIGHT; break;
+                                            default:    return false;
                                             }
 
                                             int xsource, xdest;
@@ -119,9 +135,11 @@ bool NamedPipeChessPlayer::GetMove (ChessBoard &board, Move &move, INT32 &timeSp
                                             MoveList    LegalMoves;
                                             board.GenMoves (LegalMoves);
 
-                                            for (int i=0; i < LegalMoves.num; ++i) {
+                                            for (int i=0; i < LegalMoves.num; ++i)
+                                            {
                                                 xprom = LegalMoves.m[i].actualOffsets (board, xsource, xdest);
-                                                if (xsource==rsource && xdest==rdest && xprom==rprom) {
+                                                if (xsource==rsource && xdest==rdest && xprom==rprom)
+                                                {
                                                     move = LegalMoves.m[i];
                                                     userInterface.DisplayMove (board, move);
                                                     return true;
@@ -161,7 +179,7 @@ void NamedPipeChessPlayer::InformResignation()
 void NamedPipeChessPlayer::InformGameOver (const ChessBoard &)
 {
 }
- 
+
 
 #endif // SUPPORT_NAMED_PIPE
 

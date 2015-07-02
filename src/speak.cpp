@@ -37,41 +37,53 @@ void Speak (const char *pgn)
 {
     int index = 0;
 
-    if (pgn[0] == 'O') {
+    if (pgn[0] == 'O')
+    {
         // must be castling... either "O-O" or "O-O-O"
-        if (pgn[1]=='-' && pgn[2]=='O') {
-            if (pgn[3]=='-' && pgn[4]=='O') {
+        if (pgn[1]=='-' && pgn[2]=='O')
+        {
+            if (pgn[3]=='-' && pgn[4]=='O')
+            {
                 PlayWav ("ooo");
                 index = 5;      // skip over "O-O-O", in case there is a "+", etc.
-            } else {
+            }
+            else
+            {
                 PlayWav ("oo");
                 index = 3;      // skip over "O-O", in case there is a "+", etc.
             }
-        } else {
+        }
+        else
+        {
             assert (false);     // not valid PGN notation!
         }
     }
 
     char c;
-    while ((c = pgn[index++]) != '\0') {
-        switch (c) {
-            case 'N':   PlayWav("knight");      break;
-            case 'B':   PlayWav("bishop");      break;
-            case 'R':   PlayWav("rook");        break;
-            case 'Q':   PlayWav("queen");       break;
-            case 'K':   PlayWav("king");        break;
-            case 'x':   PlayWav("takes");       break;
-            case '+':   PlayWav("check");       break;
-            case '#':   PlayWav("mate");        break;
-            case '=':   PlayWav("prom");        break;
+    while ((c = pgn[index++]) != '\0')
+    {
+        switch (c)
+        {
+        case 'N':   PlayWav("knight");      break;
+        case 'B':   PlayWav("bishop");      break;
+        case 'R':   PlayWav("rook");        break;
+        case 'Q':   PlayWav("queen");       break;
+        case 'K':   PlayWav("king");        break;
+        case 'x':   PlayWav("takes");       break;
+        case '+':   PlayWav("check");       break;
+        case '#':   PlayWav("mate");        break;
+        case '=':   PlayWav("prom");        break;
 
-            default:
-                if ((c >= 'a' && c <= 'h') || (c >= '1' && c <= '8')) {
-                    PlayWav (c);
-                } else {
-                    assert (false);     // unexpected character
-                }
-                break;
+        default:
+            if ((c >= 'a' && c <= 'h') || (c >= '1' && c <= '8'))
+            {
+                PlayWav (c);
+            }
+            else
+            {
+                assert (false);     // unexpected character
+            }
+            break;
         }
     }
 }
@@ -212,9 +224,9 @@ void Speak (const char *moveString)
 
 
         Revision history:
-    
+
     1997 February 1 [Don Cross]
         Started writing.
-    
+
 */
 

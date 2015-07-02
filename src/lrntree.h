@@ -91,7 +91,7 @@ public:
         ChessUI &ui,
         INT32 timeLimit );
 
-    static int Pack ( 
+    static int Pack (
         const char  *inTreeFilename,
         const char  *outTreeFilename,
         SCORE       window );
@@ -220,17 +220,17 @@ private:
 
 
         Revision history:
-    
+
     2001 January 12 [Don Cross]
          Adding support for tree file packing... LearnTree::Pack().
-    
+
     2001 January 9 [Don Cross]
          Adding a 'ChessBoard &' parameter to LearnTree::numNodesAtDepth(),
          so that it can tell whether moves are legal or not.  That way it
          can exclude the illegal moves just like the real trainer does.
-    
+
     1996 August 22 [Don Cross]
          Started writing this code.
-    
+
 */
 

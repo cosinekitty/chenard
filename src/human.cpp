@@ -21,7 +21,7 @@ HumanChessPlayer::~HumanChessPlayer()
 }
 
 
-bool HumanChessPlayer::GetMove ( 
+bool HumanChessPlayer::GetMove (
     ChessBoard &board,
     Move       &move,
     INT32      &timeSpent )
@@ -34,7 +34,7 @@ bool HumanChessPlayer::GetMove (
     board.GenMoves ( legalMoves );
     if ( legalMoves.num==1 && automaticSingularMove )
     {
-        userInterface.NotifyUser ( 
+        userInterface.NotifyUser (
             "You have only one legal move - it will be made for you." );
 
         userInterface.DisplayMove ( board, move = legalMoves.m[0] );
@@ -56,7 +56,7 @@ bool HumanChessPlayer::GetMove (
 
         // The following check allows certain UI tricks to work...
         if ( dest == SPECIAL_MOVE_NULL ||
-           (dest & SPECIAL_MOVE_MASK) == SPECIAL_MOVE_EDIT )
+             (dest & SPECIAL_MOVE_MASK) == SPECIAL_MOVE_EDIT )
         {
             move.source = source;
             move.dest = dest;
@@ -109,26 +109,26 @@ bool HumanChessPlayer::GetMove (
 
 
          Revision history:
-    
+
     1993 August 30 [Don Cross]
          Changing pointers to references in the interfaces where
          appropriate.
-    
+
     1994 January 15 [Don Cross]
          Added check for SPECIAL_MOVE_NULL in HumanChessPlayer::GetMove().
-    
+
     1994 January 30 [Don Cross]
          Added check for SPECIAL_MOVE_EDIT.
-    
+
     1999 January 15 [Don Cross]
          Updated coding style.
-    
+
     1999 January 16 [Don Cross]
          Adding "automatic singular move" feature.
          This causes the computer to automatically make a move for
          a human player when there is only one legal move.
          This is intended to be of use when I'm playing Chenard
-         in timed games, so that the computer can immediately 
+         in timed games, so that the computer can immediately
          start thinking about its next move.
 */
 

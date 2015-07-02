@@ -94,65 +94,65 @@ ChessPlayer *ChessUI_win32_gui::CreatePlayer ( ChessSide side )
 
     switch (playerType)
     {
-        case DefPlayerInfo::computerPlayer:
+    case DefPlayerInfo::computerPlayer:
+    {
+        ComputerChessPlayer *puter = new ComputerChessPlayer (*this);
+        if (puter)
         {
-            ComputerChessPlayer *puter = new ComputerChessPlayer (*this);
-            if (puter)
+            player = puter;
+            if (useSeconds)
             {
-                player = puter;
-                if (useSeconds)
-                {
-                    puter->SetTimeLimit(searchDepth);
-                }
-                else
-                {
-                    puter->SetSearchDepth(searchDepth);
-                }
-
-                puter->SetSearchBias(searchBias);
-                extern bool Global_AllowResignFlag;
-                puter->setResignFlag(Global_AllowResignFlag);
+                puter->SetTimeLimit(searchDepth);
             }
-        }
-        break;
+            else
+            {
+                puter->SetSearchDepth(searchDepth);
+            }
 
-        case DefPlayerInfo::humanPlayer:
-        {
-            player = new HumanChessPlayer (*this);
+            puter->SetSearchBias(searchBias);
+            extern bool Global_AllowResignFlag;
+            puter->setResignFlag(Global_AllowResignFlag);
         }
-        break;
+    }
+    break;
+
+    case DefPlayerInfo::humanPlayer:
+    {
+        player = new HumanChessPlayer (*this);
+    }
+    break;
 
 #if SUPPORT_INTERNET
-        case DefPlayerInfo::internetPlayer:
+    case DefPlayerInfo::internetPlayer:
+    {
+        const InternetConnectionInfo &cinfo =
+            (side == SIDE_WHITE) ?
+            DefPlayer.whiteInternetConnect :
+            DefPlayer.blackInternetConnect;
+
+        extern bool Global_InternetPlayersReady;
+        while ( !Global_InternetPlayersReady )
         {
-            const InternetConnectionInfo &cinfo =
-                (side == SIDE_WHITE) ?
-                DefPlayer.whiteInternetConnect :
-                DefPlayer.blackInternetConnect;
-
-            extern bool Global_InternetPlayersReady;
-            while ( !Global_InternetPlayersReady )
-            {
-                Sleep(500);
-            }
-
-            MessageBox ( hwnd, "Remote connection established...\nready to play!", "", MB_OK | MB_ICONINFORMATION );
-            player = new InternetChessPlayer (*this, cinfo);
+            Sleep(500);
         }
-        break;
+
+        MessageBox ( hwnd, "Remote connection established...\nready to play!", "", MB_OK | MB_ICONINFORMATION );
+        player = new InternetChessPlayer (*this, cinfo);
+    }
+    break;
 #endif  // SUPPORT_INTERNET
 
 #if SUPPORT_NAMED_PIPE
-        case DefPlayerInfo::namedPipePlayer:
-        {
-            const char *serverMachineName =
-                (side == SIDE_WHITE) ?
-                DefPlayer.whiteServerName :
-                DefPlayer.blackServerName;
+    case DefPlayerInfo::namedPipePlayer:
+    {
+        const char *serverMachineName =
+            (side == SIDE_WHITE) ?
+            DefPlayer.whiteServerName :
+            DefPlayer.blackServerName;
 
-            player = new NamedPipeChessPlayer (*this, serverMachineName);
-        }
-        break;
+        player = new NamedPipeChessPlayer (*this, serverMachineName);
+    }
+    break;
 #endif // SUPPORT_NAMED_PIPE
     }
 
@@ -177,7 +177,7 @@ ChessPlayer *ChessUI_win32_gui::CreatePlayer ( ChessSide side )
         if ( whitePlayerType != DefPlayerInfo::humanPlayer &&
              blackPlayerType == DefPlayerInfo::humanPlayer )
         {
-            // When a human is playing Black and 
+            // When a human is playing Black and
             // something other than human is playing White,
             // show the chess board from Black's point of view.
             TheBoardDisplayBuffer.setView(false);
@@ -261,27 +261,35 @@ PGN_FILE_STATE LoadGameFromPgnFile (FILE *f, ChessBoard &board)     // loads onl
 
     board.Init();
 
-    while (GetNextPgnMove (f, movestr, state, info)) {
-        if (info.fen[0]) {
+    while (GetNextPgnMove (f, movestr, state, info))
+    {
+        if (info.fen[0])
+        {
             bool success = board.SetForsythEdwardsNotation (info.fen);
-            if (!success) {
+            if (!success)
+            {
                 state = PGN_FILE_STATE_SYNTAX_ERROR;
                 break;
             }
         }
 
-        if (board.ScanMove (movestr, move)) {
+        if (board.ScanMove (movestr, move))
+        {
             board.MakeMove (move, unmove);
-        } else {
+        }
+        else
+        {
             state = PGN_FILE_STATE_ILLEGAL_MOVE;
             break;
         }
     }
 
-    if (info.fen[0]) {
+    if (info.fen[0])
+    {
         // Special case:  there may have been an edited position, but no moves after that.
         bool success = board.SetForsythEdwardsNotation (info.fen);
-        if (!success) {
+        if (!success)
+        {
             state = PGN_FILE_STATE_SYNTAX_ERROR;
         }
     }
@@ -354,54 +362,54 @@ BOOL CALLBACK SuggestMove_DlgProc (
 
     switch ( msg )
     {
-        case WM_INITDIALOG:
+    case WM_INITDIALOG:
+    {
+        // Set check box to match previous "ding after suggestion" option.
+        CheckDlgButton(
+            hwnd,
+            IDC_CHECK_DING_AFTER_SUGGEST,
+            Global_DingAfterSuggest ? BST_CHECKED : BST_UNCHECKED);
+
+        // Remember think time setting from previous suggested moves...
+
+        int length = sprintf ( buffer, "%lg", double(SuggestThinkTime)/100.0 );
+        SetWindowText (timeEditBox, buffer);
+        SetFocus (timeEditBox);
+
+        // Select the text inside the text box, so the user does not need to hit TAB key to edit it.
+        // http://msdn.microsoft.com/en-us/library/bb761661(VS.85).aspx
+        SendMessage (timeEditBox, EM_SETSEL, 0 /*starting position*/, length /*one past end position*/);
+    }
+    break;
+
+    case WM_COMMAND:
+    {
+        switch ( wparam )
         {
-            // Set check box to match previous "ding after suggestion" option.
-            CheckDlgButton(
-                hwnd, 
-                IDC_CHECK_DING_AFTER_SUGGEST, 
-                Global_DingAfterSuggest ? BST_CHECKED : BST_UNCHECKED);
+        case IDOK:
+        {
+            buffer[0] = '\0';
+            GetWindowText ( timeEditBox, buffer, sizeof(buffer) );
+            double thinkTime = atof(buffer);
+            if ( thinkTime < 0.1 )
+                thinkTime = 0.1;
 
-            // Remember think time setting from previous suggested moves...
-
-            int length = sprintf ( buffer, "%lg", double(SuggestThinkTime)/100.0 );
-            SetWindowText (timeEditBox, buffer);
-            SetFocus (timeEditBox);
-
-            // Select the text inside the text box, so the user does not need to hit TAB key to edit it.
-            // http://msdn.microsoft.com/en-us/library/bb761661(VS.85).aspx
-            SendMessage (timeEditBox, EM_SETSEL, 0 /*starting position*/, length /*one past end position*/);
+            SuggestThinkTime = INT32 ( thinkTime * 100 );
+            Global_DingAfterSuggest = IsDlgButtonChecked(hwnd, IDC_CHECK_DING_AFTER_SUGGEST) ? true : false;
+            EndDialog ( hwnd, IDOK );
+            result = TRUE;
         }
         break;
 
-        case WM_COMMAND:
+        case IDCANCEL:
         {
-            switch ( wparam )
-            {
-                case IDOK:
-                {
-                    buffer[0] = '\0';
-                    GetWindowText ( timeEditBox, buffer, sizeof(buffer) );
-                    double thinkTime = atof(buffer);
-                    if ( thinkTime < 0.1 )
-                        thinkTime = 0.1;
-
-                    SuggestThinkTime = INT32 ( thinkTime * 100 );
-                    Global_DingAfterSuggest = IsDlgButtonChecked(hwnd, IDC_CHECK_DING_AFTER_SUGGEST) ? true : false;
-                    EndDialog ( hwnd, IDOK );
-                    result = TRUE;
-                }
-                break;
-
-                case IDCANCEL:
-                {
-                    EndDialog ( hwnd, IDCANCEL );
-                    result = TRUE;
-                }
-                break;
-            }
+            EndDialog ( hwnd, IDCANCEL );
+            result = TRUE;
         }
         break;
+        }
+    }
+    break;
     }
 
     return result;
@@ -414,7 +422,7 @@ static bool SuggestMove (
     int         &dest,
     bool        promptForSettings )
 {
-    if (Global_UI) 
+    if (Global_UI)
     {
         if (Global_GameOverFlag)
         {
@@ -433,7 +441,7 @@ static bool SuggestMove (
                 DLGPROC(SuggestMove_DlgProc));
         }
 
-        if (choice == IDOK) 
+        if (choice == IDOK)
         {
             // Cancel any pondering that might be in progress.
             // We don't want two computer players thinking at the same time!
@@ -477,23 +485,33 @@ static bool SuggestMove (
             char forced_mate [64];
             int mate_in_moves = 0;
 
-            if (board.WhiteToMove()) {
-                if (move.score >= WON_FOR_WHITE) {
-                    if (move.score < WHITE_WINS - WIN_DELAY_PENALTY) {
+            if (board.WhiteToMove())
+            {
+                if (move.score >= WON_FOR_WHITE)
+                {
+                    if (move.score < WHITE_WINS - WIN_DELAY_PENALTY)
+                    {
                         mate_in_moves = 1 + ((WHITE_WINS - int(move.score)) / WIN_DELAY_PENALTY) / 2;
                     }
                 }
-            } else {
-                if (move.score <= WON_FOR_BLACK) {
-                    if (move.score > BLACK_WINS + WIN_DELAY_PENALTY) {
+            }
+            else
+            {
+                if (move.score <= WON_FOR_BLACK)
+                {
+                    if (move.score > BLACK_WINS + WIN_DELAY_PENALTY)
+                    {
                         mate_in_moves = 1 + ((int(move.score) - BLACK_WINS) / WIN_DELAY_PENALTY) / 2;
                     }
                 }
             }
 
-            if (mate_in_moves) {
+            if (mate_in_moves)
+            {
                 sprintf (forced_mate, "  [Mate in %d]", mate_in_moves);
-            } else {
+            }
+            else
+            {
                 forced_mate[0] = '\0';
             }
 
@@ -517,7 +535,8 @@ static bool SuggestMove (
                 MB_ICONQUESTION | MB_YESNO
             );
 
-            if (makeMoveChoice == IDYES) {
+            if (makeMoveChoice == IDYES)
+            {
                 Global_UI->DisplayMove ( board, move );
                 source = move.source;
                 dest = move.dest;
@@ -532,12 +551,13 @@ static bool SuggestMove (
 
 const char *GetPlayerString (DefPlayerInfo::Type type)
 {
-    switch (type) {
-        case DefPlayerInfo::computerPlayer:     return "Computer Player (Chenard)";
-        case DefPlayerInfo::humanPlayer:        return "Human Player";
-        case DefPlayerInfo::internetPlayer:     return "Remote/Internet Player";
-        case DefPlayerInfo::namedPipePlayer:    return "Named Pipe Server";
-        default:                                return "?";
+    switch (type)
+    {
+    case DefPlayerInfo::computerPlayer:     return "Computer Player (Chenard)";
+    case DefPlayerInfo::humanPlayer:        return "Human Player";
+    case DefPlayerInfo::internetPlayer:     return "Remote/Internet Player";
+    case DefPlayerInfo::namedPipePlayer:    return "Named Pipe Server";
+    default:                                return "?";
     }
 }
 
@@ -545,9 +565,12 @@ const char *GetPlayerString (DefPlayerInfo::Type type)
 const char *GetWhitePlayerString ()
 {
     const char *WhitePlayerString;
-    if (Global_UI) {
+    if (Global_UI)
+    {
         WhitePlayerString = GetPlayerString (Global_UI->queryWhitePlayerType());
-    } else {
+    }
+    else
+    {
         WhitePlayerString = "?";
     }
     return WhitePlayerString;
@@ -557,9 +580,12 @@ const char *GetWhitePlayerString ()
 const char *GetBlackPlayerString()
 {
     const char *BlackPlayerString;
-    if (Global_UI) {
+    if (Global_UI)
+    {
         BlackPlayerString = GetPlayerString (Global_UI->queryBlackPlayerType());
-    } else {
+    }
+    else
+    {
         BlackPlayerString = "?";
     }
     return BlackPlayerString;
@@ -577,18 +603,18 @@ bool ProcessChessCommands ( ChessBoard &board, int &source, int &dest )
     if ( Global_TacticalBenchmarkFlag && Global_UI )
     {
         const char *explainText =
-        "The tactical benchmark will run a series of pre-programmed chess positions "
-        "to determine how quickly your computer can perform chess calculations. "
-        "After the benchmark is finished, the current chess position will be restored "
-        "and you will be able to resume your game. "
-        "However, this test may take a long time (4 minutes on a 100 MHz Pentium).\n\n"
-        "Do you really want to run the tactical benchmark?";
+            "The tactical benchmark will run a series of pre-programmed chess positions "
+            "to determine how quickly your computer can perform chess calculations. "
+            "After the benchmark is finished, the current chess position will be restored "
+            "and you will be able to resume your game. "
+            "However, this test may take a long time (4 minutes on a 100 MHz Pentium).\n\n"
+            "Do you really want to run the tactical benchmark?";
 
         Global_TacticalBenchmarkFlag = false;
         int choice = MessageBox ( HwndMain,
-            explainText,
-            CHESS_PROGRAM_NAME,
-            MB_ICONQUESTION | MB_YESNO );
+                                  explainText,
+                                  CHESS_PROGRAM_NAME,
+                                  MB_ICONQUESTION | MB_YESNO );
 
         if ( choice == IDYES )
         {
@@ -596,48 +622,48 @@ bool ProcessChessCommands ( ChessBoard &board, int &source, int &dest )
             if ( timeElapsed > 0.0 )
             {
                 const char *resultFormat =
-                "Benchmark completed in %0.2lf seconds\n\n"
-                "Your computer is %0.2lf times as fast as the author's 100 MHz Pentium."
+                    "Benchmark completed in %0.2lf seconds\n\n"
+                    "Your computer is %0.2lf times as fast as the author's 100 MHz Pentium."
 #ifdef CHENARD_PROFILER
-                "\n\ntime data: {%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d}\n"
-                "call data: {%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d}\n\n"
+                    "\n\ntime data: {%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d}\n"
+                    "call data: {%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d}\n\n"
 #endif
 
 #if REQUEST_BENCHMARK_DATA
-                "\n\nIf you feel like it, send email to me <cosinekitty@hotmail.com> with your computer's "
-                "benchmark time and your processor type (e.g. 486, Pentium) and speed (MHz). "
-                "I want to start collecting these statistics to publish them on the Chenard web page:\n\n"
-                "http://www.cosinekitty.com/chenard.html"
+                    "\n\nIf you feel like it, send email to me <cosinekitty@hotmail.com> with your computer's "
+                    "benchmark time and your processor type (e.g. 486, Pentium) and speed (MHz). "
+                    "I want to start collecting these statistics to publish them on the Chenard web page:\n\n"
+                    "http://www.cosinekitty.com/chenard.html"
 #endif
-                ;
+                    ;
 
                 sprintf ( msg, resultFormat,
-                    timeElapsed,
-                    290.0 / timeElapsed
+                          timeElapsed,
+                          290.0 / timeElapsed
 #ifdef CHENARD_PROFILER
-                    , ProfilerHitCount[0],
-                    ProfilerHitCount[1],
-                    ProfilerHitCount[2],
-                    ProfilerHitCount[3],
-                    ProfilerHitCount[4],
-                    ProfilerHitCount[5],
-                    ProfilerHitCount[6],
-                    ProfilerHitCount[7],
-                    ProfilerHitCount[8],
-                    ProfilerHitCount[9],
+                          , ProfilerHitCount[0],
+                          ProfilerHitCount[1],
+                          ProfilerHitCount[2],
+                          ProfilerHitCount[3],
+                          ProfilerHitCount[4],
+                          ProfilerHitCount[5],
+                          ProfilerHitCount[6],
+                          ProfilerHitCount[7],
+                          ProfilerHitCount[8],
+                          ProfilerHitCount[9],
 
-                    ProfilerCallCount[0],
-                    ProfilerCallCount[1],
-                    ProfilerCallCount[2],
-                    ProfilerCallCount[3],
-                    ProfilerCallCount[4],
-                    ProfilerCallCount[5],
-                    ProfilerCallCount[6],
-                    ProfilerCallCount[7],
-                    ProfilerCallCount[8],
-                    ProfilerCallCount[9]
+                          ProfilerCallCount[0],
+                          ProfilerCallCount[1],
+                          ProfilerCallCount[2],
+                          ProfilerCallCount[3],
+                          ProfilerCallCount[4],
+                          ProfilerCallCount[5],
+                          ProfilerCallCount[6],
+                          ProfilerCallCount[7],
+                          ProfilerCallCount[8],
+                          ProfilerCallCount[9]
 #endif
-                );
+                        );
 
                 MessageBox ( HwndMain, msg, CHESS_PROGRAM_NAME, MB_OK );
                 TheBoardDisplayBuffer.update (board);
@@ -660,17 +686,19 @@ bool ProcessChessCommands ( ChessBoard &board, int &source, int &dest )
         if ( Global_GameOverFlag )
         {
             MessageBox ( HwndMain,
-                "Please start a new game (File | New) before editing the board",
-                CHESS_PROGRAM_NAME,
-                MB_ICONEXCLAMATION | MB_OK );
+                         "Please start a new game (File | New) before editing the board",
+                         CHESS_PROGRAM_NAME,
+                         MB_ICONEXCLAMATION | MB_OK );
         }
         else
         {
-            if (Global_BoardEditRequest.getState() == BER_FEN) {
+            if (Global_BoardEditRequest.getState() == BER_FEN)
+            {
                 // Set entire board to the specified Forsyth Edwards Notation.
 
                 const char *fen = Global_BoardEditRequest.getFen();
-                if (board.SetForsythEdwardsNotation (fen)) {
+                if (board.SetForsythEdwardsNotation (fen))
+                {
                     TheBoardDisplayBuffer.update (board);
                     // We need to make a NULL move so that legal move list gets regenerated,
                     // *and* the correct player will move,
@@ -680,7 +708,9 @@ bool ProcessChessCommands ( ChessBoard &board, int &source, int &dest )
                     dest = SPECIAL_MOVE_NULL;
                     Global_GameModifiedFlag = true;
                     itIsTimeToCruise = true;
-                } else {
+                }
+                else
+                {
                     // There was something wrong with the FEN string we were given.
                     MessageBox (
                         HwndMain,
@@ -689,7 +719,9 @@ bool ProcessChessCommands ( ChessBoard &board, int &source, int &dest )
                         MB_ICONEXCLAMATION | MB_OK
                     );
                 }
-            } else if (Global_BoardEditRequest.getState() == BER_SQUARE) {
+            }
+            else if (Global_BoardEditRequest.getState() == BER_SQUARE)
+            {
                 // Change the contents of a single square.
 
                 SQUARE square;
@@ -700,13 +732,16 @@ bool ProcessChessCommands ( ChessBoard &board, int &source, int &dest )
 
                 SQUARE prev = board.GetSquareContents (x, y);
                 board.SetSquareContents ( square, x, y );
-                if (board.PositionIsPossible()) {
+                if (board.PositionIsPossible())
+                {
                     edit.dest = dest = SPECIAL_MOVE_EDIT | ConvertSquareToNybble(square);
                     edit.source = source = OFFSET(x+2,y+2);
                     board.SaveSpecialMove ( edit );
                     Global_GameModifiedFlag = true;
                     itIsTimeToCruise = true;
-                } else {
+                }
+                else
+                {
                     board.SetSquareContents (prev, x, y);
 
                     MessageBox (
@@ -726,17 +761,17 @@ bool ProcessChessCommands ( ChessBoard &board, int &source, int &dest )
         if ( Global_GameOverFlag )
         {
             MessageBox ( HwndMain,
-                "Please start a new game (File | New) before clearing the board",
-                CHESS_PROGRAM_NAME,
-                MB_ICONEXCLAMATION | MB_OK );
+                         "Please start a new game (File | New) before clearing the board",
+                         CHESS_PROGRAM_NAME,
+                         MB_ICONEXCLAMATION | MB_OK );
         }
         else
         {
             int choice = MessageBox
-               ( HwndMain,
-                 "Do you really want to clear the board?",
-                 CHESS_PROGRAM_NAME,
-                 MB_YESNO | MB_ICONQUESTION | MB_APPLMODAL );
+                         ( HwndMain,
+                           "Do you really want to clear the board?",
+                           CHESS_PROGRAM_NAME,
+                           MB_YESNO | MB_ICONQUESTION | MB_APPLMODAL );
 
             if ( choice == IDYES )
             {
@@ -763,7 +798,7 @@ bool ProcessChessCommands ( ChessBoard &board, int &source, int &dest )
         PreDefinedWhiteHuman = (DefPlayer.whiteType == DefPlayerInfo::humanPlayer);
         PreDefinedBlackHuman = (DefPlayer.blackType == DefPlayerInfo::humanPlayer);
 
-        // Present the Create Players dialog box again.        
+        // Present the Create Players dialog box again.
         if (DefinePlayerDialog(HwndMain))
         {
             board.Init();
@@ -820,43 +855,54 @@ bool ProcessChessCommands ( ChessBoard &board, int &source, int &dest )
     }
     else if ( Global_GameSaveFlag )
     {
-         Global_GameSaveFlag = false;
-         bool known = false;
-         sprintf ( msg, "Cannot save file '%s'", Global_GameFilename );     // get error message ready, just in case
+        Global_GameSaveFlag = false;
+        bool known = false;
+        sprintf ( msg, "Cannot save file '%s'", Global_GameFilename );     // get error message ready, just in case
 
-         // Look at the filename extension to determine which kind of file to save:
-         const char *ext = strrchr (Global_GameFilename, '.');
-         if (ext) {
-             FILE *outfile = NULL;
-             if (0 == stricmp(ext,".pgn")) {
-                 known = true;
-                 outfile = fopen ( Global_GameFilename, "wt" );
-                 if (outfile != NULL) {
-                     SavePortableGameNotation (outfile, board);
-                 }
-             } else if (0 == stricmp(ext,".gam")) {
-                 known = true;
-                 outfile = fopen ( Global_GameFilename, "wb" );
-                 if (outfile != NULL) {
-                     SaveGameToFile ( outfile, board );
-                 }
-             }
-             if (known) {
-                 if (outfile == NULL) {
-                     MessageBox ( HwndMain, msg, "File Open Error", MB_OK | MB_ICONERROR );
-                 } else {
-                     fclose (outfile);
-                     outfile = NULL;
-                     Global_HaveFilename = true;
-                     Global_GameModifiedFlag = false;
-                 }
-             }
-             assert (outfile == NULL);
-         }
-         if (!known) {
-             sprintf ( msg, "File '%s' has unknown extension", Global_GameFilename );
-             MessageBox ( HwndMain, msg, "File Open Error", MB_OK | MB_ICONERROR );
-         }
+        // Look at the filename extension to determine which kind of file to save:
+        const char *ext = strrchr (Global_GameFilename, '.');
+        if (ext)
+        {
+            FILE *outfile = NULL;
+            if (0 == stricmp(ext,".pgn"))
+            {
+                known = true;
+                outfile = fopen ( Global_GameFilename, "wt" );
+                if (outfile != NULL)
+                {
+                    SavePortableGameNotation (outfile, board);
+                }
+            }
+            else if (0 == stricmp(ext,".gam"))
+            {
+                known = true;
+                outfile = fopen ( Global_GameFilename, "wb" );
+                if (outfile != NULL)
+                {
+                    SaveGameToFile ( outfile, board );
+                }
+            }
+            if (known)
+            {
+                if (outfile == NULL)
+                {
+                    MessageBox ( HwndMain, msg, "File Open Error", MB_OK | MB_ICONERROR );
+                }
+                else
+                {
+                    fclose (outfile);
+                    outfile = NULL;
+                    Global_HaveFilename = true;
+                    Global_GameModifiedFlag = false;
+                }
+            }
+            assert (outfile == NULL);
+        }
+        if (!known)
+        {
+            sprintf ( msg, "File '%s' has unknown extension", Global_GameFilename );
+            MessageBox ( HwndMain, msg, "File Open Error", MB_OK | MB_ICONERROR );
+        }
     }
     else if ( Global_GameOpenFlag )
     {
@@ -871,14 +917,18 @@ bool ProcessChessCommands ( ChessBoard &board, int &source, int &dest )
             }
 
             const char *ext = strrchr (Global_GameFilename, '.');
-            if (0 == stricmp(ext,".pgn")) {
+            if (0 == stricmp(ext,".pgn"))
+            {
                 PGN_FILE_STATE state = LoadGameFromPgnFile (infile, board);
-                if (state != PGN_FILE_STATE_GAMEOVER) {
+                if (state != PGN_FILE_STATE_GAMEOVER)
+                {
                     const char *error = GetPgnFileStateString (state);
                     sprintf (msg, "Problem loading pgn file '%s':\n%s", Global_GameFilename, error);
                     MessageBox (HwndMain, msg, "PGN Load Error", MB_OK | MB_ICONERROR);
                 }
-            } else {
+            }
+            else
+            {
                 LoadGameFromFile ( infile, board );
             }
             Global_HaveFilename = true;
@@ -936,7 +986,7 @@ BlunderAlertParms* ChessUI_win32_gui::blunderAlert_Initialize (const ChessBoard&
             if (blunderAlertParms != NULL)
             {
                 // Create a new thread to process the blunder alert analysis.
-                // IMPORTANT: _beginthread may return an invalid handle even 
+                // IMPORTANT: _beginthread may return an invalid handle even
                 // though the thread was started properly, because blunder alert
                 // thread might exit very quickly.
                 uintptr_t threadHandle = _beginthread(BlunderAlertThreadFunc, 0, blunderAlertParms);
@@ -956,7 +1006,7 @@ BlunderAlertParms* ChessUI_win32_gui::blunderAlert_Initialize (const ChessBoard&
                 {
                     // Getting here means we believe we have started the thread successfully.
                     // Wait until it tells us that we can safely proceed.
-                    // Otherwise we risk corrupting the chess board before 
+                    // Otherwise we risk corrupting the chess board before
                     // the child thread has finished making a safe copy of it.
                     while (!blunderAlertParms->isStarted)
                     {
@@ -1006,7 +1056,7 @@ void ChessUI_win32_gui::blunderAlert_StopThinking (BlunderAlertParms* parms)
 
 bool ChessUI_win32_gui::blunderAlert_IsAnalysisSufficient(const BlunderAlertParms* parms) const
 {
-    if (parms != NULL)   // make sure blunder alert analysis actually happened   
+    if (parms != NULL)   // make sure blunder alert analysis actually happened
     {
         if (parms->levelCompleted >= parms->minLevel)
         {
@@ -1025,9 +1075,9 @@ bool ChessUI_win32_gui::blunderAlert_IsAnalysisSufficient(const BlunderAlertParm
 
 
 bool ChessUI_win32_gui::blunderAlert_IsLegalMove(
-    const BlunderAlertParms* parms, 
+    const BlunderAlertParms* parms,
     const ChessBoard& board,
-    int source, 
+    int source,
     int dest)
 {
     // The goal here is to return false only when we are SURE the move is illegal.
@@ -1060,9 +1110,9 @@ bool ChessUI_win32_gui::blunderAlert_IsLegalMove(
 
 
 bool ChessUI_win32_gui::blunderAlert_LooksLikeBlunder(
-    BlunderAlertParms* parms, 
+    BlunderAlertParms* parms,
     ChessBoard& board,
-    int source, 
+    int source,
     int dest)
 {
     if (blunderAlert_IsAnalysisSufficient(parms))
@@ -1119,7 +1169,7 @@ bool ChessUI_win32_gui::blunderAlert_LooksLikeBlunder(
                     }
                     else
                     {
-                        // This must be a pawn promotion, because how else 
+                        // This must be a pawn promotion, because how else
                         // could there be more than one matching legal move?
                         assert(move.isPawnPromotion());
 
@@ -1208,7 +1258,7 @@ void ChessUI_win32_gui::blunderAlert_FormatContinuation(
 
     // Isolate local variables in scope block...
     {
-        // Include the evaluation score so the user 
+        // Include the evaluation score so the user
         // has a clue how to tune the blunder threshold.
         int score = path.m[0].score;
         if (board.BlackToMove())
@@ -1295,9 +1345,9 @@ rewind_all_moves:
 
 
 void ChessUI_win32_gui::blunderAlert_WarnUser(
-    BlunderAlertParms* parms, 
-    ChessBoard& board, 
-    int humanMoveIndex, 
+    BlunderAlertParms* parms,
+    ChessBoard& board,
+    int humanMoveIndex,
     int bestMoveIndex)
 {
     // Write text at the bottom of the chess window:
@@ -1391,7 +1441,7 @@ try_another_move:
     }
 
     // Did the user click a pair of squares?
-    // Even if the pair of squares is an illegal move, 
+    // Even if the pair of squares is an illegal move,
     // the following will be set to true.
     // It will be false if the user action was a pseudo-move,
     // e.g. load PGN file, reset game, edit square, etc.
@@ -1468,9 +1518,9 @@ void ChessUI_win32_gui::DrawBoard ( const ChessBoard &board )
     if ( !Global_GameOverFlag )
     {
         ::SetWindowText ( hwnd,
-            board.WhiteToMove() ?
-            TitleBarText_WhitesTurn :
-            TitleBarText_BlacksTurn );
+                          board.WhiteToMove() ?
+                          TitleBarText_WhitesTurn :
+                          TitleBarText_BlacksTurn );
     }
 
     extern bool Global_EnableBoardBreathe;
@@ -1742,7 +1792,7 @@ void ChessUI_win32_gui::RecordMove (
     Global_MoveUndoPath.resetFromBoard ( board );
     board.UnmakeMove ( move, unmove );
 
-    if ( Global_SpeakMovesFlag ) 
+    if ( Global_SpeakMovesFlag )
     {
         Speak (moveString);
     }
@@ -1750,20 +1800,20 @@ void ChessUI_win32_gui::RecordMove (
     if (board.WhiteToMove())
     {
         sprintf ( displayString, "%d. %s: %s (%0.2lf)",
-            1 + board.GetCurrentPlyNumber()/2,
-            "White",
-            moveString,
-            double(thinkTime) / 100.0 );
+                  1 + board.GetCurrentPlyNumber()/2,
+                  "White",
+                  moveString,
+                  double(thinkTime) / 100.0 );
 
         ChessDisplayTextBuffer::SetText(STATIC_ID_WHITES_MOVE, displayString);
     }
     else
     {
         sprintf ( displayString,
-            "%s: %s (%0.2lf)",
-            "Black",
-            moveString,
-            double(thinkTime) / 100.0 );
+                  "%s: %s (%0.2lf)",
+                  "Black",
+                  moveString,
+                  double(thinkTime) / 100.0 );
 
         ChessDisplayTextBuffer::SetText(STATIC_ID_BLACKS_MOVE, displayString);
     }
@@ -1866,17 +1916,22 @@ static void FormatDisplayedInteger (unsigned long x, const char *prefix, char *o
 {
     output += sprintf (output, "%s", prefix);
 
-    if (x == 0) {
+    if (x == 0)
+    {
         sprintf (output, "0");
-    } else {
+    }
+    else
+    {
         char r [80];
         int i = 0;
         int n = 0;
-        while (x > 0) {
+        while (x > 0)
+        {
             ++n;
             r[i++] = '0' + (x % 10);
             x /= 10;
-            if (n % 3 == 0 && x > 0) {
+            if (n % 3 == 0 && x > 0)
+            {
                 r[i++] = ',';
             }
         }
@@ -1901,9 +1956,11 @@ void ChessUI_win32_gui::ReportComputerStats (
     ChessDisplayTextBuffer::SetText ( STATIC_ID_NODES_EVALUATED, displayString );
 
     displayString[0] = '\0';     // fallback in case eval/sec cannot be displayed
-    if (thinkTime > 5) {
+    if (thinkTime > 5)
+    {
         double nodesPerSecond = double(nodesEvaluated) * 100.0 / double(thinkTime);
-        if (nodesPerSecond >= 0.0 && nodesPerSecond < 1.0e+12) {
+        if (nodesPerSecond >= 0.0 && nodesPerSecond < 1.0e+12)
+        {
             FormatDisplayedInteger ((unsigned long) nodesPerSecond, "eval/sec=", displayString);
         }
     }
@@ -1955,16 +2012,19 @@ void ChessUI_win32_gui::ReportComputerStats (
 
 void ChessUI_win32_gui::forceMove()
 {
-    if ( whitePlayer && whitePlayerType == DefPlayerInfo::computerPlayer ) {
+    if ( whitePlayer && whitePlayerType == DefPlayerInfo::computerPlayer )
+    {
         ((ComputerChessPlayer *)whitePlayer)->AbortSearch();
     }
 
-    if ( blackPlayer && blackPlayerType == DefPlayerInfo::computerPlayer ) {
+    if ( blackPlayer && blackPlayerType == DefPlayerInfo::computerPlayer )
+    {
         ((ComputerChessPlayer *)blackPlayer)->AbortSearch();
     }
 
     EnterCriticalSection (&SuggestMoveCriticalSection);     // critical section prevents Global_SuggestMoveThinker changing to NULL in other thread while we are using it.
-    if (Global_SuggestMoveThinker) {
+    if (Global_SuggestMoveThinker)
+    {
         Global_SuggestMoveThinker->AbortSearch();
     }
     LeaveCriticalSection (&SuggestMoveCriticalSection);
@@ -1974,7 +2034,7 @@ void ChessUI_win32_gui::forceMove()
 void ChessUI_win32_gui::setWhiteThinkTime ( INT32 hundredthsOfSeconds )
 {
     if ( whitePlayerType == DefPlayerInfo::computerPlayer &&
-         whitePlayer && hundredthsOfSeconds >= 10 )
+            whitePlayer && hundredthsOfSeconds >= 10 )
     {
         ComputerChessPlayer *puter = (ComputerChessPlayer *)whitePlayer;
         puter->SetTimeLimit ( hundredthsOfSeconds );
@@ -1985,7 +2045,7 @@ void ChessUI_win32_gui::setWhiteThinkTime ( INT32 hundredthsOfSeconds )
 void ChessUI_win32_gui::setBlackThinkTime ( INT32 hundredthsOfSeconds )
 {
     if ( blackPlayerType == DefPlayerInfo::computerPlayer &&
-         blackPlayer && hundredthsOfSeconds >= 10 )
+            blackPlayer && hundredthsOfSeconds >= 10 )
     {
         ComputerChessPlayer *puter = (ComputerChessPlayer *)blackPlayer;
         puter->SetTimeLimit ( hundredthsOfSeconds );
@@ -2031,11 +2091,13 @@ void ChessUI_win32_gui::NotifyUser ( const char *message )
 */
 
 static unsigned long VarokGame[] =
-{0x4129L,0x5B74L,0x3720L,0xFFFD586FL,0x3226L,0x244D65L,0x362AL,0xFFFD5C68L,
-0x291BL,0xFFED6570L,0x3F27L,0xFFE74A62L,0x4B3FL,0xFFED6258L,0x3E32L,
-0xFFD86873L,0x4028L,0xFFD5B072L,0x321CL,0xFFDD5864L,0x584BL,0xFFC75862L,
-0x331DL,0xFFCF7065L,0x4D40L,0xFFF54D5BL,0x4B1FL,0xFFFB5A70L,0x5037L,
-0xC6571L,0xB01EL,0x147173L,0x1B1AL,0x156F6EL};
+{
+    0x4129L,0x5B74L,0x3720L,0xFFFD586FL,0x3226L,0x244D65L,0x362AL,0xFFFD5C68L,
+    0x291BL,0xFFED6570L,0x3F27L,0xFFE74A62L,0x4B3FL,0xFFED6258L,0x3E32L,
+    0xFFD86873L,0x4028L,0xFFD5B072L,0x321CL,0xFFDD5864L,0x584BL,0xFFC75862L,
+    0x331DL,0xFFCF7065L,0x4D40L,0xFFF54D5BL,0x4B1FL,0xFFFB5A70L,0x5037L,
+    0xC6571L,0xB01EL,0x147173L,0x1B1AL,0x156F6EL
+};
 
 
 double ChessUI_win32_gui::runTacticalBenchmark()
@@ -2391,36 +2453,49 @@ bool ChessUI_win32_gui::oppTime_finishThinking (
     Move                &myResponse,
     Move                &predictedOpponentMove )
 {
-    if (OppTimeThreadID != INVALID_THREAD && oppTimeParms.oppThinker) {
-        if (enableOppTime) {
+    if (OppTimeThreadID != INVALID_THREAD && oppTimeParms.oppThinker)
+    {
+        if (enableOppTime)
+        {
             bool predictedCorrectly = (oppTimeParms.packedNextBoard == newPosition);
-            if (predictedCorrectly) {
+            if (predictedCorrectly)
+            {
                 INT32 timeAlreadySpent = ChessTime() - oppTimeParms.timeStartedThinking;
                 INT32 extraTime = timeToThink - timeAlreadySpent;
-                if (extraTime < 20) {
-                    oppTimeParms.oppThinker->AbortSearch();    
-                } else {
+                if (extraTime < 20)
+                {
+                    oppTimeParms.oppThinker->AbortSearch();
+                }
+                else
+                {
                     oppTimeParms.oppThinker->SetTimeLimit (extraTime);
                 }
-            } else {
+            }
+            else
+            {
                 oppTimeParms.oppThinker->AbortSearch();
             }
 
-            while (!oppTimeParms.finished) {
+            while (!oppTimeParms.finished)
+            {
                 Sleep(50);
             }
 
-            if (predictedCorrectly && oppTimeParms.foundMove) {
+            if (predictedCorrectly && oppTimeParms.foundMove)
+            {
                 myResponse              =   oppTimeParms.myMove_next;
                 predictedOpponentMove   =   oppTimeParms.oppPredicted_next;
-                if (((ChessBoard &)newPosition).isLegal(myResponse)) {
+                if (((ChessBoard &)newPosition).isLegal(myResponse))
+                {
                     // We're on a roll!  Keep thinking...
                     timeSpent = ChessTime() - oppTimeParms.timeStartedThinking;
                     oppTime_startThinking (newPosition, myResponse, predictedOpponentMove);
                     return true;
                 }
             }
-        } else {
+        }
+        else
+        {
             // Getting here means opp time was enabled, but then turned off later.
             // Cancel any pondering that may be taking place to avoid burning up CPU time needlessly.
             oppTime_abortSearch();
@@ -2433,9 +2508,9 @@ bool ChessUI_win32_gui::oppTime_finishThinking (
 
 void ChessUI_win32_gui::oppTime_abortSearch()
 {
-    if (OppTimeThreadID != INVALID_THREAD && oppTimeParms.oppThinker && !oppTimeParms.finished) 
+    if (OppTimeThreadID != INVALID_THREAD && oppTimeParms.oppThinker && !oppTimeParms.finished)
     {
-        while (!oppTimeParms.finished) 
+        while (!oppTimeParms.finished)
         {
             // Abort each time around the loop, because there
             // is a theoretical race condition where a single

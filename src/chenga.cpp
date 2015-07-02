@@ -146,7 +146,7 @@ ChessGA::ChessGA():
 ChessGA::~ChessGA()
 {
     if ( info )
-    {   
+    {
         delete[] info;
         info = 0;
     }
@@ -329,8 +329,7 @@ int ChessGA::load ( const char *dirPrefix )
     char line [512];
     if ( !fgets(line,sizeof(line),f) || sscanf(line,"numGenes=%d",&numGenes) != 1 )
     {
-        printf ( "Error reading number of genes from first line of '%s'\n", 
-            gaFilename );
+        printf("Error reading number of genes from first line of '%s'\n", gaFilename);
 
         return 0;
     }
@@ -352,17 +351,16 @@ int ChessGA::load ( const char *dirPrefix )
 
     if ( !fgets(line,sizeof(line),f) || sscanf(line,"currentGene=%d",&currentGene) != 1 )
     {
-        printf ( "Error reading currentGene index from second line of '%s'\n", 
-            gaFilename );
+        printf("Error reading currentGene index from second line of '%s'\n", gaFilename);
 
         return 0;
     }
 
     if ( currentGene < 0 || currentGene >= numGenes )
     {
-        printf ( "Invalid current gene index %d in file '%s'.\n", 
-            currentGene,
-            gaFilename );
+        printf ( "Invalid current gene index %d in file '%s'.\n",
+                 currentGene,
+                 gaFilename );
 
         return 0;
     }
@@ -373,8 +371,7 @@ int ChessGA::load ( const char *dirPrefix )
 
     if ( !fgets(line,sizeof(line),f) || sscanf(line,"numRounds=%ld",&numRounds) != 1 )
     {
-        printf ( "Error reading number of rounds from third line of '%s'\n", 
-            gaFilename );
+        printf("Error reading number of rounds from third line of '%s'\n", gaFilename);
 
         return 0;
     }
@@ -391,9 +388,7 @@ int ChessGA::load ( const char *dirPrefix )
 
     if ( !fgets(line,sizeof(line),f) || sscanf(line,"nextGeneId=%ld",&nextGeneId) != 1 )
     {
-        printf ( "Error reading nextGeneId from fourth line of '%s'\n", 
-            gaFilename );
-
+        printf("Error reading nextGeneId from fourth line of '%s'\n", gaFilename);
         return 0;
     }
 
@@ -419,16 +414,14 @@ int ChessGA::load ( const char *dirPrefix )
 
         ChessGeneInfo &x = info[i];
         int check_i = 0;
-        int numScanned = sscanf ( line, 
-            "%d wins=%ld losses=%ld draws=%ld nwhite=%ld nblack=%ld id=%ld",
-            &check_i, &x.numWins, &x.numLosses, &x.numDraws, 
-            &x.numGamesAsWhite, &x.numGamesAsBlack, &x.id );
+        int numScanned = sscanf ( line,
+                                  "%d wins=%ld losses=%ld draws=%ld nwhite=%ld nblack=%ld id=%ld",
+                                  &check_i, &x.numWins, &x.numLosses, &x.numDraws,
+                                  &x.numGamesAsWhite, &x.numGamesAsBlack, &x.id );
 
         if ( numScanned < 6 )
         {
-            printf ( "Error scanning items at index %d of file '%s'\n", 
-                i, gaFilename );
-
+            printf("Error scanning items at index %d of file '%s'\n", i, gaFilename);
             printf ( "numScanned = %d\n", numScanned );
             return 0;
         }
@@ -441,7 +434,7 @@ int ChessGA::load ( const char *dirPrefix )
         if ( check_i != i )
         {
             printf ( "Mismatching index: expected %d, found %d in file '%s'\n",
-                i, check_i, gaFilename );
+                     i, check_i, gaFilename );
 
             return 0;
         }
@@ -484,7 +477,7 @@ int ChessGA::load ( const char *dirPrefix )
 void ChessGA::logdate ( const char *description )
 {
     time_t now;
-    time(&now); 
+    time(&now);
     char dateString [128];
     strcpy ( dateString, ctime(&now) );
 
@@ -578,7 +571,7 @@ void ChessGA::run()
     else
     {
         lprintf ( "***  Error %ld setting process priority class to IDLE.\n",
-            long(GetLastError()) );
+                  long(GetLastError()) );
     }
 #endif
 
@@ -586,9 +579,9 @@ void ChessGA::run()
 
     for ( startTime = ChessTime(); saveGaOnly(); ++numGamesCompleted )
     {
-        #if LOG_EVERY_GAME
-            lprintf ( "\nnum games completed = %d\n", numGamesCompleted );
-        #endif
+#if LOG_EVERY_GAME
+        lprintf ( "\nnum games completed = %d\n", numGamesCompleted );
+#endif
 
         // Pick randomly from other genes available, but exclude
         // playing against self (that would be a waste of time
@@ -598,16 +591,16 @@ void ChessGA::run()
         if ( otherGene >= currentGene )
             ++otherGene;
 
-        printf ( "####  Game %d:  gene %d versus gene %d...\n", 
-            numGamesCompleted, currentGene, otherGene );
+        printf ( "####  Game %d:  gene %d versus gene %d...\n",
+                 numGamesCompleted, currentGene, otherGene );
 
         int result = battle ( currentGene, otherGene );
 
-        #if LOG_EVERY_GAME
-                lprintf ( "BATTLE: %d vs %d - result = %d\n", currentGene, otherGene, result );
-                lprintf ( "Stats for this run: white wins: %ld, black wins: %ld, draws: %ld\n",
-                    numWhiteWins, numBlackWins, numDraws );
-        #endif // LOG_EVERY_GAME
+#if LOG_EVERY_GAME
+        lprintf ( "BATTLE: %d vs %d - result = %d\n", currentGene, otherGene, result );
+        lprintf ( "Stats for this run: white wins: %ld, black wins: %ld, draws: %ld\n",
+                  numWhiteWins, numBlackWins, numDraws );
+#endif // LOG_EVERY_GAME
 
         if ( result > 0 )
         {
@@ -642,8 +635,8 @@ void ChessGA::run()
 }
 
 
-void ChessGA::loadGene ( 
-    ComputerChessPlayer &player, 
+void ChessGA::loadGene (
+    ComputerChessPlayer &player,
     int geneIndex,
     INT32 thinkTime )
 {
@@ -738,14 +731,13 @@ int ChessGA::battle ( int g1, int g2 )
     ++gw.numGamesAsWhite;
     ++gb.numGamesAsBlack;
 
-    // The following two variables help to translate from 
+    // The following two variables help to translate from
     // White/Black winning to whether 'g1' wins or 'g2' wins.
 
     int whiteWin = firstIsWhite ?  1 : -1;   // return this if White wins
     int blackWin = firstIsWhite ? -1 :  1;   // return this if Black wins
 
-    printf  ( "####  White: gene %d,  Black: gene %d\n", 
-        whiteIndex, blackIndex );
+    printf("####  White: gene %d,  Black: gene %d\n", whiteIndex, blackIndex);
 
 #if LOG_EVERY_GAME
     lprintf ( "White: gene %d,  Black: gene %d\n", whiteIndex, blackIndex );
@@ -815,18 +807,18 @@ int ChessGA::battle ( int g1, int g2 )
                 {
                     ++numDraws;
                     displayGameResults ( "Black stalemated White" );
-                    #if LOG_EVERY_GAME
-                        lprintf ( "Stalemate at ply=%d.\n", ply );
-                    #endif
+#if LOG_EVERY_GAME
+                    lprintf ( "Stalemate at ply=%d.\n", ply );
+#endif
                     return 0;
                 }
                 else
                 {
                     ++numBlackWins;
                     displayGameResults ( "Black won" );
-                    #if LOG_EVERY_GAME
-                        lprintf ( "Black checkmated White at ply %d.\n", ply );
-                    #endif
+#if LOG_EVERY_GAME
+                    lprintf ( "Black checkmated White at ply %d.\n", ply );
+#endif
                     return blackWin;
                 }
             }
@@ -836,9 +828,9 @@ int ChessGA::battle ( int g1, int g2 )
                 displayGameResults ( "Draw" );
                 whitePlayer.InformGameOver (board);
                 ui->ReportEndOfGame ( SIDE_NEITHER );
-                #if LOG_EVERY_GAME
-                    lprintf ( "Non-stalemate forced draw at ply %d.\n", ply );
-                #endif
+#if LOG_EVERY_GAME
+                lprintf ( "Non-stalemate forced draw at ply %d.\n", ply );
+#endif
                 return 0;
             }
             else if ( isSpecialDraw(board) )
@@ -857,9 +849,9 @@ int ChessGA::battle ( int g1, int g2 )
                 displayGameResults ( "Black won" );
                 blackPlayer.InformResignation();
                 ui->Resign ( SIDE_WHITE, whitePlayer.QueryQuitReason() );
-                #if LOG_EVERY_GAME
-                    lprintf ( "White resigned at ply %d.\n", ply );
-                #endif
+#if LOG_EVERY_GAME
+                lprintf ( "White resigned at ply %d.\n", ply );
+#endif
                 return blackWin;
             }
 
@@ -877,21 +869,21 @@ int ChessGA::battle ( int g1, int g2 )
                 ChessSide winner = board.BlackInCheck() ? SIDE_WHITE : SIDE_NEITHER;
                 ui->ReportEndOfGame ( winner );
                 if ( winner == SIDE_NEITHER )
-                {   
+                {
                     ++numDraws;
                     displayGameResults ( "White stalemated black" );
-                    #if LOG_EVERY_GAME
-                        lprintf ( "Stalemate at ply %d.\n", ply );
-                    #endif
+#if LOG_EVERY_GAME
+                    lprintf ( "Stalemate at ply %d.\n", ply );
+#endif
                     return 0;
                 }
                 else
                 {
                     ++numWhiteWins;
                     displayGameResults ( "White won" );
-                    #if LOG_EVERY_GAME
-                        lprintf ( "White checkmated Black at ply %d.\n", ply );
-                    #endif                  
+#if LOG_EVERY_GAME
+                    lprintf ( "White checkmated Black at ply %d.\n", ply );
+#endif
                     return whiteWin;
                 }
             }
@@ -901,9 +893,9 @@ int ChessGA::battle ( int g1, int g2 )
                 displayGameResults ( "Draw" );
                 blackPlayer.InformGameOver (board);
                 ui->ReportEndOfGame ( SIDE_NEITHER );
-                #if LOG_EVERY_GAME
-                    lprintf ( "Non-stalemate draw at ply %d.\n", ply );
-                #endif
+#if LOG_EVERY_GAME
+                lprintf ( "Non-stalemate draw at ply %d.\n", ply );
+#endif
                 return 0;
             }
             else if ( isSpecialDraw(board) )
@@ -922,9 +914,9 @@ int ChessGA::battle ( int g1, int g2 )
                 displayGameResults ( "White won" );
                 whitePlayer.InformResignation();
                 ui->Resign ( SIDE_BLACK, blackPlayer.QueryQuitReason() );
-                #if LOG_EVERY_GAME
-                    lprintf ( "Black resigned at ply %d.\n", ply );
-                #endif
+#if LOG_EVERY_GAME
+                lprintf ( "Black resigned at ply %d.\n", ply );
+#endif
                 return whiteWin;
             }
 
@@ -941,14 +933,14 @@ int ChessGA::battle ( int g1, int g2 )
         long r_hours = r_minutes / 60;
         r_minutes %= 60;
 
-        printf ( ">>>>  runtime = %ld:%02ld:%02ld  score=%d  [W=%ld B=%ld D=%ld]\n", 
-            r_hours, r_minutes, r_seconds, int(move.score),
-            numWhiteWins, numBlackWins, numDraws );
+        printf ( ">>>>  runtime = %ld:%02ld:%02ld  score=%d  [W=%ld B=%ld D=%ld]\n",
+                 r_hours, r_minutes, r_seconds, int(move.score),
+                 numWhiteWins, numBlackWins, numDraws );
     }
 
-    #if LOG_EVERY_GAME
-        lprintf ( "Game exceeded %d plies; ruled a draw.\n", maxPliesAllowed );
-    #endif
+#if LOG_EVERY_GAME
+    lprintf ( "Game exceeded %d plies; ruled a draw.\n", maxPliesAllowed );
+#endif
 
     ++numDraws;
     displayGameResults ( "Draw by attrition" );
@@ -963,7 +955,7 @@ bool ChessGA::isSpecialDraw ( const ChessBoard &board )
     // Look for rook+king vs rook+king persisting for 10 plies.
 
     const INT16 *inv = board.queryInventoryPointer();
-    int nonKingRook = 
+    int nonKingRook =
         inv[WP_INDEX] + inv[WN_INDEX] + inv[WB_INDEX] + inv[WQ_INDEX] +
         inv[BP_INDEX] + inv[BN_INDEX] + inv[BB_INDEX] + inv[BQ_INDEX];
 
@@ -971,10 +963,9 @@ bool ChessGA::isSpecialDraw ( const ChessBoard &board )
     {
         if ( ++rooksAndKingsPlies >= 10 )
         {
-            #if LOG_EVERY_GAME
-                lprintf ( "Rook-and-king draw detected at ply %d\n", 
-                    int(board.GetCurrentPlyNumber()) );
-            #endif
+#if LOG_EVERY_GAME
+            lprintf("Rook-and-king draw detected at ply %d\n", int(board.GetCurrentPlyNumber()));
+#endif
 
             return true;
         }
@@ -992,7 +983,7 @@ void ChessGA::grimReaper()
     const int killPercent = 20;
     const int numberToKill = (numGenes * killPercent) / 100;
     const int numberToKeep = numGenes - numberToKill;
-    
+
     for ( int baby = numberToKeep; baby < numGenes; ++baby )
     {
         // Note:  Choose parents in a way that compromises elitism with
@@ -1063,7 +1054,7 @@ void ChessGA::grimReaper()
         lprintf ( "  keptOldGenes[%02d] = %3d\n", i, keptOldGenes[i] );
     }
 
-    // Now go back in second pass and kill any old genes that are not 
+    // Now go back in second pass and kill any old genes that are not
     // in the keep list.
 
     for ( i=0; i < numberToKeep; ++i )
@@ -1083,7 +1074,7 @@ void ChessGA::grimReaper()
 
                 int mom, dad;
                 do
-                {               
+                {
                     mom = ChessRandom ( 1 + numberToKeep/10 );
                     dad = ChessRandom (numberToKeep - 1);
                     if ( dad >= mom )
@@ -1176,18 +1167,18 @@ void ChessGA::displayGameResults ( const char *message )
     {
         fprintf ( f, "W=%ld B=%ld D=%ld\n", numWhiteWins, numBlackWins, numDraws );
         fclose(f);
-    }   
+    }
 }
 
 
-int ChessGA::MergePools ( 
+int ChessGA::MergePools (
     int outputPoolSize,
-    int dirc, 
+    int dirc,
     const char *dirv[],
     ChessUI &_ui,
     int _allowTextOutput )
 {
-    // First make sure that we are not attempting to overwrite 
+    // First make sure that we are not attempting to overwrite
     // an existing gene pool.
 
     FILE *f = fopen ( "chenard.ga", "r" );
@@ -1209,8 +1200,7 @@ int ChessGA::MergePools (
     {
         if ( _allowTextOutput )
         {
-            fprintf ( stderr,
-                "Error: Must pass two or more directories to gene pool merger.\n" );
+            fprintf(stderr, "Error: Must pass two or more directories to gene pool merger.\n");
         }
 
         return 2;
@@ -1220,8 +1210,7 @@ int ChessGA::MergePools (
     {
         if ( _allowTextOutput )
         {
-            fprintf ( stderr,
-                "Invalid output pool size %d.\n", outputPoolSize );
+            fprintf(stderr, "Invalid output pool size %d.\n", outputPoolSize);
         }
 
         return 3;
@@ -1262,8 +1251,7 @@ int ChessGA::MergePools (
 
     if ( _allowTextOutput )
     {
-        ::printf ( "\n$$$$ Successfully loaded %d pools, totalling %ld genes.\n", 
-            dirc, totalInputGenes );
+        ::printf("\n$$$$ Successfully loaded %d pools, totalling %ld genes.\n", dirc, totalInputGenes);
     }
 
     if ( totalInputGenes < outputPoolSize )
@@ -1432,7 +1420,7 @@ int GeneBattleGame (
                 ChessSide winner = board.BlackInCheck() ? SIDE_WHITE : SIDE_NEITHER;
                 ui.ReportEndOfGame ( winner );
                 if ( winner == SIDE_NEITHER )
-                {   
+                {
                     printf ( "Stalemate at ply %d.\n", ply );
                     return 0;
                 }
@@ -1469,7 +1457,7 @@ int GeneBattleGame (
 }
 
 
-int GeneBattle ( 
+int GeneBattle (
     ChessUI &ui,
     const char *geneFilename1,
     const char *geneFilename2 )
@@ -1484,8 +1472,7 @@ int GeneBattle (
     }
     else
     {
-        printf ( "***  Error %ld setting process priority class to IDLE.\n",
-            long(GetLastError()) );
+        printf ( "***  Error %ld setting process priority class to IDLE.\n", long(GetLastError()) );
 
         return 1;
     }
@@ -1552,9 +1539,9 @@ int GeneBattle (
             ++draws;
         else
         {
-            fprintf ( stderr, 
-                "!!!!! Nonsensical return value %d from GeneBattleGame()\n",
-                result );
+            fprintf ( stderr,
+                      "!!!!! Nonsensical return value %d from GeneBattleGame()\n",
+                      result );
 
             return 1;
         }
@@ -1607,52 +1594,52 @@ int GeneBattle (
     1999 September 9 [Don Cross]
          Made tallying of numWhiteWins, numBlackWins, and numDraws be
          persistent, by saving to a little text file called 'chenard.sta'.
-    
+
     1999 September 7 [Don Cross]
          Adding code to display game results.  Every time a game ends,
          the new member function ChessGA::displayGameResults(const char *)
          is called with an appropriate message string.
          Can turn this on and off by setting the preprocessor definition
          of the symbol DISPLAY_GAME_RESULTS.
-    
+
     1999 April 2 [Don Cross]
          Adding GeneBattle(), a function to play two specified gene files against
          each other.  If the second filename paramemter is NULL, it means that
          the first gene should be played against the "default" (pre-GA) gene.
-    
+
     1999 March 21 [Don Cross]
          Instead of always calling ChessGA::save() on each iteration,
          ChessGA::run() now calls ChessGA::saveGaOnly().  Another function,
          ChessGA::saveGenFiles(), now is responsible for saving the *.GEN
-         files, but only after they are sorted or culled (the only time 
+         files, but only after they are sorted or culled (the only time
          they change values).
-    
+
     1999 March 12 [Don Cross]
          Adding code (for Win32 build only) to adjust thread priority to
          IDLE when running genetic algorithm.
          ***
          I have noticed that a large percentage of games end up with
-         King and Rook vs King and Rook, ending in a draw.  Adding a 
+         King and Rook vs King and Rook, ending in a draw.  Adding a
          special rule that if both sides have only a king and a rook,
          that the game is a draw if the material stays the same for
          10 plies.
-    
+
     1999 February 23 [Don Cross]
          Changed fitness function to (W-L)/(16+N).
          This way new genes have to fight a little harder before taking
          over the top spots in the pool.
          Adding ChessGA::MergePools() static member function. This combines
          the best of several gene pools into a single new pool.
-    
+
     1999 February 22 [Don Cross]
          Now reap every 4 rounds instead of 10.
          Fixed unintentionally silly way of choosing 'mom' for new gene;
          now it's properly elitist.
          Added a persistent ID for every gene to track it through the
          evolution process.
-    
+
     1999 February 17 [Don Cross]
          Started writing.
-    
+
 */
 

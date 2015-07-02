@@ -31,10 +31,10 @@ ChessPlayer::~ChessPlayer()
 
 
          Revision history:
-    
+
     1993 August 30 [Don Cross]
          Changing pointers to references in the interfaces where
          appropriate.
-    
+
 */
 

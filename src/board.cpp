@@ -1,7 +1,7 @@
 /*=========================================================================
 
      board.cpp  -  Copyright (C) 1993-2005 by Don Cross
-     
+
 =========================================================================*/
 
 #include <string.h>
@@ -198,8 +198,7 @@ bool ChessBoard::IsDefiniteDraw ( int *numReps )
          inventory[WQ_INDEX] == 0 &&
          inventory[BQ_INDEX] == 0 )
     {
-        if ( inventory[WP_INDEX] == 0 &&
-           inventory[BP_INDEX] == 0 )
+        if ( inventory[WP_INDEX] == 0 && inventory[BP_INDEX] == 0 )
         {
             // Declare it a draw if both sides have knights and/or bishops.
             // If either side has just a king, then see if the other side
@@ -298,9 +297,11 @@ bool ChessBoard::BlackInCheck() const
 }
 
 
-SCORE RawPieceValues[] = 
-{ PAWN_VAL, KNIGHT_VAL, BISHOP_VAL, 
-  ROOK_VAL, QUEEN_VAL,  KING_VAL };
+SCORE RawPieceValues[] =
+{
+    PAWN_VAL, KNIGHT_VAL, BISHOP_VAL,
+    ROOK_VAL, QUEEN_VAL,  KING_VAL
+};
 
 
 PieceLookup::PieceLookup()
@@ -419,7 +420,7 @@ bool ChessBoard::SetOffsetContents ( SQUARE s, int offset, bool force )
             }
 
             board [offset] = s;
-            
+
             return true;
         }
     }
@@ -469,7 +470,8 @@ void ChessBoard::EditCommand ( Move edit )
 void ChessBoard::Update()
 {
     int i;
-    for (i=0; i < PIECE_ARRAY_SIZE; i++) {
+    for (i=0; i < PIECE_ARRAY_SIZE; i++)
+    {
         inventory[i] = 0;
     }
 
@@ -477,41 +479,50 @@ void ChessBoard::Update()
     wmaterial = 0;
     bmaterial = 0;
 
-    for (i=OFFSET(2,2); i <= OFFSET(9,9); i++) {
+    for (i=OFFSET(2,2); i <= OFFSET(9,9); i++)
+    {
         SQUARE s = board[i];
-        if (s & (WHITE_MASK | BLACK_MASK)) {
+        if (s & (WHITE_MASK | BLACK_MASK))
+        {
             ++inventory [ SPIECE_INDEX(s) ];
 
-            switch (s) {
-                case WKING:    wmaterial += KING_VAL;    wk_offset = i;     break;
-                case WQUEEN:   wmaterial += QUEEN_VAL;   break;
-                case WROOK:    wmaterial += ROOK_VAL;    break;
-                case WBISHOP:  wmaterial += BISHOP_VAL;  break;
-                case WKNIGHT:  wmaterial += KNIGHT_VAL;  break;
-                case WPAWN:    wmaterial += PAWN_VAL;    break;
+            switch (s)
+            {
+            case WKING:    wmaterial += KING_VAL;    wk_offset = i;     break;
+            case WQUEEN:   wmaterial += QUEEN_VAL;   break;
+            case WROOK:    wmaterial += ROOK_VAL;    break;
+            case WBISHOP:  wmaterial += BISHOP_VAL;  break;
+            case WKNIGHT:  wmaterial += KNIGHT_VAL;  break;
+            case WPAWN:    wmaterial += PAWN_VAL;    break;
 
-                case BKING:    bmaterial += KING_VAL;    bk_offset = i;     break;
-                case BQUEEN:   bmaterial += QUEEN_VAL;   break;
-                case BROOK:    bmaterial += ROOK_VAL;    break;
-                case BBISHOP:  bmaterial += BISHOP_VAL;  break;
-                case BKNIGHT:  bmaterial += KNIGHT_VAL;  break;
-                case BPAWN:    bmaterial += PAWN_VAL;    break;
+            case BKING:    bmaterial += KING_VAL;    bk_offset = i;     break;
+            case BQUEEN:   bmaterial += QUEEN_VAL;   break;
+            case BROOK:    bmaterial += ROOK_VAL;    break;
+            case BBISHOP:  bmaterial += BISHOP_VAL;  break;
+            case BKNIGHT:  bmaterial += KNIGHT_VAL;  break;
+            case BPAWN:    bmaterial += PAWN_VAL;    break;
 
-                default:
-                    ChessFatal ("ChessBoard::Update():  Corrupt board contents!");
+            default:
+                ChessFatal ("ChessBoard::Update():  Corrupt board contents!");
             }
         }
     }
 
-    if ( IsAttackedByBlack(wk_offset) ) {
+    if ( IsAttackedByBlack(wk_offset) )
+    {
         flags |= SF_WCHECK;
-    } else {
+    }
+    else
+    {
         flags &= ~SF_WCHECK;
     }
 
-    if ( IsAttackedByWhite(bk_offset) ) {
+    if ( IsAttackedByWhite(bk_offset) )
+    {
         flags |= SF_BCHECK;
-    } else {
+    }
+    else
+    {
         flags &= ~SF_BCHECK;
     }
 
@@ -523,23 +534,23 @@ char PieceRepresentation ( SQUARE square )
 {
     switch ( square )
     {
-        case OFFBOARD:     return '*';
+    case OFFBOARD:     return '*';
 
-        case EMPTY:        return '.';
+    case EMPTY:        return '.';
 
-        case WPAWN:        return 'P';
-        case WKNIGHT:      return 'N';
-        case WBISHOP:      return 'B';
-        case WROOK:        return 'R';
-        case WQUEEN:       return 'Q';
-        case WKING:        return 'K';
+    case WPAWN:        return 'P';
+    case WKNIGHT:      return 'N';
+    case WBISHOP:      return 'B';
+    case WROOK:        return 'R';
+    case WQUEEN:       return 'Q';
+    case WKING:        return 'K';
 
-        case BPAWN:        return 'p';
-        case BKNIGHT:      return 'n';
-        case BBISHOP:      return 'b';
-        case BROOK:        return 'r';
-        case BQUEEN:       return 'q';
-        case BKING:        return 'k';
+    case BPAWN:        return 'p';
+    case BKNIGHT:      return 'n';
+    case BBISHOP:      return 'b';
+    case BROOK:        return 'r';
+    case BQUEEN:       return 'q';
+    case BKING:        return 'k';
     }
 
     return '?';
@@ -550,10 +561,10 @@ char PromPieceRepresentation ( int prom_piece_index )
 {
     switch ( prom_piece_index )
     {
-        case N_INDEX:   return 'N';
-        case B_INDEX:   return 'B';
-        case R_INDEX:   return 'R';
-        case Q_INDEX:   return 'Q';
+    case N_INDEX:   return 'N';
+    case B_INDEX:   return 'B';
+    case R_INDEX:   return 'R';
+    case Q_INDEX:   return 'Q';
     }
 
     return '?';
@@ -563,14 +574,15 @@ char PromPieceRepresentation ( int prom_piece_index )
 char GetPieceSymbol (SQUARE piece)
 {
     char pieceSymbol;
-    switch (piece & PIECE_MASK) {
-        case P_INDEX:   pieceSymbol = 'P';  break;
-        case N_INDEX:   pieceSymbol = 'N';  break;
-        case B_INDEX:   pieceSymbol = 'B';  break;
-        case R_INDEX:   pieceSymbol = 'R';  break;
-        case Q_INDEX:   pieceSymbol = 'Q';  break;
-        case K_INDEX:   pieceSymbol = 'K';  break;
-        default:        pieceSymbol = '?';  assert(false);  break;
+    switch (piece & PIECE_MASK)
+    {
+    case P_INDEX:   pieceSymbol = 'P';  break;
+    case N_INDEX:   pieceSymbol = 'N';  break;
+    case B_INDEX:   pieceSymbol = 'B';  break;
+    case R_INDEX:   pieceSymbol = 'R';  break;
+    case Q_INDEX:   pieceSymbol = 'Q';  break;
+    case K_INDEX:   pieceSymbol = 'K';  break;
+    default:        pieceSymbol = '?';  assert(false);  break;
     }
     return pieceSymbol;
 }
@@ -579,10 +591,11 @@ SQUARE GetPhonyWhitePiece (const ChessBoard &board, int ofs)
 {
     // HACK:  We pretend like 'piece' belongs to White, even when it is Black's,
     // because otherwise we can't tell P_INDEX (0) apart from EMPTY (0).
-    
+
     SQUARE piece = board.GetSquareContents(ofs);
     assert (!(piece & OFFBOARD));
-    if (piece != EMPTY) {
+    if (piece != EMPTY)
+    {
         piece = WHITE_IND | UPIECE_INDEX(piece);
     }
     return piece;
@@ -596,7 +609,7 @@ SQUARE GetPhonyWhitePiece (const ChessBoard &board, int ofs)
             return NULL;                 \
         }                                 \
     }
-    
+
 
 char *ChessBoard::GetForsythEdwardsNotation (char *buffer, int buffersize) const
 {
@@ -606,7 +619,8 @@ char *ChessBoard::GetForsythEdwardsNotation (char *buffer, int buffersize) const
     int     piece, ofs, i;
     char    tempstr [32];
 
-    if (buffer == NULL) {
+    if (buffer == NULL)
+    {
         return NULL;
     }
 
@@ -616,99 +630,112 @@ char *ChessBoard::GetForsythEdwardsNotation (char *buffer, int buffersize) const
         http://www.very-best.de/pgn-spec.htm
 
         16.1.4 Piece placement data
-        The first field represents the placement of the pieces on the board. 
-        The board contents are specified starting with the eighth rank and 
-        ending with the first rank. For each rank, the squares are specified 
-        from file a to file h. White pieces are identified by uppercase SAN 
-        piece letters ("PNBRQK") and black pieces are identified by lowercase 
-        SAN piece letters ("pnbrqk"). Empty squares are represented by the 
-        digits one through eight; the digit used represents the count of 
-        contiguous empty squares along a rank. A solidus character "/" 
+        The first field represents the placement of the pieces on the board.
+        The board contents are specified starting with the eighth rank and
+        ending with the first rank. For each rank, the squares are specified
+        from file a to file h. White pieces are identified by uppercase SAN
+        piece letters ("PNBRQK") and black pieces are identified by lowercase
+        SAN piece letters ("pnbrqk"). Empty squares are represented by the
+        digits one through eight; the digit used represents the count of
+        contiguous empty squares along a rank. A solidus character "/"
         is used to separate data of adjacent ranks.
     */
-    
-    for (int rank='8'; rank >= '1'; --rank) {
+
+    for (int rank='8'; rank >= '1'; --rank)
+    {
         int empty_count = 0;
-        for (char file='a'; file <= 'h'; ++file) {
+        for (char file='a'; file <= 'h'; ++file)
+        {
             ofs = OFFSET (file - 'a' + 2, rank - '1' + 2);
             assert (XPART(ofs) - 2 + 'a' == file);
             assert (YPART(ofs) - 2 + '1' == rank);
             piece = GetSquareContents (ofs);
-            if (piece == EMPTY) {
+            if (piece == EMPTY)
+            {
                 ++empty_count;
-            } else {
-                if (empty_count > 0) {
+            }
+            else
+            {
+                if (empty_count > 0)
+                {
                     fencopy (empty_count + '0');
                     empty_count = 0;
                 }
                 fencopy (PieceRepresentation(piece));
             }
         }
-        if (empty_count > 0) {
+        if (empty_count > 0)
+        {
             fencopy (empty_count + '0');
         }
-        if (rank > '1') {
+        if (rank > '1')
+        {
             fencopy ('/');
         }
     }
 
     /*
         16.1.5 Active color
-        The second field represents the active color. 
-        A lower case "w" is used if White is to move; 
+        The second field represents the active color.
+        A lower case "w" is used if White is to move;
         a lower case "b" is used if Black is the active player.
     */
 
     fencopy (' ');
     fencopy (WhiteToMove() ? 'w' : 'b');
     fencopy (' ');
-    
+
     /*
         16.1.6 Castling availability
-        The third field represents castling availability. 
-        This indicates potential future castling that may of may not be 
-        possible at the moment due to blocking pieces or enemy attacks. 
-        If there is no castling availability for either side, the single 
-        character symbol "-" is used. Otherwise, a combination of from 
-        one to four characters are present. If White has kingside castling 
-        availability, the uppercase letter "K" appears. If White has 
-        queenside castling availability, the uppercase letter "Q" appears. 
-        If Black has kingside castling availability, the lowercase letter 
-        "k" appears. If Black has queenside castling availability, 
-        then the lowercase letter "q" appears. Those letters which appear 
-        will be ordered first uppercase before lowercase and second kingside 
+        The third field represents castling availability.
+        This indicates potential future castling that may of may not be
+        possible at the moment due to blocking pieces or enemy attacks.
+        If there is no castling availability for either side, the single
+        character symbol "-" is used. Otherwise, a combination of from
+        one to four characters are present. If White has kingside castling
+        availability, the uppercase letter "K" appears. If White has
+        queenside castling availability, the uppercase letter "Q" appears.
+        If Black has kingside castling availability, the lowercase letter
+        "k" appears. If Black has queenside castling availability,
+        then the lowercase letter "q" appears. Those letters which appear
+        will be ordered first uppercase before lowercase and second kingside
         before queenside. There is no white space between the letters.
     */
     int castling = 0;
-    if (0 == (flags & (SF_WKMOVED | SF_WKRMOVED))) {
+    if (0 == (flags & (SF_WKMOVED | SF_WKRMOVED)))
+    {
         assert (GetSquareContents(OFFSET(6,2)) == WKING);
         assert (GetSquareContents(OFFSET(9,2)) == WROOK);
         fencopy('K');
         ++castling;
     }
 
-    if (0 == (flags & (SF_WKMOVED | SF_WQRMOVED))) {
+    if (0 == (flags & (SF_WKMOVED | SF_WQRMOVED)))
+    {
         assert (GetSquareContents(OFFSET(6,2)) == WKING);
         assert (GetSquareContents(OFFSET(2,2)) == WROOK);
         fencopy('Q');
         ++castling;
     }
 
-    if (0 == (flags & (SF_BKMOVED | SF_BKRMOVED))) {
+    if (0 == (flags & (SF_BKMOVED | SF_BKRMOVED)))
+    {
         assert (GetSquareContents(OFFSET(6,9)) == BKING);
         assert (GetSquareContents(OFFSET(9,9)) == BROOK);
         fencopy('k');
         ++castling;
     }
 
-    if (0 == (flags & (SF_BKMOVED | SF_BQRMOVED))) {
+    if (0 == (flags & (SF_BKMOVED | SF_BQRMOVED)))
+    {
         assert (GetSquareContents(OFFSET(6,9)) == BKING);
         assert (GetSquareContents(OFFSET(2,9)) == BROOK);
         fencopy('q');
         ++castling;
     }
 
-    if (castling == 0) {
+    if (castling == 0)
+    {
         fencopy('-');
     }
 
@@ -716,17 +743,17 @@ char *ChessBoard::GetForsythEdwardsNotation (char *buffer, int buffersize) const
 
     /*
         16.1.7 En passant target square
-        The fourth field is the en passant target square. If there is no en 
-        passant target square then the single character symbol "-" appears. 
-        If there is an en passant target square then is represented by a 
-        lowercase file character immediately followed by a rank digit. 
-        Obviously, the rank digit will be "3" following a white pawn double 
-        advance (Black is the active color) or else be the digit "6" after 
+        The fourth field is the en passant target square. If there is no en
+        passant target square then the single character symbol "-" appears.
+        If there is an en passant target square then is represented by a
+        lowercase file character immediately followed by a rank digit.
+        Obviously, the rank digit will be "3" following a white pawn double
+        advance (Black is the active color) or else be the digit "6" after
         a black pawn double advance (White being the active color).
 
-        An en passant target square is given if and only if the last move 
-        was a pawn advance of two squares. Therefore, an en passant target 
-        square field may have a square name even if there is no pawn of 
+        An en passant target square is given if and only if the last move
+        was a pawn advance of two squares. Therefore, an en passant target
+        square field may have a square name even if there is no pawn of
         the opposing side that may immediately execute the en passant capture.
     */
 
@@ -735,54 +762,59 @@ char *ChessBoard::GetForsythEdwardsNotation (char *buffer, int buffersize) const
     prev_move.actualOffsets (*this, prev_source, prev_dest);
 
     piece = GetSquareContents(prev_dest);
-    if ((piece == WPAWN) || (piece == BPAWN)) {
+    if ((piece == WPAWN) || (piece == BPAWN))
+    {
         int     dir = prev_dest - prev_source;
         char    tfile = XPART(prev_dest) - 2 + 'a';
-        switch (dir) {
-            case 2*NORTH:
-                assert (BlackToMove());
-                assert (piece == WPAWN);
-                assert (YPART(prev_dest)-2+'1' == '4');
-                fencopy(tfile);
-                fencopy('3');   // Hail Dale!
-                found_ep_target = true;
-                break;
+        switch (dir)
+        {
+        case 2*NORTH:
+            assert (BlackToMove());
+            assert (piece == WPAWN);
+            assert (YPART(prev_dest)-2+'1' == '4');
+            fencopy(tfile);
+            fencopy('3');   // Hail Dale!
+            found_ep_target = true;
+            break;
 
-            case 2*SOUTH:
-                assert (WhiteToMove());
-                assert (piece == BPAWN);
-                assert (YPART(prev_dest)-2+'1' == '5');
-                fencopy(tfile);
-                fencopy('6');
-                found_ep_target = true;
-                break;
+        case 2*SOUTH:
+            assert (WhiteToMove());
+            assert (piece == BPAWN);
+            assert (YPART(prev_dest)-2+'1' == '5');
+            fencopy(tfile);
+            fencopy('6');
+            found_ep_target = true;
+            break;
         }
     }
 
-    if (!found_ep_target) {
+    if (!found_ep_target)
+    {
         fencopy('-');
     }
 
     /*
         16.1.8 Halfmove clock
-        The fifth field is a nonnegative integer representing the halfmove clock. 
-        This number is the count of halfmoves (or ply) since the last pawn 
+        The fifth field is a nonnegative integer representing the halfmove clock.
+        This number is the count of halfmoves (or ply) since the last pawn
         advance or capturing move. This value is used for the fifty move draw rule.
     */
     int quietPlies = ply_number - lastCapOrPawn - 1;
     sprintf (tempstr, " %d ", quietPlies);
-    for (i=0; tempstr[i]; ++i) {
+    for (i=0; tempstr[i]; ++i)
+    {
         fencopy (tempstr[i]);
     }
 
     /*
         16.1.9 Fullmove number
-        The sixth and last field is a positive integer that gives the fullmove number. 
-        This will have the value "1" for the first move of a game for both White and Black. 
+        The sixth and last field is a positive integer that gives the fullmove number.
+        This will have the value "1" for the first move of a game for both White and Black.
         It is incremented by one immediately after each move by Black.
     */
     sprintf (tempstr, "%d", (1 + ply_number/2));
-    for (i=0; tempstr[i]; ++i) {
+    for (i=0; tempstr[i]; ++i)
+    {
         fencopy (tempstr[i]);
     }
 
@@ -804,13 +836,13 @@ char *ChessBoard::GetForsythEdwardsNotation (char *buffer, int buffersize) const
 
         rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2
 
-        For two kings on their home squares and a white pawn on e2 
-        (White to move) with thirty eight full moves played with five 
+        For two kings on their home squares and a white pawn on e2
+        (White to move) with thirty eight full moves played with five
         halfmoves since the last pawn move or capture:
 
         4k3/8/8/8/8/8/4P3/4K3 w - - 5 39
     */
-    
+
     fencopy('\0');      // must null-terminate the string!
     return buffer;
 }
@@ -822,29 +854,33 @@ char *ChessBoard::GetForsythEdwardsNotation (char *buffer, int buffersize) const
 static SQUARE PieceFromFenChar (char fenchar, int &count)
 {
     count = 1;      // assume a single piece, unless proven otherwise
-    
-    switch (fenchar) {
-        case 'P':   return WPAWN;
-        case 'N':   return WKNIGHT;
-        case 'B':   return WBISHOP;
-        case 'R':   return WROOK;
-        case 'Q':   return WQUEEN;
-        case 'K':   return WKING;
 
-        case 'p':   return BPAWN;
-        case 'n':   return BKNIGHT;
-        case 'b':   return BBISHOP;
-        case 'r':   return BROOK;
-        case 'q':   return BQUEEN;
-        case 'k':   return BKING;
-        
-        default:
-            if (fenchar >= '1' && fenchar <= '8') {
-                count = fenchar - '0';
-            } else {
-                count = 0;  // indicate an invalid character!
-            }
-            return EMPTY;
+    switch (fenchar)
+    {
+    case 'P':   return WPAWN;
+    case 'N':   return WKNIGHT;
+    case 'B':   return WBISHOP;
+    case 'R':   return WROOK;
+    case 'Q':   return WQUEEN;
+    case 'K':   return WKING;
+
+    case 'p':   return BPAWN;
+    case 'n':   return BKNIGHT;
+    case 'b':   return BBISHOP;
+    case 'r':   return BROOK;
+    case 'q':   return BQUEEN;
+    case 'k':   return BKING;
+
+    default:
+        if (fenchar >= '1' && fenchar <= '8')
+        {
+            count = fenchar - '0';
+        }
+        else
+        {
+            count = 0;  // indicate an invalid character!
+        }
+        return EMPTY;
     }
 }
 
@@ -854,12 +890,14 @@ bool ChessBoard::SetForsythEdwardsNotation (const char *fen)
     // Create a temporary ChessBoard, in which we try to build from given FEN.
     // If we fail for any reason, we discard the temporary chess board and return false.
     // If we succeed, we copy from the temporary chess board to this chess board and return true.
-    
-    if (fen == NULL) {
+
+    if (fen == NULL)
+    {
         return false;   // invalid parameter!
     }
 
-    while (*fen && isspace(*fen)) {     // skip any leading white space characters
+    while (*fen && isspace(*fen))       // skip any leading white space characters
+    {
         ++fen;
     }
 
@@ -869,121 +907,152 @@ bool ChessBoard::SetForsythEdwardsNotation (const char *fen)
     int y;
     int count;
     SQUARE square;
-    
+
     ChessBoard temp;
-    
+
     // Empty out the entire temp board's contents...
-    
+
     // After 1. e4 c5 2. Nf3
     // "rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2"
-    for (y=9; y >= 2; --y) {
+    for (y=9; y >= 2; --y)
+    {
         x = 2;
-        while (x <= 9) {
+        while (x <= 9)
+        {
             square = PieceFromFenChar (fen[i++], count);
-            if (count == 0) {
+            if (count == 0)
+            {
                 return false;   // PieceFromFenChar detected an invalid character in the row.
-            } else {
-                while (count > 0) {
-                    if (x > 9) {
+            }
+            else
+            {
+                while (count > 0)
+                {
+                    if (x > 9)
+                    {
                         return false;   // Too many pieces in this row!
                     }
                     temp.board[OFFSET(x,y)] = square;
                     --count;
                     ++x;
                 }
-            }            
+            }
         }
-        
+
         // We should be exactly at the end of this rank...
-        if (y > 2) {
-            if (fen[i++] != '/') {
+        if (y > 2)
+        {
+            if (fen[i++] != '/')
+            {
                 return false;   // syntax error in fen: wrong separator between ranks
             }
-        } else {
-            if (fen[i++] != ' ') {
+        }
+        else
+        {
+            if (fen[i++] != ' ')
+            {
                 return false;   // syntax error in fen: expected space to terminate the board contents
             }
         }
     }
-    
+
     // Expect either 'w' or 'b' to indicate whose turn it is...
-    switch (fen[i++]) {
-        case 'w':
-            temp.white_to_move = true;
-            break;
-            
-        case 'b':
-            temp.white_to_move = false;
-            break;
-            
-        default:
-            return false;   // invalid indicator of whose turn it is!
+    switch (fen[i++])
+    {
+    case 'w':
+        temp.white_to_move = true;
+        break;
+
+    case 'b':
+        temp.white_to_move = false;
+        break;
+
+    default:
+        return false;   // invalid indicator of whose turn it is!
     }
-    
-    if (fen[i++] != ' ') {
+
+    if (fen[i++] != ' ')
+    {
         return false;   // must be a space after move indicator
     }
-    
+
     // Look at castling availability flags: either '-' or one or more of 'KQkq' in that order.
     // Assume all kings and rooks have moved unless proven otherwise by castling availability flags...
     temp.flags = SF_WKMOVED | SF_WKRMOVED | SF_WQRMOVED | SF_BKMOVED | SF_BKRMOVED | SF_BQRMOVED;
     count = 0;
-    if (fen[i] == 'K') {    // is caller claiming White O-O still possible?
+    if (fen[i] == 'K')      // is caller claiming White O-O still possible?
+    {
         ++i;
         ++count;
-        if (temp.board[OFFSET(6,2)] != WKING || temp.board[OFFSET(9,2)] != WROOK) {
+        if (temp.board[OFFSET(6,2)] != WKING || temp.board[OFFSET(9,2)] != WROOK)
+        {
             return false;   // king and kingside rook must be in original position to still do O-O
         }
         temp.flags &= ~(SF_WKMOVED | SF_WKRMOVED);  // turn off kingside castling disable flags for White
     }
-    if (fen[i] == 'Q') {    // is caller claiming White O-O-O still possible?
+    if (fen[i] == 'Q')      // is caller claiming White O-O-O still possible?
+    {
         ++i;
         ++count;
-        if (temp.board[OFFSET(6,2)] != WKING || temp.board[OFFSET(2,2)] != WROOK) {
+        if (temp.board[OFFSET(6,2)] != WKING || temp.board[OFFSET(2,2)] != WROOK)
+        {
             return false;   // king and queenside rook must be in original position to still do O-O-O
         }
         temp.flags &= ~(SF_WKMOVED | SF_WQRMOVED);  // turn off queenside castling disable flags for White
     }
-    if (fen[i] == 'k') {    // is caller claiming Black O-O still possible?
+    if (fen[i] == 'k')      // is caller claiming Black O-O still possible?
+    {
         ++i;
         ++count;
-        if (temp.board[OFFSET(6,9)] != BKING || temp.board[OFFSET(9,9)] != BROOK) {
+        if (temp.board[OFFSET(6,9)] != BKING || temp.board[OFFSET(9,9)] != BROOK)
+        {
             return false;   // king and kingside rook must be in original position to still do O-O
         }
         temp.flags &= ~(SF_BKMOVED | SF_BKRMOVED);  // turn off kingside castling disable flags for Black
     }
-    if (fen[i] == 'q') {    // is caller claiming Black O-O-O still possible?
+    if (fen[i] == 'q')      // is caller claiming Black O-O-O still possible?
+    {
         ++i;
         ++count;
-        if (temp.board[OFFSET(6,9)] != BKING || temp.board[OFFSET(2,9)] != BROOK) {
+        if (temp.board[OFFSET(6,9)] != BKING || temp.board[OFFSET(2,9)] != BROOK)
+        {
             return false;   // king and queenside rook must be in original position to still do O-O-O
         }
         temp.flags &= ~(SF_BKMOVED | SF_BQRMOVED);  // turn off queenside castling disable flags for Black
     }
-    if (count == 0) {   // if this is the case, it means we did not see 'K', 'Q', 'k', or 'q' for castling flags
-        if (fen[i++] != '-') {
+    if (count == 0)     // if this is the case, it means we did not see 'K', 'Q', 'k', or 'q' for castling flags
+    {
+        if (fen[i++] != '-')
+        {
             return false;   // If K, Q, k, q not present, only choice left is '-'.
         }
     }
-    if (fen[i++] != ' ') {
+    if (fen[i++] != ' ')
+    {
         return false;   // must be exactly one space after castling availability
     }
 
     // Look for en passant target indication of previous move, using it to set temp.prev_move accordingly.
     temp.prev_move.score = 0;
-    if (fen[i] == '-') {
+    if (fen[i] == '-')
+    {
         ++i;    // no en passant target
         temp.prev_move.dest = SPECIAL_MOVE_NULL;    // we have no idea what the previous move was, if any.
         temp.prev_move.source = 0;
-    } else {
+    }
+    else
+    {
         x = fen[i++] - 'a' + 2;
-        if (x < 2 || x > 9) {
+        if (x < 2 || x > 9)
+        {
             return false;   // invalid file
         }
         y = fen[i++] - '1' + 2;
-        if (temp.white_to_move) {
+        if (temp.white_to_move)
+        {
             // Black just moved, so e.p. target rank must be 7 (in the 2..9 range Chenard uses for ranks)
-            if (y != 7) {
+            if (y != 7)
+            {
                 return false;   // invalid e.p. target rank
             }
             // Construct the distinct previous move Black made that would yield this e.p. target.
@@ -991,47 +1060,54 @@ bool ChessBoard::SetForsythEdwardsNotation (const char *fen)
             temp.prev_move.dest   = OFFSET(x,6);
             if (temp.board[temp.prev_move.source] != EMPTY || 
                 temp.board[OFFSET(x,7)] != EMPTY || 
-                temp.board[temp.prev_move.dest] != BPAWN) {
+                temp.board[temp.prev_move.dest] != BPAWN) 
+            {
                 return false;   // the board is not consistent with the inferred previous move
             }
-        } else {
+        }
+        else
+        {
             // White just moved, so e.p. target rank must be 7 (in the 2..9 range Chenard uses for ranks)
-            if (y != 4) {
+            if (y != 4)
+            {
                 return false;   // invalid e.p. target rank
             }
             // Construct the distinct previous move White made that would yield this e.p. target.
             temp.prev_move.source = OFFSET(x,3);
             temp.prev_move.dest   = OFFSET(x,5);
-            if (temp.board[temp.prev_move.source] != EMPTY || 
-                temp.board[OFFSET(x,4)] != EMPTY || 
-                temp.board[temp.prev_move.dest] != WPAWN) {
+            if (temp.board[temp.prev_move.source] != EMPTY ||
+                temp.board[OFFSET(x,4)] != EMPTY ||
+                temp.board[temp.prev_move.dest] != WPAWN)
+            {
                 return false;   // the board is not consistent with the inferred previous move
             }
         }
     }
-    
+
     // Look for the halfmove clock: how many plies have gone by since the last pawn advance or capture.
     int quietPlies     = 0;        // a.k.a. half-move clock
     int fullMoveNumber = 0;
-    if (2 != sscanf(&fen[i], " %d %d", &quietPlies, &fullMoveNumber)) {
+    if (2 != sscanf(&fen[i], " %d %d", &quietPlies, &fullMoveNumber))
+    {
         return false;   // missing the numeric indicators at the end
     }
 
     // We can't really do anything with calculating ply_number from fullMoveNumber, because
     // doing so would mess up places we use it as an array index.
-    
+
     // A little algebra:  quietPlies = ply_number - lastCapOrPawn - 1, so...
-    temp.lastCapOrPawn = temp.ply_number - quietPlies - 1;      // it's perfectly OK if this is negative    
-    
+    temp.lastCapOrPawn = temp.ply_number - quietPlies - 1;      // it's perfectly OK if this is negative
+
     temp.Update();                            // needed to tally inventory and calculate hash values, etc.
 
     ReplaceString (temp.initialFen, fen);     // this serves the side effect of remembering that the board has been edited.
-    
-    if (temp.PositionIsPossible()) {
+
+    if (temp.PositionIsPossible())
+    {
         success = true;
         *this = temp;
-    }    
-    
+    }
+
     return success;
 }
 
@@ -1055,7 +1131,7 @@ void FormatChessMove (
 
 
 // Must be called before move is made on the given board!!!
-void FormatChessMove ( 
+void FormatChessMove (
     const ChessBoard &board,
     const MoveList   &LegalMoves,
     Move              move,
@@ -1085,47 +1161,60 @@ void FormatChessMove (
     SQUARE piece = GetPhonyWhitePiece (board, source);    // WP_INDEX .. WK_INDEX
     char pieceSymbol = GetPieceSymbol (piece);
 
-    if ((piece == WK_INDEX) && (dir == 2*EAST)) {
+    if ((piece == WK_INDEX) && (dir == 2*EAST))
+    {
         strcpy (movestr, "O-O");
         length = (int) strlen(movestr);
-    } else if ((piece == WK_INDEX) && (dir == 2*WEST)) {
+    }
+    else if ((piece == WK_INDEX) && (dir == 2*WEST))
+    {
         strcpy (movestr, "O-O-O");
         length = (int) strlen(movestr);
-    } else {
+    }
+    else
+    {
         // This move is not castling.
         SQUARE capture = GetPhonyWhitePiece (board, dest);
-        if ((piece == WP_INDEX) && (file1 != file2) && (capture == EMPTY)) {
+        if ((piece == WP_INDEX) && (file1 != file2) && (capture == EMPTY))
+        {
             // Weirdness alert:  adjust for en passant capture...
             capture = WP_INDEX;
         }
 
-        if (piece == WP_INDEX) {
+        if (piece == WP_INDEX)
+        {
             // We need to know whether this is pawn promotion for 2 reasons:
             // (1) So we can filter out the 4 pawn promotions for N,B,R,Q as not being ambiguous.
             // (2) So we can put "=Q", "=R", ... in the move notation.
-            if ((rank2 == '1') || (rank2 == '8')) {
+            if ((rank2 == '1') || (rank2 == '8'))
+            {
                 // This is pawn promotion, so figure out which piece is being promoted to.
-                switch (move.dest & 0xf0) {
-                    case SPECIAL_MOVE_PROMOTE_NORM:
-                    case SPECIAL_MOVE_PROMOTE_CAP_EAST:
-                    case SPECIAL_MOVE_PROMOTE_CAP_WEST:
-                        promotion = move.dest & PIECE_MASK;
-                        break;
+                switch (move.dest & 0xf0)
+                {
+                case SPECIAL_MOVE_PROMOTE_NORM:
+                case SPECIAL_MOVE_PROMOTE_CAP_EAST:
+                case SPECIAL_MOVE_PROMOTE_CAP_WEST:
+                    promotion = move.dest & PIECE_MASK;
+                    break;
 
-                    default:
-                        assert (false);
-                        promotion = WP_INDEX;    // pick an impossible piece to promote to!
-                        break;
+                default:
+                    assert (false);
+                    promotion = WP_INDEX;    // pick an impossible piece to promote to!
+                    break;
                 }
-            } else {
+            }
+            else
+            {
                 // This is a pawn move, but we know for sure this is NOT pawn promotion.
                 // Leave promotion == EMPTY.
             }
-        } else {
+        }
+        else
+        {
             // we know for sure this is NOT pawn promotion; it is not even a pawn move.
             // Leave promotion == EMPTY.
         }
-        
+
         // Central to PGN is the concept of "ambiguous" notation.
         // We want to figure out the minimum number of characters needed
         // to unambiguously encode the chess move.
@@ -1133,27 +1222,33 @@ void FormatChessMove (
 
         // Compact the list so that only moves with the same destination and moved piece are listed.
         // Include only pawn promotions to the same promoted piece.
-        for (i=k=0; i < movelist.num; ++i) {
+        for (i=k=0; i < movelist.num; ++i)
+        {
             movelist.m[i].actualOffsets (board, msource, mdest);
-            if (mdest == dest) {
+            if (mdest == dest)
+            {
                 mpiece = GetPhonyWhitePiece (board, msource);
-                if (mpiece == piece) {
+                if (mpiece == piece)
+                {
                     // Filter out identical pawn (source,dest) that have different promotions.
                     // We don't need to disambiguate those because the "=" notation will do that later.
-                    switch (movelist.m[i].dest & 0xf0) {
-                        case SPECIAL_MOVE_PROMOTE_NORM:
-                        case SPECIAL_MOVE_PROMOTE_CAP_EAST:
-                        case SPECIAL_MOVE_PROMOTE_CAP_WEST:
-                            mprom = movelist.m[i].dest & PIECE_MASK;
-                            break;
+                    switch (movelist.m[i].dest & 0xf0)
+                    {
+                    case SPECIAL_MOVE_PROMOTE_NORM:
+                    case SPECIAL_MOVE_PROMOTE_CAP_EAST:
+                    case SPECIAL_MOVE_PROMOTE_CAP_WEST:
+                        mprom = movelist.m[i].dest & PIECE_MASK;
+                        break;
 
-                        default:
-                            mprom = EMPTY;
-                            break;
+                    default:
+                        mprom = EMPTY;
+                        break;
                     }
 
-                    if ((promotion == EMPTY) || (promotion == mprom)) {
-                        if (k < i) {
+                    if ((promotion == EMPTY) || (promotion == mprom))
+                    {
+                        if (k < i)
+                        {
                             movelist.m[k] = movelist.m[i];
                         }
                         ++k;
@@ -1168,35 +1263,39 @@ void FormatChessMove (
         bool need_source_file = false;
         bool need_source_rank = false;
 
-        if (movelist.num > 1) {
+        if (movelist.num > 1)
+        {
             /*
                 [The following is quoted from http://www.very-best.de/pgn-spec.htm, section 8.2.3.]
 
-                In the case of ambiguities (multiple pieces of the same type moving to the same square), 
+                In the case of ambiguities (multiple pieces of the same type moving to the same square),
                 the first appropriate disambiguating step of the three following steps is taken:
 
-                First, if the moving pieces can be distinguished by their originating files, 
-                the originating file letter of the moving piece is inserted immediately after 
+                First, if the moving pieces can be distinguished by their originating files,
+                the originating file letter of the moving piece is inserted immediately after
                 the moving piece letter.
 
-                Second (when the first step fails), if the moving pieces can be distinguished by 
-                their originating ranks, the originating rank digit of the moving piece is inserted 
+                Second (when the first step fails), if the moving pieces can be distinguished by
+                their originating ranks, the originating rank digit of the moving piece is inserted
                 immediately after the moving piece letter.
 
-                Third (when both the first and the second steps fail), the two character square 
-                coordinate of the originating square of the moving piece is inserted immediately 
-                after the moving piece letter.                     
+                Third (when both the first and the second steps fail), the two character square
+                coordinate of the originating square of the moving piece is inserted immediately
+                after the moving piece letter.
             */
 
             // Check for distinct files and ranks for other moves that end up at 'dest'.
             int file_count = 0;
             int rank_count = 0;
-            for (i=0; i < movelist.num; ++i) {
+            for (i=0; i < movelist.num; ++i)
+            {
                 movelist.m[i].actualOffsets (board, msource, mdest);
-                if ((XPART(msource) - 2 + 'a') == file1) {
+                if ((XPART(msource) - 2 + 'a') == file1)
+                {
                     ++file_count;
                 }
-                if (YPART(msource) - 2 + '1' == rank1) {
+                if (YPART(msource) - 2 + '1' == rank1)
+                {
                     ++rank_count;
                 }
             }
@@ -1204,49 +1303,65 @@ void FormatChessMove (
             assert (rank_count > 0);
             assert (file_count > 0);
 
-            if (file_count == 1) {
+            if (file_count == 1)
+            {
                 need_source_file = true;
-            } else {
+            }
+            else
+            {
                 need_source_rank = true;
-                if (rank_count > 1) {
+                if (rank_count > 1)
+                {
                     need_source_file = true;
                 }
             }
         }
 
-        if (piece == WP_INDEX) {
-            if (capture != EMPTY) {     // NOTE:  capture was set to PAWN above if this move is en passant.
+        if (piece == WP_INDEX)
+        {
+            if (capture != EMPTY)       // NOTE:  capture was set to PAWN above if this move is en passant.
+            {
                 need_source_file = true;
             }
-        } else {
+        }
+        else
+        {
             movestr[length++] = pieceSymbol;
         }
 
-        if (need_source_file) {
+        if (need_source_file)
+        {
             movestr[length++] = file1;
         }
 
-        if (need_source_rank) {
+        if (need_source_rank)
+        {
             movestr[length++] = rank1;
         }
 
-        if (capture != EMPTY) {
+        if (capture != EMPTY)
+        {
             movestr[length++] = 'x';
         }
 
         movestr[length++] = file2;
         movestr[length++] = rank2;
 
-        if (promotion != EMPTY) {
+        if (promotion != EMPTY)
+        {
             movestr[length++] = '=';
             movestr[length++] = GetPieceSymbol(promotion);
         }
     }
 
-    if (check) {
-        if (immobile) {
+    if (check)
+    {
+        if (immobile)
+        {
             movestr[length++] = '#';
-        } else {
+        }
+        else
+        {
             movestr[length++] = '+';
         }
     }
@@ -1320,9 +1435,12 @@ void ChessBoard::SaveSpecialMove ( Move special )
     initialPlyNumber = ++ply_number;        // Remember the spot right after the last pseudo-move was saved
 
     char fen [200];
-    if (GetForsythEdwardsNotation (fen, sizeof(fen))) {
+    if (GetForsythEdwardsNotation (fen, sizeof(fen)))
+    {
         ReplaceString (initialFen, fen);
-    } else {
+    }
+    else
+    {
         ChessFatal ("ChessBoard::SaveSpecialMove: Unable to save initial FEN");
     }
 }
@@ -1330,7 +1448,7 @@ void ChessBoard::SaveSpecialMove ( Move special )
 
 bool ChessBoard::operator== ( const ChessBoard &other ) const
 {
-    // The vast majority of the time, comparing the hash values will 
+    // The vast majority of the time, comparing the hash values will
     // determine whether the boards are unequal...
 
     if ( cachedHash != other.cachedHash )
@@ -1371,35 +1489,41 @@ bool ChessBoard::PositionIsPossible() const
 {
     bool possible = true;
     int x;
-    
+
     // Caller must ensure that ChessBoard::Update() was called if the internals of the ChessBoard
     // were monkeyed with, or the inventory[] will be out of date.
     // This is an inherent requirement of all ChessBoard internal methods.
     // It should not be possible for an outside user of class ChessBoard to avoid Update being called.
-    
-    if (inventory[WK_INDEX] == 1 && inventory[BK_INDEX] == 1) {
+
+    if (inventory[WK_INDEX] == 1 && inventory[BK_INDEX] == 1)
+    {
         // Make sure there are no pawns on the first or eighth ranks...
-        for (x=2; x <= 9; ++x) {
-            if (board[OFFSET(x,2)] & (WP_MASK | BP_MASK)) {
+        for (x=2; x <= 9; ++x)
+        {
+            if (board[OFFSET(x,2)] & (WP_MASK | BP_MASK))
+            {
                 return false;
             }
-            
-            if (board[OFFSET(x,9)] & (WP_MASK | BP_MASK)) {
+
+            if (board[OFFSET(x,9)] & (WP_MASK | BP_MASK))
+            {
                 return false;
             }
         }
-        
+
         int numberOfWhitePieces = inventory[WK_INDEX];
         numberOfWhitePieces    += inventory[WQ_INDEX];
         numberOfWhitePieces    += inventory[WR_INDEX];
         numberOfWhitePieces    += inventory[WB_INDEX];
         numberOfWhitePieces    += inventory[WN_INDEX];
         numberOfWhitePieces    += inventory[WP_INDEX];
-        if (numberOfWhitePieces > 16) {
+        if (numberOfWhitePieces > 16)
+        {
             return false;   // White cannot have more pieces on the board than he started with!
         }
-        
-        if (inventory[WQ_INDEX] > 9 || inventory[WR_INDEX] > 10 || inventory[WB_INDEX] > 10 || inventory[WN_INDEX] > 10) {
+
+        if (inventory[WQ_INDEX] > 9 || inventory[WR_INDEX] > 10 || inventory[WB_INDEX] > 10 || inventory[WN_INDEX] > 10)
+        {
             return false;   // White cannot promote more than 8 pawns
         }
 
@@ -1409,29 +1533,38 @@ bool ChessBoard::PositionIsPossible() const
         numberOfBlackPieces    += inventory[BB_INDEX];
         numberOfBlackPieces    += inventory[BN_INDEX];
         numberOfBlackPieces    += inventory[BP_INDEX];
-        if (numberOfBlackPieces > 16) {
+        if (numberOfBlackPieces > 16)
+        {
             return false;   // Black cannot have more pieces on the board than he started with!
         }
 
-        if (inventory[BQ_INDEX] > 9 || inventory[BR_INDEX] > 10 || inventory[BB_INDEX] > 10 || inventory[BN_INDEX] > 10) {
+        if (inventory[BQ_INDEX] > 9 || inventory[BR_INDEX] > 10 || inventory[BB_INDEX] > 10 || inventory[BN_INDEX] > 10)
+        {
             return false;   // Black cannot promote more than 8 pawns
         }
 
-        if (white_to_move) {
+        if (white_to_move)
+        {
             // Make sure Black is not in check.  Otherwise, how can it be White's turn?
-            if (IsAttackedByWhite (bk_offset)) {
-                possible = false;
-            }
-        } else {
-            // Make sure White is not in check.  Otherwise, how can it be Black's turn?
-            if (IsAttackedByBlack (wk_offset)) {
+            if (IsAttackedByWhite (bk_offset))
+            {
                 possible = false;
             }
         }
-    } else {
+        else
+        {
+            // Make sure White is not in check.  Otherwise, how can it be Black's turn?
+            if (IsAttackedByBlack (wk_offset))
+            {
+                possible = false;
+            }
+        }
+    }
+    else
+    {
         possible = false;   // wrong number of kings!!!
     }
-    
+
     return possible;
 }
 
@@ -1444,11 +1577,14 @@ bool ChessBoard::ScanMove (const char *pgn, Move &move)
 
     move.source = move.dest = 0;
 
-    if (pgn != NULL) {
+    if (pgn != NULL)
+    {
         GenMoves (ml);
-        for (i=0; i < ml.num; ++i) {
+        for (i=0; i < ml.num; ++i)
+        {
             FormatChessMove (*this, ml, ml.m[i], movestr);
-            if (0 == strcmp(movestr,pgn)) {
+            if (0 == strcmp(movestr,pgn))
+            {
                 move = ml.m[i];
                 return true;
             }
@@ -1456,18 +1592,24 @@ bool ChessBoard::ScanMove (const char *pgn, Move &move)
 
         // OK, we did not find an exact match, so we have to fall back on best guess...
         int match = -1;
-        for (i=0; i < ml.num; ++i) {
-            if (pgnCloseMatch (pgn, ml.m[i])) {
-                if (match >= 0) {
+        for (i=0; i < ml.num; ++i)
+        {
+            if (pgnCloseMatch (pgn, ml.m[i]))
+            {
+                if (match >= 0)
+                {
                     // ambiguous... we already found something that matched!
                     return false;
-                } else {
+                }
+                else
+                {
                     match = i;
                 }
             }
         }
 
-        if (match >= 0) {
+        if (match >= 0)
+        {
             move = ml.m[match];
             return true;
         }
@@ -1479,37 +1621,39 @@ bool ChessBoard::ScanMove (const char *pgn, Move &move)
 
 SQUARE ConvertPieceToWhite (SQUARE piece)
 {
-    switch (piece) {
-        case BPAWN:     return WPAWN;
-        case BKNIGHT:   return WKNIGHT;
-        case BBISHOP:   return WBISHOP;
-        case BROOK:     return WROOK;
-        case BQUEEN:    return WQUEEN;
-        case BKING:     return WKING;
-        default:        return piece;
+    switch (piece)
+    {
+    case BPAWN:     return WPAWN;
+    case BKNIGHT:   return WKNIGHT;
+    case BBISHOP:   return WBISHOP;
+    case BROOK:     return WROOK;
+    case BQUEEN:    return WQUEEN;
+    case BKING:     return WKING;
+    default:        return piece;
     }
 }
 
 
 SQUARE ConvertCharToWhitePiece (char c)
 {
-    switch (c) {
-        case 'N':   return WKNIGHT;
-        case 'B':   return WBISHOP;
-        case 'R':   return WROOK;
-        case 'Q':   return WQUEEN;
-        case 'K':   return WKING;
+    switch (c)
+    {
+    case 'N':   return WKNIGHT;
+    case 'B':   return WBISHOP;
+    case 'R':   return WROOK;
+    case 'Q':   return WQUEEN;
+    case 'K':   return WKING;
 
-        case 'a':
-        case 'b':
-        case 'c':
-        case 'd':
-        case 'e':
-        case 'f':
-        case 'g':
-        case 'h':   return WPAWN;
+    case 'a':
+    case 'b':
+    case 'c':
+    case 'd':
+    case 'e':
+    case 'f':
+    case 'g':
+    case 'h':   return WPAWN;
 
-        default:    return EMPTY;
+    default:    return EMPTY;
     }
 }
 
@@ -1523,64 +1667,90 @@ bool ChessBoard::pgnCloseMatch (const char *pgn, Move move) const
     SQUARE piece = ConvertPieceToWhite (GetSquareContents(msource));
 
     int length = (int) strlen(pgn);
-    if ((pgn[length-1] == '+') || (pgn[length-1] == '#')) {
+    if ((pgn[length-1] == '+') || (pgn[length-1] == '#'))
+    {
         --length;
     }
 
     const char *prom = strchr (pgn, '=');
-    if (prom) {
-        if (strchr("QRBN",prom[1])) {
+    if (prom)
+    {
+        if (strchr("QRBN",prom[1]))
+        {
             length = (int) (prom - pgn);
-            if (piece == WPAWN) {
+            if (piece == WPAWN)
+            {
                 // ok so far
-            } else {
+            }
+            else
+            {
                 // promotion does not match non-pawn move
                 return false;
             }
-        } else {
+        }
+        else
+        {
             // illegal promotion format
             return false;
         }
     }
 
-    if (length >= 2) {
+    if (length >= 2)
+    {
         char    file2 = pgn[length-2];
         char    rank2 = pgn[length-1];
-        if ((file2 >= 'a') && (file2 <= 'h')) {
-            if ((rank2 >= '1') && (rank2 <= '8')) {
+        if ((file2 >= 'a') && (file2 <= 'h'))
+        {
+            if ((rank2 >= '1') && (rank2 <= '8'))
+            {
                 int dest = OFFSET(file2-'a'+2, rank2-'1'+2);
-                if (dest == mdest) {
+                if (dest == mdest)
+                {
                     length -= 2;    // chop off destination characters
 
                     SQUARE capture = ConvertPieceToWhite (GetSquareContents (dest));
-                    if ((piece == WPAWN) && (XPART(msource) != XPART(mdest)) && (capture == EMPTY)) {
+                    if ((piece == WPAWN) && (XPART(msource) != XPART(mdest)) && (capture == EMPTY))
+                    {
                         // fake it for en passant
                         capture = WPAWN;
                     }
                     const char *capx = strchr(pgn,'x');
-                    if (capx ? (capture != EMPTY) : (capture == EMPTY)) {
+                    if (capx ? (capture != EMPTY) : (capture == EMPTY))
+                    {
                         SQUARE pgnpiece = ConvertCharToWhitePiece (pgn[0]);
-                        if (pgnpiece == piece) {
-                            if (capx) {
+                        if (pgnpiece == piece)
+                        {
+                            if (capx)
+                            {
                                 length = (int) (capx - pgn);    // truncate at capture symbol 'x'
                             }
 
-                            if (length > 1) {
+                            if (length > 1)
+                            {
                                 // There must be at least one disambiguating character
-                                if ((pgn[1] >= 'a') && (pgn[1] <= 'h')) {
-                                    if (length > 2) {
-                                        if ((pgn[2] >= '1') && (pgn[2] <= '8')) {
+                                if ((pgn[1] >= 'a') && (pgn[1] <= 'h'))
+                                {
+                                    if (length > 2)
+                                    {
+                                        if ((pgn[2] >= '1') && (pgn[2] <= '8'))
+                                        {
                                             int source = OFFSET(pgn[1]-'a'+2, pgn[2]-'1'+2);
                                             return msource == source;
-                                        } else {
+                                        }
+                                        else
+                                        {
                                             return false;
                                         }
                                     }
                                     return XPART(msource)-2+'a' == pgn[1];
-                                } else if ((pgn[1] >= '1') && (pgn[1] <= '8')) {
+                                }
+                                else if ((pgn[1] >= '1') && (pgn[1] <= '8'))
+                                {
                                     return YPART(msource)-2+'1' == pgn[1];
                                 }
-                            } else {
+                            }
+                            else
+                            {
                                 return true;    // unambiguous and compatible
                             }
                         }
@@ -1596,14 +1766,15 @@ bool ChessBoard::pgnCloseMatch (const char *pgn, Move move) const
 
 const char *GetPgnFileStateString (PGN_FILE_STATE state)
 {
-    switch (state) {
-        case PGN_FILE_STATE_UNDEFINED:          return "undefined";
-        case PGN_FILE_STATE_NEWGAME:            return "new game";
-        case PGN_FILE_STATE_SAMEGAME:           return "same game";
-        case PGN_FILE_STATE_EOF:                return "unexpected end of file";
-        case PGN_FILE_STATE_SYNTAX_ERROR:       return "syntax error";
-        case PGN_FILE_STATE_INVALID_PARAMETER:  return "invalid parameter";
-        default:                                return "unknown state";
+    switch (state)
+    {
+    case PGN_FILE_STATE_UNDEFINED:          return "undefined";
+    case PGN_FILE_STATE_NEWGAME:            return "new game";
+    case PGN_FILE_STATE_SAMEGAME:           return "same game";
+    case PGN_FILE_STATE_EOF:                return "unexpected end of file";
+    case PGN_FILE_STATE_SYNTAX_ERROR:       return "syntax error";
+    case PGN_FILE_STATE_INVALID_PARAMETER:  return "invalid parameter";
+    default:                                return "unknown state";
     }
 }
 
@@ -1893,85 +2064,85 @@ bool PackedChessBoard::operator== ( const PackedChessBoard &other ) const
     have generated the string I thought.  Replaced question marks with pound signs.
 
          Revision history:
-    
+
     1993 July 14 [Don Cross]
          Fixed a bug in FormatChessMove().  It was using 'dest'
          expecting it to contain a pawn promotion piece in a situation
          after it had assigned the destination offset of the promotion
          to 'dest'.
-    
+
     1993 August 30 [Don Cross]
          Changing pointers to references in the interfaces where
          appropriate.
-    
+
     1993 October 19 [Don Cross]
          Adding ChessBoard::IsDefiniteDraw()
-    
+
     1993 October 27 [Don Cross]
          Adding ChessBoard::GetPastMove() and
          ChessBoard::GetCurrentPlyNumber().
-    
+
     1993 December 31 [Don Cross]
          Making the following changes to FormatChessMove:
          (1) If non-pawn is being moved, include piece name in source.
          (2) If capture of non-pawn, include piece name in dest.
-    
+
     1994 January 30 [Don Cross]
          Added ChessBoard::ClearEverythingButKings().
          Added ChessBoard::EditCommand(Move).
-    
+
     1994 March 1 [Don Cross]
          Added hash function and code to help find repeated board positions.
-    
+
     1995 December 25 [Don Cross]
          Fixed a bug: ChessBoard needed copy constructor and
          assignment operator.
-    
+
     1997 January 25 [Don Cross]
          A user reported to me that it really is possible to force a
          checkmate with B+N+K versus a lone K.  Therefore, I have
          modified ChessBoard::IsDefiniteDraw to reflect this.
-    
+
     1999 January 19 [Don Cross]
          Updated coding style.
-    
+
     1999 January 25 [Don Cross]
          Bit the bullet and finally added ChessBoard::IsDrawByRepetition()
          function, so that when repeatHash[] array determines there is a
          draw by repetition, this function is called to verify it for sure.
          This should eliminate false draw-by-repetition rulings once and
          for all.
-    
+
     1999 January 28 [Don Cross]
          Fixed a bug in ChessBoard::IsDrawByRepetition().
          Was unnecessarily checking that the same side was to move
          (ChessBoard::operator== does this anyway), plus I was doing
          it wrong to boot.
-    
+
     1999 February 5 [Don Cross]
          Changing IsDrawByRepetition() to NumberOfRepetitions(),
          so that IsDefiniteDraw() can optionally pass back the
          repetition count to its caller.  This way, I hope to prevent
          the transposition table code from messing up detecting
          forced draws by repetition.
-    
+
     1999 August 4 [Don Cross]
          Adding ChessBoard::isLegal(Move) to stomp out a bug!
-    
+
     1999 August 5 [Don Cross]
          Added utility function ChessBoard::GameIsOver().
-    
+
     2001 January 14 [Don Cross]
          Adding class PackedBoard.
-    
+
     2001 January 20 [Don Cross]
          Performance improvements for functions that can be called
          a lot (e.g. from endgame database generator and Windows GUI).
-    
+
          1. In ChessBoard copy constructor, no longer copy the entire contents
             of the gameHistory array, but just the part needed as determined
             by ply_number.
-    
+
          2. The function ChessBoard::SetOffsetContents is called only
             by the endgame database generator and the ChessBoard class itself.
             I am going to make it more efficient by not always updating

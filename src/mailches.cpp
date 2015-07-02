@@ -79,19 +79,19 @@ void ListChessGame ( const ChessBoard &theBoard, FILE *out )
             char c = '?';
             switch ( p )
             {
-                case EMPTY:      c = '.';   break;
-                case WPAWN:      c = 'P';   break;
-                case WKNIGHT:    c = 'N';   break;
-                case WBISHOP:    c = 'B';   break;
-                case WROOK:      c = 'R';   break;
-                case WQUEEN:     c = 'Q';   break;
-                case WKING:      c = 'K';   break;
-                case BPAWN:      c = 'p';   break;
-                case BKNIGHT:    c = 'n';   break;
-                case BBISHOP:    c = 'b';   break;
-                case BROOK:      c = 'r';   break;
-                case BQUEEN:     c = 'q';   break;
-                case BKING:      c = 'k';   break;
+            case EMPTY:      c = '.';   break;
+            case WPAWN:      c = 'P';   break;
+            case WKNIGHT:    c = 'N';   break;
+            case WBISHOP:    c = 'B';   break;
+            case WROOK:      c = 'R';   break;
+            case WQUEEN:     c = 'Q';   break;
+            case WKING:      c = 'K';   break;
+            case BPAWN:      c = 'p';   break;
+            case BKNIGHT:    c = 'n';   break;
+            case BBISHOP:    c = 'b';   break;
+            case BROOK:      c = 'r';   break;
+            case BQUEEN:     c = 'q';   break;
+            case BKING:      c = 'k';   break;
             }
 
             fprintf ( out, "%c", c );
@@ -185,8 +185,8 @@ bool ReadEmail ( ChessUI *ui, ChessBoard &board, const char *filename )
     fclose ( f );
 
     fprintf ( stderr,
-        "Error:  The file '%s' exists but has no valid chess data in it!\n",
-        filename );
+              "Error:  The file '%s' exists but has no valid chess data in it!\n",
+              filename );
 
     exit(1);
 
@@ -283,16 +283,16 @@ void HelpUser_EndOfGame ( ChessSide winner )
     gotoxy ( x, y++ );
     switch ( winner )
     {
-       case SIDE_WHITE:
-            printf ( "White wins." );
-            break;
+    case SIDE_WHITE:
+        printf ( "White wins." );
+        break;
 
-       case SIDE_BLACK:
-            printf ( "Black wins." );
-            break;
+    case SIDE_BLACK:
+        printf ( "Black wins." );
+        break;
 
-       default:
-            printf ( "Draw game." );
+    default:
+        printf ( "Draw game." );
     }
     y++;
 
@@ -432,8 +432,8 @@ int main ( int argc, char *argv[] )
         HelpUser_EndOfGame ( winner );
         while ( (bioskey(0) & 0xff) != 0x1b );
         sprintf ( ExitMessage,
-            "This game is over.  MailChess has not changed '%s'.\n",
-            argv[1] );
+                  "This game is over.  MailChess has not changed '%s'.\n",
+                  argv[1] );
     }
     else
     {
@@ -451,9 +451,9 @@ int main ( int argc, char *argv[] )
             INT32 timeSpent = 0;
 
             bool moveWasRead = player->GetMove (
-                theBoard,
-                move,
-                timeSpent );
+                                   theBoard,
+                                   move,
+                                   timeSpent );
 
             if ( moveWasRead )
             {
@@ -502,16 +502,16 @@ int main ( int argc, char *argv[] )
 
 void ChessFatal ( const char *message )
 {
-   sprintf ( ExitMessage, "Chess fatal:\n%s\n", message );
+    sprintf ( ExitMessage, "Chess fatal:\n%s\n", message );
 
-   FILE *errorLog = fopen ( "mailches.err", "wt" );
-   if ( errorLog )
-   {
-      fprintf ( errorLog, "Chess fatal:\n%s\n", message );
-      fclose ( errorLog );
-   }
+    FILE *errorLog = fopen ( "mailches.err", "wt" );
+    if ( errorLog )
+    {
+        fprintf ( errorLog, "Chess fatal:\n%s\n", message );
+        fclose ( errorLog );
+    }
 
-   exit(1);
+    exit(1);
 }
 
 

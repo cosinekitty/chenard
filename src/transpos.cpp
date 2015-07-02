@@ -20,14 +20,21 @@ TranspositionTable  *ComputerChessPlayer::XposTable = 0;   // users must lazy in
 
 TranspositionTable::TranspositionTable (int memorySizeInMegabytes)
 {
-    if (memorySizeInMegabytes < 1) {
-        if (sizeof(int) < 4) {
+    if (memorySizeInMegabytes < 1)
+    {
+        if (sizeof(int) < 4)
+        {
             numTableEntries = 65500 / sizeof(TranspositionEntry);
-        } else {
+        }
+        else
+        {
             numTableEntries = TRANSPOSE_POOL_SIZE;      // about 800K worth of table
         }
-    } else {
-        if (memorySizeInMegabytes > 1024) {
+    }
+    else
+    {
+        if (memorySizeInMegabytes > 1024)
+        {
             memorySizeInMegabytes = 1024;   // enforce a 1GB limit to avoid integer overflow
         }
 
@@ -114,7 +121,7 @@ void TranspositionTable::rememberWhiteMove (
 
     PROFILER_EXIT();
 }
-    
+
 
 void TranspositionTable::rememberBlackMove (
     ChessBoard &board,
@@ -144,7 +151,7 @@ const TranspositionEntry *TranspositionTable::locateWhiteMove (
     PROFILER_EXIT();
     return xpos;
 }
-    
+
 
 const TranspositionEntry *TranspositionTable::locateBlackMove (
     ChessBoard &board )
@@ -173,7 +180,7 @@ void TranspositionTable::rememberMove (
     // Go through 3 passes to find a slot to store the new <board,reply> tuple...
 
     // Pass 1: search for a completely unused slot (hash == 0), or old
-    // copies of the same board position. 
+    // copies of the same board position.
 
     unsigned index = idealIndex;
     int retry;
@@ -191,7 +198,7 @@ void TranspositionTable::rememberMove (
                 // If the searches are of equal depth, employ tie-breakers
                 // for replacement.
 
-                bool newInsideWindow = 
+                bool newInsideWindow =
                     alpha <= bestReply.score && bestReply.score <= beta;
 
                 if ( !x.scoreIsInsideWindow() )
@@ -248,7 +255,7 @@ void TranspositionTable::rememberMove (
             index = 0;
     }
 
-    // Pass 3: as a last resort, try to find an "inferior" 
+    // Pass 3: as a last resort, try to find an "inferior"
     // entry in the table to stomp on.
 
     for ( retry=0; retry < COLLISION_RESOLVE; ++retry )
@@ -334,20 +341,20 @@ void TranspositionTable::debugDump ( const char *filename ) const
         if ( numTries > 0 )
         {
             fprintf ( f, "numTries=%u  numHits=%d  percent=%0.1lf\n",
-                numTries, numHits, 
-                100.0 * double(numHits) / double(numTries) );
+                      numTries, numHits,
+                      100.0 * double(numHits) / double(numTries) );
         }
 
-        fprintf ( f, "numStores=%u numInferior=%u numStomps=%u\nnumFresh=%u numStales=%u numFailures=%u\n", 
-            numStores, numInferior, numStomps, numFresh, numStales, numFailures );
+        fprintf ( f, "numStores=%u numInferior=%u numStomps=%u\nnumFresh=%u numStales=%u numFailures=%u\n",
+                  numStores, numInferior, numStomps, numFresh, numStales, numFailures );
 
-        fprintf ( f, "store checksum = %u\n\n", 
-            numStomps + numInferior + numFresh + numStales + numFailures );
+        fprintf ( f, "store checksum = %u\n\n",
+                  numStomps + numInferior + numFresh + numStales + numFailures );
 
         fprintf ( f, "%8s %3s %3s %2s %3s %3s %6s %6s %6s  %8s %3s %3s %2s %3s %3s %6s %6s %6s: %9s\n\n",
-            "hash", "dep", "fut", "fl", "src", "dst", "score", "alpha", "beta",
-            "hash", "dep", "fut", "fl", "src", "dst", "score", "alpha", "beta",
-            "index" );
+                  "hash", "dep", "fut", "fl", "src", "dst", "score", "alpha", "beta",
+                  "hash", "dep", "fut", "fl", "src", "dst", "score", "alpha", "beta",
+                  "index" );
 
         for ( unsigned i=0; i < numTableEntries; ++i )
         {
@@ -355,13 +362,13 @@ void TranspositionTable::debugDump ( const char *filename ) const
             const TranspositionEntry &b = blackTable[i];
 
             fprintf ( f, "%8x %3u %3u %2x %3u %3u %6d %6d %6d  %8x %3u %3u %2x %3u %3u %6d %6d %6d: %9u\n",
-                w.boardHash, unsigned(w.searchedDepth), unsigned(w.future), unsigned(w.flags),
-                unsigned(w.bestReply.source), unsigned(w.bestReply.dest), int(w.bestReply.score), 
-                int(w.alpha), int(w.beta),
-                b.boardHash, unsigned(b.searchedDepth), unsigned(b.future), unsigned(b.flags),
-                unsigned(b.bestReply.source), unsigned(b.bestReply.dest), int(b.bestReply.score),
-                int(b.alpha), int(b.beta),
-                i );
+                      w.boardHash, unsigned(w.searchedDepth), unsigned(w.future), unsigned(w.flags),
+                      unsigned(w.bestReply.source), unsigned(w.bestReply.dest), int(w.bestReply.score),
+                      int(w.alpha), int(w.beta),
+                      b.boardHash, unsigned(b.searchedDepth), unsigned(b.future), unsigned(b.flags),
+                      unsigned(b.bestReply.source), unsigned(b.bestReply.dest), int(b.bestReply.score),
+                      int(b.alpha), int(b.beta),
+                      i );
         }
 
         fclose (f);
@@ -369,8 +376,8 @@ void TranspositionTable::debugDump ( const char *filename ) const
 }
 
 
-bool TranspositionTable::findEntry ( 
-    UINT32 hashCode, 
+bool TranspositionTable::findEntry (
+    UINT32 hashCode,
     TranspositionEntry *table,
     unsigned &findIndex )
 {
@@ -416,20 +423,20 @@ bool TranspositionTable::findEntry (
 
 
         Revision history:
-    
+
     1999 January 25 [Don Cross]
          Started writing.  This is my second attempt at using transposition
          tables.  I'm going to start out simple by concentrating on using
          the transposition tables as a way of influencing the move ordering.
-    
+
     1999 January 27 [Don Cross]
          Storing alpha and beta values in transposition entries now.
          This is used to short-circuit recursion in the search when
          certain window criteria are met.
-    
+
     1999 January 14 [Don Cross]
          Adding conditional to use smaller transposition tables when
          sizeof(int) < 4, i.e., MS-DOS 64K limit.
-    
+
 */
 
