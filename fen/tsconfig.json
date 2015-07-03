@@ -1,6 +1,10 @@
 {
+  "compilerOptions": {
+      "removeComments": false,
+      "sourceMap": true
+  },
+
   "files": [
-    "jquery.d.ts",
     "fen.ts",
     "ui.ts"
   ]
