@@ -1118,6 +1118,7 @@ static const tPieceSet WorkSet[] =
     tPieceSet(WQUEEN,BROOK),
     tPieceSet(WQUEEN,BBISHOP),
     tPieceSet(WQUEEN,BKNIGHT),
+    tPieceSet(WPAWN,BKNIGHT),
     tPieceSet(WBISHOP,WBISHOP),
     tPieceSet(WBISHOP,WKNIGHT),
 };
