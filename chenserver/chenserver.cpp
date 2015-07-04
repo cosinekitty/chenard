@@ -288,7 +288,7 @@ std::string MakeMoves(ChessGameState& game, const std::vector<std::string>& move
             ++numPushedMoves;
         }
         else
-        {            
+        {
             // Illegal or malformed move text.
             // Roll back all the moves we made before finding this invalid move text.
             while (numPushedMoves > 0)
@@ -332,30 +332,6 @@ std::string Think(ChessUI_Server& ui, ChessGameState& game, int thinkTimeMillis)
         }
     }
     return "BAD_THINK_TIME";
-}
-
-bool FormatLongMove(bool whiteToMove, Move move, char notation[LONGMOVE_MAX_CHARS])
-{
-    int source;
-    int dest;
-    SQUARE prom = move.actualOffsets(whiteToMove, source, dest);
-    char pchar = (prom == EMPTY) ? '\0' : tolower(SquareCharacter(prom));
-    if (pchar == '?' || source < OFFSET(2, 2) || source > OFFSET(9, 9) || dest < OFFSET(2, 2) || dest > OFFSET(9, 9))
-    {
-        // Something is wrong with this move!
-        notation[0] = '\0';
-        return false;
-    }
-    else
-    {
-        notation[0] = 'a' + (XPART(source) - 2);
-        notation[1] = '1' + (YPART(source) - 2);
-        notation[2] = 'a' + (XPART(dest) - 2);
-        notation[3] = '1' + (YPART(dest) - 2);
-        notation[4] = pchar;
-        notation[5] = '\0';
-        return true;
-    }
 }
 
 std::string LegalMoveList(ChessGameState& game, const std::vector<std::string>& args)
@@ -410,28 +386,4 @@ std::string History(ChessGameState& game, const std::vector<std::string>& args)
         }
     }
     return listing;
-}
-
-char SquareCharacter(SQUARE square)
-{
-    switch (square)
-    {
-    case EMPTY:     return '.';
-
-    case WPAWN:     return 'P';
-    case WKNIGHT:   return 'N';
-    case WBISHOP:   return 'B';
-    case WROOK:     return 'R';
-    case WQUEEN:    return 'Q';
-    case WKING:     return 'K';
-
-    case BPAWN:     return 'p';
-    case BKNIGHT:   return 'n';
-    case BBISHOP:   return 'b';
-    case BROOK:     return 'r';
-    case BQUEEN:    return 'q';
-    case BKING:     return 'k';
-
-    default:        return '?';
-    }
 }

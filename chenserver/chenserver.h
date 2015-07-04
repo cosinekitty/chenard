@@ -17,21 +17,21 @@
     #include <stdlib.h>
     #include <unistd.h>
     #include <cstring>
-    #include <sys/types.h> 
+    #include <sys/types.h>
     #include <sys/socket.h>
     #include <netinet/in.h>
-    
+
     // Hacks to help WinSock code build on Linux.
     typedef int SOCKET;
     typedef sockaddr_in SOCKADDR_IN;
     typedef sockaddr *LPSOCKADDR;
     const int INVALID_SOCKET = -1;
-    
+
     inline bool IsValidSocket(SOCKET s)
     {
         return s >= 0;
     }
-    
+
     inline int closesocket(SOCKET s)
     {
         return close(s);
@@ -39,14 +39,14 @@
 #else
     #ifdef _MSC_VER     // Windows?
         #include <WinSock2.h>
-        
+
         inline bool IsValidSocket(SOCKET s)
         {
             return s != INVALID_SOCKET;
         }
     #else
         #error We do not know how to do socket programming on this platform.
-    #endif    
+    #endif
 #endif
 #include "uiserver.h"
 
@@ -85,10 +85,6 @@ std::string TestLegality(ChessGameState& game, const std::string& notation);
 std::string Think(ChessUI_Server& ui, ChessGameState& game, int thinkTimeMillis);
 std::string Undo(ChessGameState& game, int numTurns);
 std::string History(ChessGameState& game, const std::vector<std::string>& args);
-
-const size_t LONGMOVE_MAX_CHARS = 6;        // max: "e7e8q\0" is 6 characters
-bool FormatLongMove(bool whiteToMove, Move move, char notation[LONGMOVE_MAX_CHARS]);
-char SquareCharacter(SQUARE);
 
 class ChessGameState
 {

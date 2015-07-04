@@ -160,8 +160,8 @@ void ChessBoard::Init()
     inventory [WQ_INDEX] = inventory [BQ_INDEX] = 1;
     inventory [WK_INDEX] = inventory [BK_INDEX] = 1;
 
-    wmaterial = bmaterial = 
-        8*PAWN_VAL + 2*KNIGHT_VAL + 2*BISHOP_VAL + 
+    wmaterial = bmaterial =
+        8*PAWN_VAL + 2*KNIGHT_VAL + 2*BISHOP_VAL +
         2*ROOK_VAL + QUEEN_VAL + KING_VAL;
 
     ply_number = 0;
@@ -1058,9 +1058,9 @@ bool ChessBoard::SetForsythEdwardsNotation (const char *fen)
             // Construct the distinct previous move Black made that would yield this e.p. target.
             temp.prev_move.source = OFFSET(x,8);
             temp.prev_move.dest   = OFFSET(x,6);
-            if (temp.board[temp.prev_move.source] != EMPTY || 
-                temp.board[OFFSET(x,7)] != EMPTY || 
-                temp.board[temp.prev_move.dest] != BPAWN) 
+            if (temp.board[temp.prev_move.source] != EMPTY ||
+                temp.board[OFFSET(x,7)] != EMPTY ||
+                temp.board[temp.prev_move.dest] != BPAWN)
             {
                 return false;   // the board is not consistent with the inferred previous move
             }
@@ -1371,6 +1371,56 @@ void FormatChessMove (
     assert (length <= 7);
 }
 
+inline bool IsBadCoord(int z)
+{
+    return (z & 7) != z;    // returns true for anything outside the range 0..7
+}
+
+bool FormatLongMove(bool whiteToMove, Move move, char notation[LONGMOVE_MAX_CHARS])
+{
+    if (notation == NULL)
+    {
+        return false;
+    }
+
+    int source;
+    int dest;
+    SQUARE prom = move.actualOffsets(whiteToMove, source, dest);
+
+    int sx = XPART(source) - 2;
+    int sy = YPART(source) - 2;
+    int dx = XPART(dest) - 2;
+    int dy = YPART(dest) - 2;
+    if (IsBadCoord(sx) || IsBadCoord(sy) || IsBadCoord(dx) || IsBadCoord(dy))
+    {
+        // Something is wrong with the source and/or destination offsets encoded in this move.
+        notation[0] = '\0';
+        return false;
+    }
+
+    // If this is a pawn promotion, decode the promotion piece.
+    char pchar;
+    switch (prom)
+    {
+    case EMPTY:                     pchar = '\0';   break;  // not a promotion - this is what happens most often
+    case WQUEEN:    case BQUEEN:    pchar = 'q';    break;
+    case WROOK:     case BROOK:     pchar = 'r';    break;
+    case WBISHOP:   case BBISHOP:   pchar = 'b';    break;
+    case WKNIGHT:   case BKNIGHT:   pchar = 'n';    break;
+    default:
+        // Bogus move - invalid pawn promotion piece.
+        notation[0] = '\0';
+        return false;
+    }
+
+    notation[0] = 'a' + sx;
+    notation[1] = '1' + sy;
+    notation[2] = 'a' + dx;
+    notation[3] = '1' + dy;
+    notation[4] = pchar;
+    notation[5] = '\0';
+    return true;
+}
 
 void GetGameListing (
     const ChessBoard &board,
@@ -2150,4 +2200,3 @@ bool PackedChessBoard::operator== ( const PackedChessBoard &other ) const
             Have to be careful not to screw up how the endgame database
             algorithms work.
 */
-

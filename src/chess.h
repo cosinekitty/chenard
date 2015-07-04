@@ -1520,16 +1520,19 @@ inline int Distance ( int ofs1, int ofs2 )
 }
 
 
-void FormatChessMove (
+void FormatChessMove (      // PGN formatter #1
     const ChessBoard &,
     Move,
     char movestr [MAX_MOVE_STRLEN + 1] );
 
-void FormatChessMove (      // This version is much more efficient if you already have a legal move list!
+void FormatChessMove (      // PGN formatter #2 - This version is much more efficient if you already have a legal move list!
     const ChessBoard &,
-    const MoveList &LegalMoves,
+    const MoveList &legalMoves,
     Move,
     char movestr [MAX_MOVE_STRLEN + 1] );
+
+const unsigned LONGMOVE_MAX_CHARS = 6;        // max: "e7e8q\0" is 6 characters
+bool FormatLongMove(bool whiteToMove, Move move, char notation[LONGMOVE_MAX_CHARS]);
 
 void GetGameListing (
     const ChessBoard &,
@@ -1933,4 +1936,3 @@ void  ReplaceString (char *&target, const char *source);
          code's binary.
 
 */
-
