@@ -644,163 +644,161 @@ bool GetNextPgnMove (
     PgnExtraInfo    &info )
 {
     char    token [1 + MAX_PGN_TOKEN_LENGTH];
-    state = PGN_FILE_STATE_UNDEFINED;
     memset (&info, 0, sizeof(PgnExtraInfo));
 
     if (movestr == NULL)
     {
         state = PGN_FILE_STATE_INVALID_PARAMETER;
+        return false;
     }
-    else
+
+    movestr[0] = '\0';
+
+    if (file == NULL)
     {
-        state = PGN_FILE_STATE_SAMEGAME;
-        movestr[0] = '\0';
+        state = PGN_FILE_STATE_INVALID_PARAMETER;
+        return false;
+    }
 
-        if (file == NULL)
+    state = PGN_FILE_STATE_SAMEGAME;
+
+    for (;;)
+    {
+        PGN_TOKEN_TYPE type = ScanPgnToken(file, token);
+        if (type == PGNTOKEN_EOF)
         {
-            state = PGN_FILE_STATE_INVALID_PARAMETER;
+            state = PGN_FILE_STATE_EOF;
+            break;
         }
-        else
+        else if (type == PGNTOKEN_SYNTAX_ERROR)
         {
-            for(;;)
+            state = PGN_FILE_STATE_SYNTAX_ERROR;
+            break;
+        }
+        else if (type == PGNTOKEN_SYMBOL)
+        {
+            if (isalpha(token[0]))
             {
-                PGN_TOKEN_TYPE type = ScanPgnToken (file, token);
-                if (type == PGNTOKEN_EOF)
+                // A valid move token will always begin with a letter of the alphabet.
+                size_t length = strlen(token);
+                if (length >= 1 && length <= 7)
                 {
-                    state = PGN_FILE_STATE_EOF;
-                    break;
+                    strcpy(movestr, token);
+                    return true;
                 }
-                else if (type == PGNTOKEN_SYNTAX_ERROR)
+                else
                 {
                     state = PGN_FILE_STATE_SYNTAX_ERROR;
                     break;
                 }
-                else if (type == PGNTOKEN_SYMBOL)
+            }
+            else
+            {
+                // Look for special game terminators: "1-0", "0-1", "1/2-1/2".
+                if (0 == strcmp(token, "1-0") || 0 == strcmp(token, "0-1") || 0 == strcmp(token, "1/2-1/2"))
                 {
-                    if (isalpha (token[0]))
-                    {
-                        // A valid move token will always begin with a letter of the alphabet.
-                        size_t length = strlen (token);
-                        if (length >= 1 && length <= 7)
-                        {
-                            strcpy (movestr, token);
-                            return true;
-                        }
-                        else
-                        {
-                            state = PGN_FILE_STATE_SYNTAX_ERROR;
-                            break;
-                        }
-                    }
-                    else
-                    {
-                        // Look for special game terminators: "1-0", "0-1", "1/2-1/2".
-                        if (0 == strcmp(token,"1-0") || 0 == strcmp(token,"0-1") || 0 == strcmp(token,"1/2-1/2"))
-                        {
-                            state = PGN_FILE_STATE_GAMEOVER;
-                            break;
-                        }
-                    }
+                    state = PGN_FILE_STATE_GAMEOVER;
+                    break;
                 }
-                else if (type == PGNTOKEN_STRING)
+            }
+        }
+        else if (type == PGNTOKEN_STRING)
+        {
+            // Invalid token type for this context!
+            state = PGN_FILE_STATE_SYNTAX_ERROR;
+            break;
+        }
+        else if (type == PGNTOKEN_PUNCTUATION)
+        {
+            if (0 == strcmp(token, "["))
+            {
+                state = PGN_FILE_STATE_NEWGAME;     // We are starting a whole new game.
+
+                // A tag must contain exactly 4 tokens: "[" Symbol String "]".
+                type = ScanPgnToken(file, token);
+                if (type != PGNTOKEN_SYMBOL)
                 {
-                    // Invalid token type for this context!
                     state = PGN_FILE_STATE_SYNTAX_ERROR;
                     break;
                 }
-                else if (type == PGNTOKEN_PUNCTUATION)
+
+                int tagIndex;
+                if (IsPgnTagNameWeCareAbout(token, tagIndex))
                 {
-                    if (0 == strcmp(token, "["))
+                    type = ScanPgnToken(file, token);
+                    if (type != PGNTOKEN_STRING)
                     {
-                        state = PGN_FILE_STATE_NEWGAME;     // We are starting a whole new game.
+                        state = PGN_FILE_STATE_SYNTAX_ERROR;
+                        break;
+                    }
 
-                        // A tag must contain exactly 4 tokens: "[" Symbol String "]".
-                        type = ScanPgnToken (file, token);
-                        if (type != PGNTOKEN_SYMBOL)
+                    switch (tagIndex)
+                    {
+                    case 0:     // FEN
+                        strncpy(info.fen, token, sizeof(info.fen));
+                        break;
+
+                    case 1:     // WhiteELO
+                        info.whiteElo = atoi(token);
+                        break;
+
+                    case 2:     // BlackELO
+                        info.blackElo = atoi(token);
+                        break;
+
+                    case 3:     // Result
+                        if (0 == strcmp(token, "1-0"))
                         {
-                            state = PGN_FILE_STATE_SYNTAX_ERROR;
-                            break;
+                            info.result = PGNRESULT_WHITE_WON;
                         }
-
-                        int tagIndex;
-                        if (IsPgnTagNameWeCareAbout (token, tagIndex))
+                        else if (0 == strcmp(token, "0-1"))
                         {
-                            type = ScanPgnToken (file, token);
-                            if (type != PGNTOKEN_STRING)
-                            {
-                                state = PGN_FILE_STATE_SYNTAX_ERROR;
-                                break;
-                            }
-
-                            switch (tagIndex)
-                            {
-                            case 0:     // FEN
-                                strncpy (info.fen, token, sizeof(info.fen));
-                                break;
-
-                            case 1:     // WhiteELO
-                                info.whiteElo = atoi (token);
-                                break;
-
-                            case 2:     // BlackELO
-                                info.blackElo = atoi (token);
-                                break;
-
-                            case 3:     // Result
-                                if (0 == strcmp(token, "1-0"))
-                                {
-                                    info.result = PGNRESULT_WHITE_WON;
-                                }
-                                else if (0 == strcmp(token, "0-1"))
-                                {
-                                    info.result = PGNRESULT_BLACK_WON;
-                                }
-                                else if (0 == strcmp(token, "1/2-1/2"))
-                                {
-                                    info.result = PGNRESULT_DRAW;
-                                }
-                                else
-                                {
-                                    info.result = PGNRESULT_UNKNOWN;
-                                }
-                                break;
-                            }
-
-                            type = ScanPgnToken (file, token);
-                            if (0 != strcmp(token, "]"))
-                            {
-                                state = PGN_FILE_STATE_SYNTAX_ERROR;
-                                break;
-                            }
+                            info.result = PGNRESULT_BLACK_WON;
+                        }
+                        else if (0 == strcmp(token, "1/2-1/2"))
+                        {
+                            info.result = PGNRESULT_DRAW;
                         }
                         else
                         {
-                            // I have run into some software that screws up some tags
-                            // with extra quote marks, e.g.:   [Black ""Atak_62.exe"   "]
-                            // For tags I don't care about, I am going to skip over everything until I find the end of the line.
-                            // I am going to avoid looking for ']', in case some joker puts that character inside the string!
-                            for(;;)
-                            {
-                                int c = fgetc (file);
-                                if (c == EOF)
-                                {
-                                    state = PGN_FILE_STATE_SYNTAX_ERROR;
-                                    goto bail_out;
-                                }
-                                if (c == '\n')
-                                {
-                                    break;
-                                }
-                            }
+                            info.result = PGNRESULT_UNKNOWN;
                         }
+                        break;
                     }
-                    else if (0 == strcmp(token,"*"))
+
+                    type = ScanPgnToken(file, token);
+                    if (0 != strcmp(token, "]"))
                     {
-                        // Symbol for the end of the listing of an unfinished game...
-                        state = PGN_FILE_STATE_GAMEOVER;
+                        state = PGN_FILE_STATE_SYNTAX_ERROR;
                         break;
                     }
                 }
+                else
+                {
+                    // I have run into some software that screws up some tags
+                    // with extra quote marks, e.g.:   [Black ""Atak_62.exe"   "]
+                    // For tags I don't care about, I am going to skip over everything until I find the end of the line.
+                    // I am going to avoid looking for ']', in case some joker puts that character inside the string!
+                    for (;;)
+                    {
+                        int c = fgetc(file);
+                        if (c == EOF)
+                        {
+                            state = PGN_FILE_STATE_SYNTAX_ERROR;
+                            goto bail_out;
+                        }
+                        if (c == '\n')
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+            else if (0 == strcmp(token, "*"))
+            {
+                // Symbol for the end of the listing of an unfinished game...
+                state = PGN_FILE_STATE_GAMEOVER;
+                break;
             }
         }
     }

@@ -161,7 +161,10 @@ typedef INT16           SCORE;     //holds move-ordering and eval scores
 #define  SIDE_MASK    (WHITE_IND | BLACK_IND)
 #define  INDEX_MASK   (SIDE_MASK | PIECE_MASK)
 
-#define  PIECE_ARRAY_SIZE     (BLACK_IND + K_INDEX + 1)
+// Increased PIECE_ARRAY_SIZE from 22 ...
+// #define  PIECE_ARRAY_SIZE     (BLACK_IND + K_INDEX + 1)
+// ... to 32 because of static analyzer warnings about SPIECE_INDEX(s) range of values.
+#define  PIECE_ARRAY_SIZE     (1 + INDEX_MASK)
 
 #define  SPIECE_INDEX(square)   (((square) >> 16) & INDEX_MASK)
 #define  UPIECE_INDEX(square)   (((square) >> 16) & PIECE_MASK)
@@ -1080,9 +1083,9 @@ private:
     // Best path stuff...
 
     int      eachBestPathCount;                     // number of paths in eachBestPath[]
-    BestPath eachBestPath [MAX_MOVES];              // array of BestPath for each Top Level Move
+    BestPath *eachBestPath;                         // array of BestPath for each Top Level Move
     BestPath currentBestPath;                       // BestPath from prev search of current TLM
-    BestPath nextBestPath [MAX_BESTPATH_DEPTH+8];   // BestPath for next search
+    BestPath *nextBestPath;                         // BestPath for next search
     UINT32   expectedNextBoardHash;                 // hash value of board if opponent makes expected move
     int      prevCompletedLevel;                    // highest full-width level completed in previous search
     UINT32   hashPath [MAX_BESTPATH_DEPTH+8];
@@ -1498,7 +1501,9 @@ bool LoadGame ( ChessBoard &board, const char *filename );
 //   Global functions that must be defined on a
 //   per-project basis...
 //-------------------------------------------------------
-void  ChessFatal ( const char *message );   // displays message and aborts
+
+void ChessFatal(const char *message);   // displays message and aborts (maybe - caller must assume it returns)
+
 INT32 ChessTime();   // returns interval marker in hundredths of a second
 
 

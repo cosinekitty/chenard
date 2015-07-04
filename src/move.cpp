@@ -82,6 +82,7 @@ UINT32 PieceMush [PIECE_ARRAY_SIZE] =
     0xE62B155F, 0x77B3EE4C, 0x8BC2B49F, 0xB9C1EDE2,
     0xA3D5ACA8, 0xB42762A7, 0xD3DA999F, 0xDCA0C943,
     0x122842D8, 0xD8DB0DD2
+    // note intentionally left 0 entries at the end (32 total, 22 used)
 };
 
 

@@ -49,6 +49,8 @@ ComputerChessPlayer::ComputerChessPlayer ( ChessUI &ui ):
     whiteEval ( &ComputerChessPlayer::WhiteMidgameEval ),
     blackEval ( &ComputerChessPlayer::BlackMidgameEval ),
     eachBestPathCount ( 0 ),
+    eachBestPath (new BestPath[MAX_MOVES]),
+    nextBestPath(new BestPath[MAX_BESTPATH_DEPTH + 8]),
     expectedNextBoardHash ( 0 ),
     prevCompletedLevel ( 0 ),
     moveOrder_depth ( 0 ),
@@ -68,10 +70,6 @@ ComputerChessPlayer::ComputerChessPlayer ( ChessUI &ui ):
     blunderAlertInstance(false)
 {
     rootml.num = 0;
-
-    if ( !whiteHist || !blackHist )
-        ChessFatal ( "Out of memory creating ComputerChessPlayer" );
-
     ResetHistoryBuffers();
     predictedOppMove.score = 0;
     predictedOppMove.source = predictedOppMove.dest = 0;
@@ -85,6 +83,12 @@ ComputerChessPlayer::~ComputerChessPlayer()
 
     delete[] blackHist;
     blackHist = 0;
+
+    delete[] eachBestPath;
+    eachBestPath = 0;
+
+    delete[] nextBestPath;
+    nextBestPath = 0;
 }
 
 
@@ -94,10 +98,6 @@ ComputerChessPlayer::~ComputerChessPlayer()
     {
         // Create a default 1MB transposition table.
         XposTable = new TranspositionTable(1);
-        if (!XposTable)
-        {
-            ChessFatal("Out of memory in ComputerChessPlayer::LazyInitXposTable");
-        }
     }
 }
 
@@ -1302,7 +1302,7 @@ SCORE ComputerChessPlayer::BlackSearch (
         && xpos->searchedDepth >= level-depth 
         && numReps < 2
         && ml.IsLegal(xpos->bestReply) )
-    {                                   /*||*/
+    {
         if ( xpos->scoreIsInsideWindow() && xpos->compatibleWindow(alpha,beta) )
         {
             if ( depth < MAX_BESTPATH_DEPTH )
@@ -1649,13 +1649,10 @@ void ComputerChessPlayer::SetTimeLimit ( INT32 hundredthsOfSeconds )
 
 void ComputerChessPlayer::SetMaxNodesEvaluated ( UINT32 _maxNodesEvaluated )
 {
-    if ( _maxNodesEvaluated < 100 )
-        ChessFatal ( "Max nodes evaluated was too small" );
-
     maxlevel = NODES_ARRAY_SIZE/4 - 1;
     searchType = CCPST_MAXEVAL_SEARCH;
     searchAborted = false;
-    maxNodesEvaluated = _maxNodesEvaluated;
+    maxNodesEvaluated = (_maxNodesEvaluated < 100) ? 100 : _maxNodesEvaluated;
 }
 
 
@@ -1672,8 +1669,11 @@ bool ComputerChessPlayer::CheckTimeLimit()
 
     if ( searchType == CCPST_MAXEVAL_SEARCH )
     {
-        if ( evaluated >= maxNodesEvaluated )
-            return searchAborted = true;
+        if (evaluated >= maxNodesEvaluated)
+        {
+            searchAborted = true;
+            return true;
+        }
     }
     if ( searchType == CCPST_TIMED_SEARCH )
     {
@@ -1706,10 +1706,13 @@ bool ComputerChessPlayer::CheckTimeLimit()
                 if ( now - prevTime > 10 )
                     timeCheckLimit /= 2;
 
-                return searchAborted = true;
+                searchAborted = true;
+                return true;
             }
-            else if ( now - prevTime < 5 )   // less than 0.05 sec elapsed?
+            else if (now - prevTime < 5)   // less than 0.05 sec elapsed?
+            {
                 timeCheckLimit += 100;
+            }
 
             prevTime = now;
         }

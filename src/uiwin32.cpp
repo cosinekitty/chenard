@@ -1208,7 +1208,8 @@ void ChessUI_win32_gui::blunderAlert_FormatContinuation(
     char* text,
     int maxTextLength)
 {
-    memset(text, '\0', 1+maxTextLength);
+    int d = 0;      // must init before first usage of SafeAppendToken macro
+    memset(text, '\0', 1 + maxTextLength);
     int length = 0;
 
     if (!parms || moveIndex < 0 || moveIndex >= parms->numLegalMoves)
@@ -1256,7 +1257,6 @@ void ChessUI_win32_gui::blunderAlert_FormatContinuation(
 
     // Loop for each move in the path.
     UnmoveInfo unmove[MAX_BESTPATH_DEPTH];
-    int d = 0;
     while (d < path.depth)
     {
         Move move = path.m[d];  // make safe copy so MakeMove can modify it

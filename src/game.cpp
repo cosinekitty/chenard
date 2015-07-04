@@ -165,14 +165,18 @@ void ChessGame::Play()
     {
         // It's OK if compiler reports an "unreachable code" warning...
         ChessFatal ( "Integer types are wrong size!" );
+        return;
     }
 
     MoveList     ml;
     Move         move;
     UnmoveInfo   unmove;
 
-    if ( !whitePlayer || !blackPlayer )
-        ChessFatal ( "Chess player(s) not initialized!" );
+    if (!whitePlayer || !blackPlayer)
+    {
+        ChessFatal("Chess player(s) not initialized!");
+        return;
+    }
 
     move.dest = SPECIAL_MOVE_NULL;   // to assist in checking for board edit
 

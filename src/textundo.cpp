@@ -24,20 +24,27 @@ MoveUndoPath::~MoveUndoPath()
 
 void MoveUndoPath::resetFromBoard ( const ChessBoard &board )
 {
-    if ( !moveList )
+    current = length = board.GetCurrentPlyNumber();
+
+    if (!moveList || (size < length))
     {
-        size = 1024;    // arbitrary but larger than necessary
-        moveList = new Move [size];
-        if ( !moveList )
+        if (length < 1024)
         {
-            ChessFatal ( "Out of memory allocating MoveUndoPath" );
-            return;
+            size = 1024;    // arbitrary but larger than necessary
         }
+        else
+        {
+            size = 2 * length;      // unexpected, but stay ahead of large size
+        }
+
+        delete[] moveList;
+        moveList = new Move[size];
     }
 
-    current = length = board.GetCurrentPlyNumber();
-    for ( int i=0; i<length; i++ )
+    for (int i = 0; i < length; i++)
+    {
         moveList[i] = board.GetPastMove(i);
+    }
 }
 
 

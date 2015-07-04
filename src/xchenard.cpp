@@ -787,11 +787,13 @@ void SetLevelCommand (const char *rest)
     if (rest == NULL)
     {
         ChessFatal ("SetLevelCommand:  rest == NULL");
+        return;
     }
 
     if (strlen(rest) >= MAX_XBOARD_LINE)
     {
         ChessFatal ("SetLevelCommand:  input string is too long to be valid");
+        return;
     }
 
     int  moves = 0;
