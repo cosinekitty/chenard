@@ -701,32 +701,20 @@ public:
         return decoded;
     }
 
-    bool readAndDecodeMove (FILE *dbfile, const tDatabasePrefix &prefix, Move &RawMove)
+    bool decodeMove(int entrySize, const void *entryData, Move &rawMove)
     {
-        bool decoded = false;
-        unsigned char record [2];   // packed 2-byte move
-
-        switch (prefix.entrySize)
+        switch (entrySize)
         {
         case sizeof(Move):
-            if (1 == fread (&RawMove, sizeof(Move), 1, dbfile))
-            {
-                if (RawMove.dest != 0)
-                {
-                    decoded = true;
-                }
-            }
-            break;
+            rawMove = *((const Move *)entryData);
+            return rawMove.dest != 0;
 
         case 2:
-            if (1 == fread (record, 2, 1, dbfile))
-            {
-                decoded = expandMove (record, RawMove);
-            }
-            break;
-        }
+            return expandMove((unsigned char *)entryData, rawMove);
 
-        return decoded;
+        default:
+            return false;
+        }
     }
 
     bool encodeDatabase (FILE *dbfile, unsigned numTableEntries, const Move *table)
@@ -758,13 +746,14 @@ public:
                 offset[p] = CalcPieceOffset (8 + (ti % 48));
                 ti /= 48;
             }
-            else
+            else    // FIXFIXFIX - add support for Black pawn(s)
             {
                 offset[p] = CalcPieceOffset (ti % 64);
                 ti /= 64;
             }
         }
 
+        // Decode the location of the Black king.
         if (contains_pawn)
         {
             assert (ti < 32);
@@ -776,8 +765,7 @@ public:
             offset[0] = FlipSlashOffsets[ti];
         }
 
-        unsigned sanity = GetRawTableIndex (piece, offset, numPieces, contains_pawn);
-        assert (sanity == original_ti);
+        assert (GetRawTableIndex(piece, offset, numPieces, contains_pawn) == original_ti);
     }
 
     short databaseEntrySize() const
@@ -1131,7 +1119,6 @@ static const tPieceSet WorkSet[] =
 
 const int WorkSetSize = sizeof(WorkSet) / sizeof(WorkSet[0]);
 
-
 //---------------------------------------------------------------------------------------------------------
 
 
@@ -1314,10 +1301,18 @@ inline SCORE AdjustScoreForPly (SCORE score)
 }
 
 
+int NumCompletedWorkSets = 0;
+int NumConsults = 0;            // how many times did we have to open/seek/close a database file?
 int NumWinsFound = 0;
 INT32 LastDisplayTime = ChessTime();
 
-bool ConsultDatabase (tPieceSet set, ChessBoard &board, Move &move);
+enum ConsultMode
+{
+    CONSULT_MODE_SEEK,          // conserve memory at the expense of speed: open/seek/close file each time
+    CONSULT_MODE_MEMORY,        // load entire table into memory on first access and re-use it each time afterward.
+};
+
+bool ConsultDatabase (tPieceSet set, ChessBoard &board, Move &move, ConsultMode mode);
 
 SCORE EGDB_FeedbackEval (ChessBoard &board)
 {
@@ -1329,11 +1324,12 @@ SCORE EGDB_FeedbackEval (ChessBoard &board)
         // Only if we find a match do we try to find the egm file...
 
         Move move;
-        for (int i=0; i < WorkSetSize; ++i)
+        for (int i=0; i < NumCompletedWorkSets; ++i)
         {
             if (WorkSet[i].isExactMatch (board))
             {
-                if (ConsultDatabase (WorkSet[i], board, move))
+                ++NumConsults;      // track these expensive calls (if too high, may rework so we keep prior tables in memory)
+                if (ConsultDatabase (WorkSet[i], board, move, CONSULT_MODE_MEMORY))
                 {
                     return move.score;
                 }
@@ -1771,12 +1767,21 @@ void Generate (
 
     int TotalWinsFound = 0;
 
+    INT32 startTime = ChessTime();
+
     for (int required_mate_moves=0; ; ++required_mate_moves)
     {
         NumWinsFound = 0;
+        NumConsults = 0;
         GeneratePass (board, ui, set, whiteTable, blackTable, 0, required_mate_moves);
+        INT32 currTime = ChessTime();
+        double elapsed = static_cast<double>(currTime - startTime) / 100.0;
         TotalWinsFound += NumWinsFound;
-        fprintf (dblog, "Generate:  pass=%d, NumWinsFound=%d, TotalWinsFound=%d\n", required_mate_moves, NumWinsFound, TotalWinsFound);
+        fprintf (
+            dblog,
+            "Generate:  pass=%d, elapsed=%0.2lf sec, NumWinsFound=%d, TotalWinsFound=%d, Consults=%d\n",
+            required_mate_moves, elapsed, NumWinsFound, TotalWinsFound, NumConsults);
+
         fflush (dblog);
         if (NumWinsFound == 0)
         {
@@ -1784,7 +1789,6 @@ void Generate (
         }
     }
 }
-
 
 
 void GenerateEndgameDatabase (ChessBoard &board, ChessUI &ui, tPieceSet set)
@@ -1852,73 +1856,66 @@ void AnalyzeEndgameDatabase (const char *filename)
                 unsigned    MoveHistogram  [0x100] = {0};
                 unsigned    ScoreHistogram [0x100] = {0};
                 unsigned   *RecordHistogram = new unsigned [0x10000];
-                if (RecordHistogram)
+
+                memset (RecordHistogram, 0, 0x10000*sizeof(RecordHistogram[0]));
+
+                bool success = true;
+                for (i=0; i < prefix.numTableEntries; ++i)
                 {
-                    memset (RecordHistogram, 0, 0x10000*sizeof(RecordHistogram[0]));
-
-                    bool success = true;
-                    for (i=0; i < prefix.numTableEntries; ++i)
+                    if (1 != fread (record, 2, 1, dbfile))
                     {
-                        if (1 != fread (record, 2, 1, dbfile))
-                        {
-                            fprintf (dblog, "AnalyzeEndgameDatabase:  Error reading from position %d\n", i);
-                            success = false;
-                            break;
-                        }
-                        else
-                        {
-                            ++MoveHistogram  [record[0]];
-                            ++ScoreHistogram [record[1]];
+                        fprintf (dblog, "AnalyzeEndgameDatabase:  Error reading from position %d\n", i);
+                        success = false;
+                        break;
+                    }
+                    else
+                    {
+                        ++MoveHistogram  [record[0]];
+                        ++ScoreHistogram [record[1]];
 
-                            // Interpret the bytes in the record as a
-                            // little-endian 16-bit integer.
-                            unsigned x = (record[1] << 8) | record[0];
-                            ++RecordHistogram[x];
+                        // Interpret the bytes in the record as a
+                        // little-endian 16-bit integer.
+                        unsigned x = (record[1] << 8) | record[0];
+                        ++RecordHistogram[x];
+                    }
+                }
+                if (success)
+                {
+                    unsigned NumDistinctMoves   = 0;
+                    unsigned NumDistinctScores  = 0;
+                    unsigned NumDistinctRecords = 0;
+                    unsigned MaxMatePlies       = 0;
+                    for (i=0; i<0x100; ++i)
+                    {
+                        //fprintf (dblog, "AnalyzeEndgameDatabase:  i=0x%02x  %9lu %9lu\n", i, MoveHistogram[i], ScoreHistogram[i]);
+                        if (MoveHistogram[i] > 0)
+                        {
+                            ++NumDistinctMoves;
+                        }
+                        if (ScoreHistogram[i] > 0)
+                        {
+                            ++NumDistinctScores;
+                            MaxMatePlies = i;
                         }
                     }
-                    if (success)
+                    for (i=0; i<0x10000; ++i)
                     {
-                        unsigned NumDistinctMoves   = 0;
-                        unsigned NumDistinctScores  = 0;
-                        unsigned NumDistinctRecords = 0;
-                        unsigned MaxMatePlies       = 0;
-                        for (i=0; i<0x100; ++i)
+                        if (RecordHistogram[i] > 0)
                         {
-                            //fprintf (dblog, "AnalyzeEndgameDatabase:  i=0x%02x  %9lu %9lu\n", i, MoveHistogram[i], ScoreHistogram[i]);
-                            if (MoveHistogram[i] > 0)
-                            {
-                                ++NumDistinctMoves;
-                            }
-                            if (ScoreHistogram[i] > 0)
-                            {
-                                ++NumDistinctScores;
-                                MaxMatePlies = i;
-                            }
+                            ++NumDistinctRecords;
                         }
-                        for (i=0; i<0x10000; ++i)
-                        {
-                            if (RecordHistogram[i] > 0)
-                            {
-                                ++NumDistinctRecords;
-                            }
-                        }
-                        fprintf (
-                            dblog,
-                            "AnalyzeEndgameDatabase:  ---------  distinct moves: %d, distinct scores: %d, distinct records: %d, max mate plies: %d\n\n",
-                            NumDistinctMoves,
-                            NumDistinctScores,
-                            NumDistinctRecords,
-                            MaxMatePlies
-                        );
                     }
+                    fprintf (
+                        dblog,
+                        "AnalyzeEndgameDatabase:  ---------  distinct moves: %d, distinct scores: %d, distinct records: %d, max mate plies: %d\n\n",
+                        NumDistinctMoves,
+                        NumDistinctScores,
+                        NumDistinctRecords,
+                        MaxMatePlies
+                    );
+                }
 
-                    delete[] RecordHistogram;
-                    RecordHistogram = NULL;
-                }
-                else
-                {
-                    fprintf (dblog, "Out of memory!\n");
-                }
+                delete[] RecordHistogram;
             }
             else
             {
@@ -1960,6 +1957,7 @@ void GenerateEndgameDatabases (ChessBoard &board, ChessUI &ui)
 
         for (int i=0; i < WorkSetSize; ++i)
         {
+            NumCompletedWorkSets = i;
             GenerateEndgameDatabase (board, ui, WorkSet[i]);
             AnalyzeEndgameDatabase (WorkSet[i].getFileName());
         }
@@ -1978,8 +1976,36 @@ void GenerateEndgameDatabases (ChessBoard &board, ChessUI &ui)
 
 //-----------------------------------------------------------------------------------------------------
 
+struct tDatabaseMemoryImage
+{
+    tDatabasePrefix  prefix;
+    tPieceSet        pieceSet;
+    unsigned char   *buffer;
 
-bool ConsultDatabase (tPieceSet set, ChessBoard &board, Move &move)
+    tDatabaseMemoryImage()
+        : pieceSet()
+        , buffer(NULL)
+    {
+        memset(&prefix, 0, sizeof(prefix));
+    }
+
+    ~tDatabaseMemoryImage()
+    {
+        Erase();
+    }
+
+    void Erase()
+    {
+        delete[] buffer;
+        buffer = NULL;
+    }
+};
+
+
+static tDatabaseMemoryImage DatabaseMemoryImage[WorkSetSize];
+
+
+bool ConsultDatabase (tPieceSet set, ChessBoard &board, Move &move, ConsultMode mode)
 {
     // Tricky bit:  If it is Black's turn to move, we need to toggle all the pieces,
     // and if pawns are involved, we need to rotate/unrotate the board and moves.
@@ -1988,60 +2014,117 @@ bool ConsultDatabase (tPieceSet set, ChessBoard &board, Move &move)
 
     assert (set.isValid());
 
-    bool white_move = (board.WhiteToMove() != false);
+    bool white_move = board.WhiteToMove();
 
     set.setWinnerSide (white_move);
     if (set.findPieces (board))
     {
+        int sym;
+        int ti = set.getTableIndex(sym);
+
+        // Tricky:  readjust 'set' so that it has canonical piece offsets...
+        // We have to do this so that move decoder works properly.
+        set.decodeForTableIndex(ti);
+
+        unsigned char entryData[sizeof(Move)];
+        memset(entryData, 0, sizeof(entryData));
+
         const char *filename = set.getFileName();
-        FILE *dbfile = fopen (filename, "rb");
-        if (dbfile)
+        int entrySize = 0;
+        bool loaded = false;
+
+        // See if we have already loaded this database file.
+        // Note that we re-use in-memory data even if told to seek,
+        // to take advantage of anyone else who already loaded it in memory mode.
+        for (int di=0; di < WorkSetSize; ++di)
         {
-            tDatabasePrefix prefix;
-            if (ReadAndValidatePrefix (dbfile, prefix))
+            const tDatabaseMemoryImage& d = DatabaseMemoryImage[di];
+            if (d.buffer != NULL)
             {
-                int sym;
-                int ti = set.getTableIndex (sym);
-
-                // Seek to the correct file offset for this move...
-                int FileOffset = sizeof(prefix) + (ti * prefix.entrySize);
-                if (0 == fseek (dbfile, FileOffset, SEEK_SET))
+                if (0 == strcmp(d.pieceSet.getFileName(), filename))
                 {
-                    // Tricky:  readjust 'set' so that it has canonical piece offsets...
-                    // We have to do this so that readAndDecodeMove works properly.
-                    set.decodeForTableIndex (ti);
+                    entrySize = d.prefix.entrySize;
+                    memcpy(entryData, &d.buffer[ti * entrySize], entrySize);
+                    loaded = true;
+                    break;
+                }
+            }
+        }
 
-                    Move RawMove;
-                    if (set.readAndDecodeMove (dbfile, prefix, RawMove))        // returns false if move is null
+        if (!loaded)
+        {
+            FILE *dbfile = fopen (filename, "rb");
+            if (dbfile)
+            {
+                tDatabasePrefix prefix;
+                if (ReadAndValidatePrefix (dbfile, prefix))
+                {
+                    entrySize = prefix.entrySize;
+                    if (mode == CONSULT_MODE_MEMORY)
                     {
-                        // Adjust for symmetry translation.
-                        move = RotateMove (RawMove, white_move, INVERSE_SYMMETRY[sym]);
+                        // Slurp entire table into memory.
+                        // First find the slot where it goes (first unused, determined by buffer==NULL).
+                        for (int di=0; di < WorkSetSize; ++di)
+                        {
+                            tDatabaseMemoryImage& d = DatabaseMemoryImage[di];
+                            if (d.buffer == NULL)
+                            {
+                                size_t bufferLength =
+                                    static_cast<size_t>(prefix.entrySize) *
+                                    static_cast<size_t>(prefix.numTableEntries);
 
-                        if (!white_move)
-                        {
-                            // Adjust for black.
-                            move = RotateMove (move, white_move, SYMMETRY_ROTATE_180);
-                            move.score = -move.score;
-                        }
+                                d.prefix = prefix;
+                                d.pieceSet = set;
+                                d.buffer = new unsigned char[bufferLength];
 
-                        // When we get here, the move MUST be legal (or we should not have put it in the database).
-                        // Let's just make sure before causing really bad stuff to happen...
-                        MoveList ml;
-                        board.GenMoves (ml);
-                        if (ml.IsLegal (move))
-                        {
-                            found = true;
+                                if (1 == fread(d.buffer, bufferLength, 1, dbfile))
+                                {
+                                    memcpy(entryData, &d.buffer[ti * entrySize], entrySize);
+                                    loaded = true;
+                                    break;
+                                }
+                            }
                         }
-                        else
+                    }
+                    else
+                    {
+                        // Seek to the correct file offset for this move...
+                        int FileOffset = sizeof(prefix) + (ti * entrySize);
+                        if (0 == fseek (dbfile, FileOffset, SEEK_SET))
                         {
-                            assert (false);     // the database contains a non-null, illegal move!  (look in RawMove)
+                            if (1 == fread(entryData, entrySize, 1, dbfile))
+                            {
+                                loaded = true;
+                            }
                         }
                     }
                 }
+                fclose (dbfile);
             }
+        }
 
-            fclose (dbfile);
-            dbfile = NULL;
+        if (loaded)
+        {
+            Move rawMove;
+            if (set.decodeMove (entrySize, entryData, rawMove))        // returns false if move is null
+            {
+                // Adjust for symmetry translation.
+                move = RotateMove(rawMove, white_move, INVERSE_SYMMETRY[sym]);
+
+                if (!white_move)
+                {
+                    // Adjust for black.
+                    move = RotateMove (move, white_move, SYMMETRY_ROTATE_180);
+                    move.score = -move.score;
+                }
+
+                // When we get here, the move MUST be legal (or we should not have put it in the database).
+                // Let's just make sure before causing really bad stuff to happen...
+                MoveList ml;
+                board.GenMoves(ml);
+                found = ml.IsLegal(move);
+                assert(false);     // the database contains a non-null, illegal move!  (look in RawMove)
+            }
         }
     }
 
@@ -2060,7 +2143,7 @@ bool ComputerChessPlayer::FindEndgameDatabaseMove (ChessBoard &board, Move &move
     {
         if (WorkSet[i].isExactMatch (board))
         {
-            return ConsultDatabase (WorkSet[i], board, move);
+            return ConsultDatabase (WorkSet[i], board, move, CONSULT_MODE_SEEK);
         }
     }
 
