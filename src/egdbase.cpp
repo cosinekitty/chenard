@@ -840,9 +840,20 @@ protected:
                     assert (mate_in_plies <= 255);
                     record[1] = (unsigned char) mate_in_plies;
 
-                    // sanity check that we will be able to re-decode the move later...
+                    // Sanity check that we will be able to re-decode the move later.
+                    // This stuff is tricky, so I keep the verifier code in release builds too.
                     Move testMove;
-                    assert(expandMove(record, testMove) && (testMove == move));
+                    if (expandMove(record, testMove))
+                    {
+                        if (testMove != move)
+                        {
+                            ChessFatal("tPieceSet::encodeAndSaveMove - expanded move incorrectly");
+                        }
+                    }
+                    else 
+                    {
+                        ChessFatal("tPieceSet::encodeAndSaveMove - could not expand move");
+                    }
                 }
                 else
                 {
