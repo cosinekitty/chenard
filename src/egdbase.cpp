@@ -1312,7 +1312,7 @@ enum ConsultMode
     CONSULT_MODE_MEMORY,        // load entire table into memory on first access and re-use it each time afterward.
 };
 
-bool ConsultDatabase (tPieceSet set, ChessBoard &board, Move &move, ConsultMode mode);
+bool ConsultDatabase (int workIndex, ChessBoard &board, Move &move, ConsultMode mode);
 
 SCORE EGDB_FeedbackEval (ChessBoard &board)
 {
@@ -1329,14 +1329,14 @@ SCORE EGDB_FeedbackEval (ChessBoard &board)
             if (WorkSet[i].isExactMatch (board))
             {
                 ++NumConsults;      // track these expensive calls (if too high, may rework so we keep prior tables in memory)
-                if (ConsultDatabase (WorkSet[i], board, move, CONSULT_MODE_MEMORY))
+                if (ConsultDatabase (i, board, move, CONSULT_MODE_MEMORY))
                 {
                     return move.score;
                 }
+                break;  // can't match any other work set, so give up
             }
         }
-
-        return 0;       // assume anything we don't know about is inherently a draw
+        // assume anything we don't know about is inherently a draw
     }
     else
     {
@@ -1344,11 +1344,10 @@ SCORE EGDB_FeedbackEval (ChessBoard &board)
         {
             return BLACK_WINS;      // Black has checkmated White!  (could happen in WKING+WQUEEN vs BKING+BROOK)
         }
-        else
-        {
-            return 0;               // stalemate
-        }
+        // stalemate
     }
+
+    return 0;
 }
 
 SCORE EGDB_FeedbackSearch (ChessBoard &board)
@@ -1941,13 +1940,11 @@ void AnalyzeEndgameDatabase (const char *filename)
 struct tDatabaseMemoryImage
 {
     tDatabasePrefix  prefix;
-    char             filename[MAX_DATABASE_FILENAME];
     unsigned char   *buffer;
 
     tDatabaseMemoryImage()
     {
         memset(&prefix, 0, sizeof(prefix));
-        filename[0] = '\0';
         buffer = NULL;
     }
 
@@ -1958,9 +1955,9 @@ struct tDatabaseMemoryImage
 
     void Erase()
     {
+        memset(&prefix, 0, sizeof(prefix));
         delete[] buffer;
         buffer = NULL;
-        filename[0] = '\0';
     }
 };
 
@@ -2011,10 +2008,18 @@ void GenerateEndgameDatabases (ChessBoard &board, ChessUI &ui)
     }
 }
 
-bool ConsultDatabase (tPieceSet set, ChessBoard &board, Move &move, ConsultMode mode)
+bool ConsultDatabase (int workIndex, ChessBoard &board, Move &move, ConsultMode mode)
 {
     // Tricky bit:  If it is Black's turn to move, we need to toggle all the pieces,
     // and if pawns are involved, we need to rotate/unrotate the board and moves.
+
+    if (workIndex < 0 || workIndex >= WorkSetSize)
+    {
+        assert(false);      // workIndex is out of range!
+        return false;
+    }
+
+    tPieceSet set = WorkSet[workIndex];     // copy struct locally so we can modify it.
 
     bool found = false;
 
@@ -2043,22 +2048,14 @@ bool ConsultDatabase (tPieceSet set, ChessBoard &board, Move &move, ConsultMode 
         // See if we have already loaded this database file.
         // Note that we re-use in-memory data even if told to seek,
         // to take advantage of anyone else who already loaded it in memory mode.
-        for (int di=0; di < WorkSetSize; ++di)
+        tDatabaseMemoryImage& d = DatabaseMemoryImage[workIndex];
+        if (d.buffer != NULL)
         {
-            const tDatabaseMemoryImage& d = DatabaseMemoryImage[di];
-            if (d.buffer != NULL)
-            {
-                if (0 == strcmp(d.filename, filename))
-                {
-                    entrySize = d.prefix.entrySize;
-                    memcpy(entryData, &d.buffer[ti * entrySize], entrySize);
-                    loaded = true;
-                    break;
-                }
-            }
+            entrySize = d.prefix.entrySize;
+            memcpy(entryData, &d.buffer[ti * entrySize], entrySize);
+            loaded = true;
         }
-
-        if (!loaded)
+        else
         {
             FILE *dbfile = fopen (filename, "rb");
             if (dbfile)
@@ -2070,31 +2067,23 @@ bool ConsultDatabase (tPieceSet set, ChessBoard &board, Move &move, ConsultMode 
                     if (mode == CONSULT_MODE_MEMORY)
                     {
                         // Slurp entire table into memory.
-                        // First find the slot where it goes (first unused, determined by buffer==NULL).
-                        for (int di=0; di < WorkSetSize; ++di)
+                        size_t bufferLength =
+                            static_cast<size_t>(prefix.entrySize) *
+                            static_cast<size_t>(prefix.numTableEntries);
+
+                        d.prefix = prefix;
+                        d.buffer = new unsigned char[bufferLength];
+
+                        if (1 == fread(d.buffer, bufferLength, 1, dbfile))
                         {
-                            tDatabaseMemoryImage& d = DatabaseMemoryImage[di];
-                            if (d.buffer == NULL)
-                            {
-                                size_t bufferLength =
-                                    static_cast<size_t>(prefix.entrySize) *
-                                    static_cast<size_t>(prefix.numTableEntries);
-
-                                d.prefix = prefix;
-                                strcpy(d.filename, filename);
-                                d.buffer = new unsigned char[bufferLength];
-
-                                if (1 == fread(d.buffer, bufferLength, 1, dbfile))
-                                {
-                                    memcpy(entryData, &d.buffer[ti * entrySize], entrySize);
-                                    loaded = true;
-                                    break;
-                                }
-                            }
+                            memcpy(entryData, &d.buffer[ti * entrySize], entrySize);
+                            loaded = true;
                         }
                     }
                     else
                     {
+                        assert(mode == CONSULT_MODE_SEEK);
+
                         // Seek to the correct file offset for this move...
                         int FileOffset = sizeof(prefix) + (ti * entrySize);
                         if (0 == fseek (dbfile, FileOffset, SEEK_SET))
@@ -2150,7 +2139,7 @@ bool ComputerChessPlayer::FindEndgameDatabaseMove (ChessBoard &board, Move &move
     {
         if (WorkSet[i].isExactMatch (board))
         {
-            return ConsultDatabase (WorkSet[i], board, move, CONSULT_MODE_SEEK);
+            return ConsultDatabase (i, board, move, CONSULT_MODE_SEEK);
         }
     }
 
