@@ -841,15 +841,8 @@ protected:
                     record[1] = (unsigned char) mate_in_plies;
 
                     // sanity check that we will be able to re-decode the move later...
-                    Move TestMove;
-                    if (expandMove (record, TestMove))
-                    {
-                        assert (TestMove == move);
-                    }
-                    else
-                    {
-                        assert (false);     // ack!
-                    }
+                    Move testMove;
+                    assert(expandMove(record, testMove) && (testMove == move));
                 }
                 else
                 {
