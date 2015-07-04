@@ -1305,7 +1305,7 @@ int main (int argc, const char *argv[])
         }
         else
         {
-            printf ("Unknown option on command line.");
+            printf ("Unknown option on command line.\n");
         }
         return 0;
     }
