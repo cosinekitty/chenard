@@ -315,7 +315,7 @@ const int LeftRightTable [64] =         // abcdefgh
 
 //----------------------------------------------------------------------------------------------
 
-const int MAX_PIECE_SET = 4;    // Any bigger than this and resulting tables are excessively large for memory!  (e.g. 5 ==> 1.6 GB)
+const int MAX_PIECE_SET = 4;    // Any bigger than this and resulting tables are very large!
 const int MAX_DATABASE_FILENAME = (MAX_PIECE_SET-2)*2 + 4 + 1;      // "wbwn" + ".egm" + '\0'
 
 class tPieceSet
@@ -850,7 +850,7 @@ protected:
                             ChessFatal("tPieceSet::encodeAndSaveMove - expanded move incorrectly");
                         }
                     }
-                    else 
+                    else
                     {
                         ChessFatal("tPieceSet::encodeAndSaveMove - could not expand move");
                     }
@@ -1117,6 +1117,7 @@ static const tPieceSet WorkSet[] =
     tPieceSet(WPAWN),
     tPieceSet(WQUEEN,BROOK),
     tPieceSet(WQUEEN,BBISHOP),
+    tPieceSet(WQUEEN,BKNIGHT),
     tPieceSet(WBISHOP,WBISHOP),
     tPieceSet(WBISHOP,WKNIGHT),
 };
