@@ -1938,6 +1938,37 @@ void AnalyzeEndgameDatabase (const char *filename)
 
 //-----------------------------------------------------------------------------------------------------
 
+struct tDatabaseMemoryImage
+{
+    tDatabasePrefix  prefix;
+    char             filename[MAX_DATABASE_FILENAME];
+    unsigned char   *buffer;
+
+    tDatabaseMemoryImage()
+    {
+        memset(&prefix, 0, sizeof(prefix));
+        filename[0] = '\0';
+        buffer = NULL;
+    }
+
+    ~tDatabaseMemoryImage()
+    {
+        Erase();
+    }
+
+    void Erase()
+    {
+        delete[] buffer;
+        buffer = NULL;
+        filename[0] = '\0';
+    }
+};
+
+static tDatabaseMemoryImage DatabaseMemoryImage[WorkSetSize];
+
+//-----------------------------------------------------------------------------------------------------
+
+
 void GenerateEndgameDatabases (ChessBoard &board, ChessUI &ui)
 {
     dblog = fopen ("dblog.txt", "wt");
@@ -1955,11 +1986,18 @@ void GenerateEndgameDatabases (ChessBoard &board, ChessUI &ui)
         fflush (dblog);
 #endif
 
+        // Generate the tables in the correct order.
         for (int i=0; i < WorkSetSize; ++i)
         {
             NumCompletedWorkSets = i;
             GenerateEndgameDatabase (board, ui, WorkSet[i]);
             AnalyzeEndgameDatabase (WorkSet[i].getFileName());
+        }
+
+        // Free up any memory we allocated for holding the tables for feedback.
+        for (int i=0; i < WorkSetSize; ++i)
+        {
+            DatabaseMemoryImage[i].Erase();
         }
 
         fprintf (dblog, "Finished!\n");
@@ -1973,38 +2011,6 @@ void GenerateEndgameDatabases (ChessBoard &board, ChessUI &ui)
     }
 }
 
-
-//-----------------------------------------------------------------------------------------------------
-
-struct tDatabaseMemoryImage
-{
-    tDatabasePrefix  prefix;
-    tPieceSet        pieceSet;
-    unsigned char   *buffer;
-
-    tDatabaseMemoryImage()
-        : pieceSet()
-        , buffer(NULL)
-    {
-        memset(&prefix, 0, sizeof(prefix));
-    }
-
-    ~tDatabaseMemoryImage()
-    {
-        Erase();
-    }
-
-    void Erase()
-    {
-        delete[] buffer;
-        buffer = NULL;
-    }
-};
-
-
-static tDatabaseMemoryImage DatabaseMemoryImage[WorkSetSize];
-
-
 bool ConsultDatabase (tPieceSet set, ChessBoard &board, Move &move, ConsultMode mode)
 {
     // Tricky bit:  If it is Black's turn to move, we need to toggle all the pieces,
@@ -2013,6 +2019,7 @@ bool ConsultDatabase (tPieceSet set, ChessBoard &board, Move &move, ConsultMode 
     bool found = false;
 
     assert (set.isValid());
+    assert (*set.getFileName() != '\0');
 
     bool white_move = board.WhiteToMove();
 
@@ -2041,7 +2048,7 @@ bool ConsultDatabase (tPieceSet set, ChessBoard &board, Move &move, ConsultMode 
             const tDatabaseMemoryImage& d = DatabaseMemoryImage[di];
             if (d.buffer != NULL)
             {
-                if (0 == strcmp(d.pieceSet.getFileName(), filename))
+                if (0 == strcmp(d.filename, filename))
                 {
                     entrySize = d.prefix.entrySize;
                     memcpy(entryData, &d.buffer[ti * entrySize], entrySize);
@@ -2074,7 +2081,7 @@ bool ConsultDatabase (tPieceSet set, ChessBoard &board, Move &move, ConsultMode 
                                     static_cast<size_t>(prefix.numTableEntries);
 
                                 d.prefix = prefix;
-                                d.pieceSet = set;
+                                strcpy(d.filename, filename);
                                 d.buffer = new unsigned char[bufferLength];
 
                                 if (1 == fread(d.buffer, bufferLength, 1, dbfile))
