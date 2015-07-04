@@ -2123,7 +2123,7 @@ bool ConsultDatabase (tPieceSet set, ChessBoard &board, Move &move, ConsultMode 
                 MoveList ml;
                 board.GenMoves(ml);
                 found = ml.IsLegal(move);
-                assert(false);     // the database contains a non-null, illegal move!  (look in RawMove)
+                assert(found);     // the database contains a non-null, illegal move!  (look in RawMove)
             }
         }
     }
