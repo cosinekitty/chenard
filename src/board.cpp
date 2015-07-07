@@ -627,18 +627,18 @@ char *ChessBoard::GetForsythEdwardsNotation (char *buffer, int buffersize) const
     int length = 0;     // used by fencopy macro (see above)
 
     /*
-        http://www.very-best.de/pgn-spec.htm
+        http://www.thechessdrum.net/PGN_Reference.txt
 
-        16.1.4 Piece placement data
-        The first field represents the placement of the pieces on the board.
-        The board contents are specified starting with the eighth rank and
-        ending with the first rank. For each rank, the squares are specified
-        from file a to file h. White pieces are identified by uppercase SAN
-        piece letters ("PNBRQK") and black pieces are identified by lowercase
-        SAN piece letters ("pnbrqk"). Empty squares are represented by the
-        digits one through eight; the digit used represents the count of
-        contiguous empty squares along a rank. A solidus character "/"
-        is used to separate data of adjacent ranks.
+        16.1.3.1: Piece placement data
+
+        The first field represents the placement of the pieces on the board.  The board
+        contents are specified starting with the eighth rank and ending with the first
+        rank.  For each rank, the squares are specified from file a to file h.  White
+        pieces are identified by uppercase SAN piece letters ("PNBRQK") and black
+        pieces are identified by lowercase SAN piece letters ("pnbrqk").  Empty squares
+        are represented by the digits one through eight; the digit used represents the
+        count of contiguous empty squares along a rank.  A solidus character "/" is
+        used to separate data of adjacent ranks.
     */
 
     for (int rank='8'; rank >= '1'; --rank)
@@ -675,10 +675,10 @@ char *ChessBoard::GetForsythEdwardsNotation (char *buffer, int buffersize) const
     }
 
     /*
-        16.1.5 Active color
-        The second field represents the active color.
-        A lower case "w" is used if White is to move;
-        a lower case "b" is used if Black is the active player.
+        16.1.3.2: Active color
+
+        The second field represents the active color.  A lower case "w" is used if
+        White is to move; a lower case "b" is used if Black is the active player.
     */
 
     fencopy (' ');
@@ -686,20 +686,19 @@ char *ChessBoard::GetForsythEdwardsNotation (char *buffer, int buffersize) const
     fencopy (' ');
 
     /*
-        16.1.6 Castling availability
-        The third field represents castling availability.
-        This indicates potential future castling that may of may not be
-        possible at the moment due to blocking pieces or enemy attacks.
-        If there is no castling availability for either side, the single
-        character symbol "-" is used. Otherwise, a combination of from
-        one to four characters are present. If White has kingside castling
-        availability, the uppercase letter "K" appears. If White has
-        queenside castling availability, the uppercase letter "Q" appears.
-        If Black has kingside castling availability, the lowercase letter
-        "k" appears. If Black has queenside castling availability,
-        then the lowercase letter "q" appears. Those letters which appear
-        will be ordered first uppercase before lowercase and second kingside
-        before queenside. There is no white space between the letters.
+        16.1.3.3: Castling availability
+
+        The third field represents castling availability.  This indicates potential
+        future castling that may of may not be possible at the moment due to blocking
+        pieces or enemy attacks.  If there is no castling availability for either side,
+        the single character symbol "-" is used.  Otherwise, a combination of from one
+        to four characters are present.  If White has kingside castling availability,
+        the uppercase letter "K" appears.  If White has queenside castling
+        availability, the uppercase letter "Q" appears.  If Black has kingside castling
+        availability, the lowercase letter "k" appears.  If Black has queenside
+        castling availability, then the lowercase letter "q" appears.  Those letters
+        which appear will be ordered first uppercase before lowercase and second
+        kingside before queenside.  There is no white space between the letters.
     */
     int castling = 0;
     if (0 == (flags & (SF_WKMOVED | SF_WKRMOVED)))
@@ -742,19 +741,20 @@ char *ChessBoard::GetForsythEdwardsNotation (char *buffer, int buffersize) const
     fencopy(' ');
 
     /*
-        16.1.7 En passant target square
-        The fourth field is the en passant target square. If there is no en
-        passant target square then the single character symbol "-" appears.
-        If there is an en passant target square then is represented by a
-        lowercase file character immediately followed by a rank digit.
-        Obviously, the rank digit will be "3" following a white pawn double
-        advance (Black is the active color) or else be the digit "6" after
-        a black pawn double advance (White being the active color).
+        16.1.3.4: En passant target square
 
-        An en passant target square is given if and only if the last move
-        was a pawn advance of two squares. Therefore, an en passant target
-        square field may have a square name even if there is no pawn of
-        the opposing side that may immediately execute the en passant capture.
+
+        The fourth field is the en passant target square.  If there is no en passant
+        target square then the single character symbol "-" appears.  If there is an en
+        passant target square then is represented by a lowercase file character
+        immediately followed by a rank digit.  Obviously, the rank digit will be "3"
+        following a white pawn double advance (Black is the active color) or else be
+        the digit "6" after a black pawn double advance (White being the active color).
+
+        An en passant target square is given if and only if the last move was a pawn
+        advance of two squares.  Therefore, an en passant target square field may have
+        a square name even if there is no pawn of the opposing side that may
+        immediately execute the en passant capture.
     */
 
     bool found_ep_target = false;
@@ -794,10 +794,11 @@ char *ChessBoard::GetForsythEdwardsNotation (char *buffer, int buffersize) const
     }
 
     /*
-        16.1.8 Halfmove clock
-        The fifth field is a nonnegative integer representing the halfmove clock.
-        This number is the count of halfmoves (or ply) since the last pawn
-        advance or capturing move. This value is used for the fifty move draw rule.
+        16.1.3.5: Halfmove clock
+
+        The fifth field is a nonnegative integer representing the halfmove clock.  This
+        number is the count of halfmoves (or ply) since the last pawn advance or
+        capturing move.  This value is used for the fifty move draw rule.
     */
     int quietPlies = ply_number - lastCapOrPawn - 1;
     sprintf (tempstr, " %d ", quietPlies);
@@ -807,10 +808,11 @@ char *ChessBoard::GetForsythEdwardsNotation (char *buffer, int buffersize) const
     }
 
     /*
-        16.1.9 Fullmove number
+        16.1.3.6: Fullmove number
+
         The sixth and last field is a positive integer that gives the fullmove number.
-        This will have the value "1" for the first move of a game for both White and Black.
-        It is incremented by one immediately after each move by Black.
+        This will have the value "1" for the first move of a game for both White and
+        Black.  It is incremented by one immediately after each move by Black.
     */
     sprintf (tempstr, "%d", (1 + ply_number/2));
     for (i=0; tempstr[i]; ++i)
@@ -819,7 +821,8 @@ char *ChessBoard::GetForsythEdwardsNotation (char *buffer, int buffersize) const
     }
 
     /*
-        16.1.10 Examples
+        16.1.4: Examples
+
         Here's the FEN for the starting position:
 
         rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
