@@ -1261,7 +1261,7 @@ void FormatChessMove (
         }
 
         assert (k > 0);       // otherwise the supplied move is not legal!
-        movelist.num = k;   // truncate the list: now it contains only moves to same dest by same piece
+        movelist.num = k;     // truncate the list: now it contains only moves to same dest by same piece
 
         bool need_source_file = false;
         bool need_source_rank = false;
