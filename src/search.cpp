@@ -71,8 +71,8 @@ ComputerChessPlayer::ComputerChessPlayer ( ChessUI &ui ):
 {
     rootml.num = 0;
     ResetHistoryBuffers();
-    predictedOppMove.score = 0;
-    predictedOppMove.source = predictedOppMove.dest = 0;
+    memset(&predictedOppMove, 0, sizeof(predictedOppMove));
+    memset(&moveOrder_xposBestMove, 0, sizeof(moveOrder_xposBestMove));
 }
 
 
