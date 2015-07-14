@@ -76,6 +76,96 @@ bool LoadGameFile(ChessBoard& board, const char *inFileName)
 }
 
 
+int MakeFlywheelUnitTest(const char *inPgnFileName, const char *outFileName, const char *varname)
+{
+    int rc = 1;
+    remove(outFileName);    // delete file if already exists
+    tChessMoveStream *stream = tChessMoveStream::OpenFileForRead(inPgnFileName);
+    if (stream != NULL)
+    {
+        FILE *outfile = fopen(outFileName, "wt");
+        if (outfile)
+        {
+            ChessBoard board;
+            rc = 0;
+            fprintf(outfile, "var %s = [\n", varname);
+        
+            bool gameReset;
+            Move move;
+            UnmoveInfo unmove;
+            bool first = true;
+            while (stream->GetNextMove(move, gameReset))
+            {
+                if (first)
+                {
+                    first = false;
+                    fprintf(outfile, "  { ");
+                }
+                else
+                {
+                    fprintf(outfile, ", { ");
+                }                
+            
+                if (gameReset)
+                {
+                    board.Init();
+                }
+                MoveList legal;
+                board.GenMoves(legal);
+                
+                char notation[LONGMOVE_MAX_CHARS];
+                if (!FormatLongMove(board.WhiteToMove(), move, notation))
+                {
+                    fprintf(stderr, "ERROR: cannot format move\n");
+                    rc = 1;
+                    break;
+                }
+                
+                fprintf(outfile, "\"move\": \"%s\"\n", notation);                
+                
+                board.MakeMove(move, unmove);
+                
+                char fen[200];
+                if (!board.GetForsythEdwardsNotation(fen, sizeof(fen)))
+                {
+                    fprintf(stderr, "ERROR: cannot calculate FEN\n");
+                    rc = 1;
+                    break;
+                }
+                
+                bool check    = board.CurrentPlayerInCheck();
+                bool mobile   = board.CurrentPlayerCanMove();
+                int  reps = 0;
+                int  draw     = (!mobile && !check) || board.IsDefiniteDraw(&reps);
+                
+                fprintf(outfile, ",   \"fen\": \"%s\"\n",    fen);
+                fprintf(outfile, ",   \"check\": \"%s\"\n",  check  ? "true" : "false");
+                fprintf(outfile, ",   \"mobile\": \"%s\"\n", mobile ? "true" : "false");
+                fprintf(outfile, ",   \"draw\": \"%s\" }\n\n", draw   ? "true" : "false");
+            }
+            
+            fprintf(outfile, "];\n");
+            fclose(outfile);
+            if (rc != 0)
+            {
+                remove(outFileName);
+            }
+        }
+        else
+        {
+            fprintf(stderr, "ERROR: cannot open file '%s' for write\n", outFileName);
+        }
+
+        delete stream;
+    }
+    else
+    {
+        fprintf(stderr, "Could not open '%s'\n", inPgnFileName);
+    }
+    return rc;
+}
+
+
 int main ( int argc, const char *argv[] )
 {
     char line [256];
@@ -366,6 +456,18 @@ int main ( int argc, const char *argv[] )
             const char *inGameFilename = argv[3];
             const char *outListFilename = argv[4];
             return AnalyzeGameFile ( thinkTimeSeconds, inGameFilename, outListFilename );
+        }
+        else if (strcmp(argv[1], "--flytest") == 0)
+        {
+            if (argc != 5)
+            {
+                fprintf(stderr, "Use: %s --flytest infile.pgn outfile.js varname\n", argv[0]);
+                return 1;
+            }
+            const char *inPgnFileName = argv[2];
+            const char *outFileName = argv[3];
+            const char *varname = argv[4];
+            return MakeFlywheelUnitTest(inPgnFileName, outFileName, varname);
         }
         else
         {
