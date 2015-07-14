@@ -612,7 +612,9 @@ void LearnTree::absorbPgnFile (const char *pgnFileName)
                             break;
                         }
                         else if (result == 1)
+                        {
                             ++updates;
+                        }
                         else if (result == 2)
                         {
                             ++branches;

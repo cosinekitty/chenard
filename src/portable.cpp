@@ -80,21 +80,31 @@ int MakeFlywheelUnitTest(const char *inPgnFileName, const char *outFileName, con
 {
     int rc = 1;
     remove(outFileName);    // delete file if already exists
-    tChessMoveStream *stream = tChessMoveStream::OpenFileForRead(inPgnFileName);
-    if (stream != NULL)
+    FILE *infile = fopen(inPgnFileName, "rt");
+    if (infile == NULL)
     {
-        FILE *outfile = fopen(outFileName, "wt");
-        if (outfile)
-        {
-            ChessBoard board;
-            rc = 0;
-            fprintf(outfile, "var %s = [\n", varname);
+        fprintf(stderr, "ERROR: Cannot open input PGN file '%s'\n", inPgnFileName);
+        return 1;
+    }
+    
+    FILE *outfile = fopen(outFileName, "wt");
+    if (outfile)
+    {
+        PgnExtraInfo    info;
+        PGN_FILE_STATE  state;
+        char            movestr [1 + MAX_MOVE_STRLEN];
+        ChessBoard      board;
+        Move            move;
+        UnmoveInfo      unmove;
         
-            bool gameReset;
-            Move move;
-            UnmoveInfo unmove;
-            bool first = true;
-            while (stream->GetNextMove(move, gameReset))
+        rc = 0;
+        fprintf(outfile, "var %s = [\n", varname);
+    
+        bool first = true;
+        
+        for(;;)
+        {
+            while (GetNextPgnMove (infile, movestr, state, info))
             {
                 if (first)
                 {
@@ -106,22 +116,35 @@ int MakeFlywheelUnitTest(const char *inPgnFileName, const char *outFileName, con
                     fprintf(outfile, ", { ");
                 }                
             
-                if (gameReset)
+                if (state == PGN_FILE_STATE_NEWGAME)                
                 {
+                    fprintf(outfile, "\"reset\": true\n");
                     board.Init();
                 }
+                else
+                {
+                    fprintf(outfile, "\"reset\": false\n");
+                }
+                
                 MoveList legal;
                 board.GenMoves(legal);
+                
+                if (!ParseFancyMove (movestr, board, move))
+                {
+                    fprintf(stderr, "ERROR: illegal move '%s'\n", movestr);
+                    rc = 1;
+                    goto failure_exit;
+                }
                 
                 char notation[LONGMOVE_MAX_CHARS];
                 if (!FormatLongMove(board.WhiteToMove(), move, notation))
                 {
                     fprintf(stderr, "ERROR: cannot format move\n");
                     rc = 1;
-                    break;
+                    goto failure_exit;
                 }
                 
-                fprintf(outfile, "\"move\": \"%s\"\n", notation);
+                fprintf(outfile, ",   \"move\": \"%s\"\n", notation);
                 
                 fprintf(outfile, ",   \"legal\": [");
                 for (int i=0; i < legal.num; ++i)
@@ -147,7 +170,7 @@ int MakeFlywheelUnitTest(const char *inPgnFileName, const char *outFileName, con
                 {
                     fprintf(stderr, "ERROR: cannot calculate FEN\n");
                     rc = 1;
-                    break;
+                    goto failure_exit;
                 }
                 
                 bool check    = board.CurrentPlayerInCheck();
@@ -155,31 +178,33 @@ int MakeFlywheelUnitTest(const char *inPgnFileName, const char *outFileName, con
                 int  reps = 0;
                 int  draw     = (!mobile && !check) || board.IsDefiniteDraw(&reps);
                 
-                fprintf(outfile, ",   \"fen\": \"%s\"\n",    fen);
-                fprintf(outfile, ",   \"check\": \"%s\"\n",  check  ? "true" : "false");
-                fprintf(outfile, ",   \"mobile\": \"%s\"\n", mobile ? "true" : "false");
-                fprintf(outfile, ",   \"draw\": \"%s\" }\n\n", draw   ? "true" : "false");
+                fprintf(outfile, ",   \"fen\": \"%s\"\n",  fen);
+                fprintf(outfile, ",   \"check\": %s\n",    check  ? "true" : "false");
+                fprintf(outfile, ",   \"mobile\": %s\n",   mobile ? "true" : "false");
+                fprintf(outfile, ",   \"draw\": %s }\n\n", draw   ? "true" : "false");
             }
             
-failure_exit:            
-            fprintf(outfile, "];\n");
-            fclose(outfile);
-            if (rc != 0)
+            if (state != PGN_FILE_STATE_GAMEOVER)
             {
-                remove(outFileName);
+                break;      // nothing left in this PGN file, or we encountered a syntax error
             }
-        }
-        else
+        }        
+        
+failure_exit:            
+        fprintf(outfile, "];\n");
+        fclose(outfile);
+        if (rc != 0)
         {
-            fprintf(stderr, "ERROR: cannot open file '%s' for write\n", outFileName);
+            remove(outFileName);
         }
-
-        delete stream;
     }
     else
     {
-        fprintf(stderr, "Could not open '%s'\n", inPgnFileName);
+        fprintf(stderr, "ERROR: cannot open file '%s' for write\n", outFileName);
     }
+
+    fclose(infile);
+    
     return rc;
 }
 
