@@ -121,7 +121,24 @@ int MakeFlywheelUnitTest(const char *inPgnFileName, const char *outFileName, con
                     break;
                 }
                 
-                fprintf(outfile, "\"move\": \"%s\"\n", notation);                
+                fprintf(outfile, "\"move\": \"%s\"\n", notation);
+                
+                fprintf(outfile, ",   \"legal\": [");
+                for (int i=0; i < legal.num; ++i)
+                {
+                    if (!FormatLongMove(board.WhiteToMove(), legal.m[i], notation))
+                    {
+                        fprintf(stderr, "ERROR: cannot format legal move %d\n", i);
+                        rc = 1;
+                        goto failure_exit;
+                    }
+                    if (i > 0) 
+                    {
+                        fprintf(outfile, ", ");
+                    }
+                    fprintf(outfile, "\"%s\"", notation);
+                }
+                fprintf(outfile, "]\n");
                 
                 board.MakeMove(move, unmove);
                 
@@ -144,6 +161,7 @@ int MakeFlywheelUnitTest(const char *inPgnFileName, const char *outFileName, con
                 fprintf(outfile, ",   \"draw\": \"%s\" }\n\n", draw   ? "true" : "false");
             }
             
+failure_exit:            
             fprintf(outfile, "];\n");
             fclose(outfile);
             if (rc != 0)
