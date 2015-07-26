@@ -45,12 +45,12 @@ tChessMoveStream *tChessMoveStream::OpenFileForRead (const char *filename)
     // it ends with the extension ".gam"...
     const char *ext = strrchr (filename, '.');
 
-    if (0 == stricmp (ext, ".gam"))
+    if (ext && (0 == stricmp(ext, ".gam")))
     {
         infile = fopen (filename, "rb");
         if (infile)
         {
-            stream = new tChessMoveFile_GAM (infile);
+            stream = new tChessMoveFile_GAM(infile);
         }
     }
     else
