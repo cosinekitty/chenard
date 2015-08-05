@@ -16,5 +16,7 @@ Release
 *.map
 fen/fen.js
 fen/ui.js
+src/tags
 chenclient/chenclient
 chenserver/chenserver
+linux/vgchenard
