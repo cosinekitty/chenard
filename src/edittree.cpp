@@ -1168,7 +1168,7 @@ bool ImportGameFile (LearnTree &tree, const char *filename)
 {
     int  updates  = 0;
     int  branches = 0;
-    bool reset    = false;
+    PGN_FILE_STATE state = PGN_FILE_STATE_UNDEFINED;
     bool success  = false;
 
     tChessMoveStream *stream = tChessMoveStream::OpenFileForRead (filename);
@@ -1182,9 +1182,9 @@ bool ImportGameFile (LearnTree &tree, const char *filename)
         Move        move;
         UnmoveInfo  unmove;
 
-        while (stream->GetNextMove (move, reset))
+        while (stream->GetNextMove(move, state))
         {
-            if (reset)
+            if (state == PGN_FILE_STATE_NEWGAME)
             {
                 board.Init();
             }
@@ -1212,12 +1212,17 @@ bool ImportGameFile (LearnTree &tree, const char *filename)
             }
             board.MakeMove (move, unmove);
         }
+        delete stream;
+        
+        if (state != PGN_FILE_STATE_FINISHED)
+        {
+            // We don't consider this a fatal error, just a warning.
+            printf("??? Error loading PGN file '%s': %s\n", filename, GetPgnFileStateString(state));
+        }
 
         success = true;
 
         printf(">>> file='%s', branches=%d, updates=%d\n", filename, branches, updates);
-        delete stream;
-        stream = NULL;
     }
 
     return success;
