@@ -42,15 +42,15 @@ public:
     {
     }
 
-    virtual bool GetNextMove (Move &, bool &GameReset) = 0;
+    virtual bool GetNextMove(Move &, PGN_FILE_STATE &) = 0;
 };
 
 
 class tChessMoveFile: public tChessMoveStream
 {
 public:
-    tChessMoveFile (FILE *_infile):
-        infile (_infile)
+    tChessMoveFile(FILE *_infile):
+        infile(_infile)
     {
     }
 
@@ -69,48 +69,15 @@ protected:
 };
 
 
-class tChessMoveFile_GAM: public tChessMoveFile
-{
-public:
-    tChessMoveFile_GAM (FILE *_infile):
-        tChessMoveFile (_infile)
-    {
-    }
-
-    virtual bool GetNextMove (Move &, bool &GameReset);
-};
-
-
 class tChessMoveFile_PGN: public tChessMoveFile
 {
 public:
-    tChessMoveFile_PGN (FILE *_infile):
-        tChessMoveFile (_infile)
+    tChessMoveFile_PGN(FILE *_infile):
+        tChessMoveFile(_infile)
     {
     }
 
-    virtual bool GetNextMove (Move &, bool &GameReset);
-};
-
-
-class tChessMoveFile_Yahoo: public tChessMoveFile
-{
-public:
-    tChessMoveFile_Yahoo(FILE *_infile)
-        : tChessMoveFile(_infile)
-        , num_scanned(0)
-        , move_number(1)
-    {
-    }
-
-    virtual bool GetNextMove (Move &, bool &GameReset);
-
-private:
-    char    line [128];
-    char    white_move_string [128];
-    char    black_move_string [128];
-    int     num_scanned;
-    int     move_number;
+    virtual bool GetNextMove(Move &, PGN_FILE_STATE &);
 };
 
 

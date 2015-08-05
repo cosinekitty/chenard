@@ -1746,7 +1746,7 @@ bool LoadGameFile (const char *arg)
             if (infile)
             {
                 PGN_FILE_STATE state = LoadGameFromPgnFile (infile, Global_Board);
-                if (state == PGN_FILE_STATE_GAMEOVER)
+                if (state == PGN_FILE_STATE_FINISHED)
                 {
                     // We successfully loaded the game state into the global chess board.
                     // Now we assist the user by trying to restore the player definitions.

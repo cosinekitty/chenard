@@ -1589,14 +1589,15 @@ enum PGN_FILE_STATE
     PGN_FILE_STATE_UNDEFINED,
     PGN_FILE_STATE_NEWGAME,
     PGN_FILE_STATE_SAMEGAME,
-    PGN_FILE_STATE_GAMEOVER,
+    PGN_FILE_STATE_FINISHED,
     PGN_FILE_STATE_EOF,
     PGN_FILE_STATE_SYNTAX_ERROR,
     PGN_FILE_STATE_INVALID_PARAMETER,
-    PGN_FILE_STATE_ILLEGAL_MOVE
+    PGN_FILE_STATE_ILLEGAL_MOVE,
+    PGN_FILE_STATE_EDITED_POSITION,
 };
 
-const char *GetPgnFileStateString (PGN_FILE_STATE);
+const char *GetPgnFileStateString(PGN_FILE_STATE);
 
 const char *ConvertDateToVersion (const char *compileDateString);   // pass in __DATE__ to get a string like "2008.11.06".
 

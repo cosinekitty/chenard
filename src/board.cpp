@@ -1824,9 +1824,12 @@ const char *GetPgnFileStateString (PGN_FILE_STATE state)
     case PGN_FILE_STATE_UNDEFINED:          return "undefined";
     case PGN_FILE_STATE_NEWGAME:            return "new game";
     case PGN_FILE_STATE_SAMEGAME:           return "same game";
+    case PGN_FILE_STATE_FINISHED:           return "no more moves";
     case PGN_FILE_STATE_EOF:                return "unexpected end of file";
     case PGN_FILE_STATE_SYNTAX_ERROR:       return "syntax error";
     case PGN_FILE_STATE_INVALID_PARAMETER:  return "invalid parameter";
+    case PGN_FILE_STATE_ILLEGAL_MOVE:       return "illegal move";
+    case PGN_FILE_STATE_EDITED_POSITION:    return "edited position (initial FEN) not supported";
     default:                                return "unknown state";
     }
 }

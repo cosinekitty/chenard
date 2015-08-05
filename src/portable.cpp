@@ -56,21 +56,31 @@ bool LoadGameFile(ChessBoard& board, const char *inFileName)
     tChessMoveStream *stream = tChessMoveStream::OpenFileForRead(inFileName);
     if (stream != NULL)
     {
-        bool gameReset;
+        PGN_FILE_STATE state;
         Move move;
         UnmoveInfo unmove;
-        while (stream->GetNextMove(move, gameReset))
+        while (stream->GetNextMove(move, state))
         {
-            if (gameReset)
+            if (state == PGN_FILE_STATE_NEWGAME)
             {
                 board.Init();
             }
             board.MakeMove(move, unmove);
         }
-
         delete stream;
-        stream = NULL;
+
+        if (state != PGN_FILE_STATE_FINISHED)
+        {
+            // Something went wrong parsing this PGN file.
+            printf("ERROR loading PGN file '%s': %s\n", inFileName, GetPgnFileStateString(state));
+            return false;
+        }
+
         return true;
+    }
+    else
+    {
+        printf("Cannot open file '%s'\n", inFileName);
     }
     return false;
 }
@@ -184,7 +194,7 @@ int MakeFlywheelUnitTest(const char *inPgnFileName, const char *outFileName, con
                 fprintf(outfile, ",   \"draw\": %s }\n\n", draw   ? "true" : "false");
             }
             
-            if (state != PGN_FILE_STATE_GAMEOVER)
+            if (state != PGN_FILE_STATE_FINISHED)
             {
                 break;      // nothing left in this PGN file, or we encountered a syntax error
             }
@@ -244,7 +254,6 @@ int main ( int argc, const char *argv[] )
             }
             else
             {
-                printf ( "Cannot open file '%s'\n", gameFilename );
                 return 1;
             }
         }
@@ -655,10 +664,10 @@ int AnalyzeGameFile (
     tChessMoveStream *stream = tChessMoveStream::OpenFileForRead (inGameFilename);
     if (stream)
     {
-        bool reset = false;
-        for ( int i=0; stream->GetNextMove(move,reset); ++i )
+        PGN_FILE_STATE state;
+        for (int i=0; stream->GetNextMove(move, state); ++i)
         {
-            if (reset)
+            if (state == PGN_FILE_STATE_NEWGAME)
             {
                 board.Init();
                 fprintf (listFile, "\n----------- NEW GAME -----------\n\n");
@@ -688,7 +697,10 @@ int AnalyzeGameFile (
         }
 
         delete stream;
-        stream = NULL;
+        if (state != PGN_FILE_STATE_FINISHED)
+        {
+            fprintf(stderr, "Error parsing PGN file '%s': %s\n", inGameFilename, GetPgnFileStateString(state));
+        }
     }
     else
     {

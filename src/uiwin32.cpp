@@ -915,7 +915,7 @@ bool ProcessChessCommands ( ChessBoard &board, int &source, int &dest )
             if (0 == stricmp(ext,".pgn"))
             {
                 PGN_FILE_STATE state = LoadGameFromPgnFile (infile, board);
-                if (state != PGN_FILE_STATE_GAMEOVER)
+                if (state != PGN_FILE_STATE_FINISHED)
                 {
                     const char *error = GetPgnFileStateString (state);
                     sprintf (msg, "Problem loading pgn file '%s':\n%s", Global_GameFilename, error);

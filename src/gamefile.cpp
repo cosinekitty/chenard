@@ -34,210 +34,53 @@ bool ScanAlgebraic (char file, char rank, int &offset)
 
 //-----------------------------------------------------------------------------------------------
 
-tChessMoveStream *tChessMoveStream::OpenFileForRead (const char *filename)
+tChessMoveStream *tChessMoveStream::OpenFileForRead(const char *filename)
 {
-    // factory function for auto-detecting file format
-    tChessMoveStream *stream = NULL;
-    FILE *infile = NULL;
-    char line [256];
-
-    // To make life simple, we assume it must be Chenard GAM format if
-    // it ends with the extension ".gam"...
-    const char *ext = strrchr (filename, '.');
-
-    if (ext && (0 == stricmp(ext, ".gam")))
+    // Factory function for auto-detecting file format.
+    // I used to support multiple formats, but here we are in the 21st century
+    // and everyone uses PGN now.
+    FILE *infile = fopen(filename, "rb");
+    if (infile)
     {
-        infile = fopen (filename, "rb");
-        if (infile)
-        {
-            stream = new tChessMoveFile_GAM(infile);
-        }
+        return new tChessMoveFile_PGN(infile);
     }
-    else
-    {
-        infile = fopen (filename, "rt");
-        if (infile)
-        {
-            // Now we need to peek through the file to see what kind of file it is...
-
-            while (fgets (line, sizeof(line), infile))
-            {
-                if (line[0] == '[')
-                {
-                    // e.g. '[Event "?"]'
-                    rewind (infile);    // do this so object we create can read moves from the file
-                    stream = new tChessMoveFile_PGN (infile);
-                    break;
-                }
-                else if (line[0] == ';')
-                {
-                    // e.g. ';Title: Yahoo! Chess Game'
-                    rewind (infile);    // do this so object we create can read moves from the file
-                    stream = new tChessMoveFile_Yahoo (infile);
-                    break;
-                }
-            }
-        }
-    }
-
-    if (stream == NULL)
-    {
-        if (infile)
-        {
-            fclose (infile);
-            infile = NULL;
-        }
-    }
-
-    return stream;
+    return NULL;
 }
 
 //-----------------------------------------------------------------------------------------------
 
-bool tChessMoveFile_GAM::GetNextMove (Move &move, bool &GameReset)
-{
-    GameReset = false;
-    return ::ReadFromFile (infile, move);
-}
-
-//-----------------------------------------------------------------------------------------------
-
-bool tChessMoveFile_PGN::GetNextMove (Move &move, bool &GameReset)
+bool tChessMoveFile_PGN::GetNextMove(Move& move, PGN_FILE_STATE& state)
 {
     char            movestr [1+MAX_MOVE_STRLEN];
     UnmoveInfo      unmove;
-    PGN_FILE_STATE  state;
     PgnExtraInfo    info;
 
-    GameReset = false;
-
-    if (GetNextPgnMove (infile, movestr, state, info))
+    if (GetNextPgnMove(infile, movestr, state, info))
     {
         if (state == PGN_FILE_STATE_NEWGAME)
         {
             if (info.fen[0])
             {
-                return false;       // this API does not support edited positions!
+                // This API does not support edited positions!
+                state = PGN_FILE_STATE_EDITED_POSITION;
+                return false;       
             }
             else
             {
-                GameReset = true;
                 board.Init();
             }
         }
 
-        if (board.ScanMove (movestr, move))
+        if (board.ScanMove(movestr, move))
         {
-            board.MakeMove (move, unmove);
+            board.MakeMove(move, unmove);
             return true;
         }
+
+        // Could not find a matching PGN move for this board position.
+        state = PGN_FILE_STATE_ILLEGAL_MOVE;
     }
 
-    return false;
-}
-
-//-----------------------------------------------------------------------------------------------
-
-bool tChessMoveFile_Yahoo::GetNextMove (Move &move, bool &GameReset)
-{
-    int          test_move_number = 0;
-    char        *move_string = NULL;
-    UnmoveInfo   unmove;
-
-    GameReset = false;
-
-    if (board.WhiteToMove())
-    {
-        // Read lines until we find one that begins with the expected move number.
-        // Typical example:  "29. c7-c6+ e6xe7"
-        while (fgets (line, sizeof(line), infile))
-        {
-            num_scanned = sscanf (line, "%d. %s %s", &test_move_number, white_move_string, black_move_string);
-            if (num_scanned >= 2)
-            {
-                if (test_move_number == move_number)
-                {
-                    // We found the desired move.
-                    move_string = white_move_string;
-                    break;
-                }
-            }
-        }
-    }
-    else
-    {
-        if (num_scanned == 3)
-        {
-            move_string = black_move_string;
-        }
-    }
-
-    if (move_string)
-    {
-        int msource = 0;
-        int mdest   = 0;
-
-        // Special cases:   e2-e4  f3xf6  o-o  o-o-o  e5xg4+  f5-h5++
-        if (0 == memcmp (move_string, "o-o", 3))
-        {
-            // We don't know whether it is o-o or o-o-o yet, but we know the king is moving.
-            // But is it White's king or Black's king?
-            if (board.WhiteToMove())
-            {
-                msource = OFFSET(6,2);
-            }
-            else
-            {
-                msource = OFFSET(6,9);
-            }
-            if (move_string[3]=='-' && move_string[4]=='o')
-            {
-                mdest = msource + (2*WEST);     // o-o-o
-            }
-            else
-            {
-                mdest = msource + (2*EAST);     // o-o
-            }
-        }
-        else
-        {
-            // not castling, so expect normal coords.
-            if (strlen(move_string) >= 5)
-            {
-                if ((move_string[2] == '-') || (move_string[2] == 'x'))
-                {
-                    ScanAlgebraic (move_string[0], move_string[1], msource);
-                    ScanAlgebraic (move_string[3], move_string[4], mdest  );
-                }
-            }
-        }
-
-        if (msource && mdest)
-        {
-            int     tsource, tdest;
-            MoveList    ml;
-            board.GenMoves (ml);
-            for (int i=0; i < ml.num; ++i)
-            {
-                SQUARE prom = ml.m[i].actualOffsets (board, tsource, tdest);
-                if ((tsource == msource) && (tdest == mdest))
-                {
-                    // Stupid Yahoo game format does not indicate pawn promotion piece!
-                    // So we ignore promotions to anything other than queen.
-                    if ((prom == EMPTY) || (prom == WQUEEN) || (prom == BQUEEN))
-                    {
-                        move = ml.m[i];
-                        board.MakeMove (move, unmove);
-                        if (board.WhiteToMove())
-                        {
-                            ++move_number;
-                        }
-                        return true;
-                    }
-                }
-            }
-        }
-    }
     return false;
 }
 
@@ -697,7 +540,7 @@ bool GetNextPgnMove (
                 // Look for special game terminators: "1-0", "0-1", "1/2-1/2".
                 if (0 == strcmp(token, "1-0") || 0 == strcmp(token, "0-1") || 0 == strcmp(token, "1/2-1/2"))
                 {
-                    state = PGN_FILE_STATE_GAMEOVER;
+                    state = PGN_FILE_STATE_FINISHED;
                     break;
                 }
             }
@@ -797,7 +640,7 @@ bool GetNextPgnMove (
             else if (0 == strcmp(token, "*"))
             {
                 // Symbol for the end of the listing of an unfinished game...
-                state = PGN_FILE_STATE_GAMEOVER;
+                state = PGN_FILE_STATE_FINISHED;
                 break;
             }
         }

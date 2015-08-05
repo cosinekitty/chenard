@@ -645,7 +645,7 @@ void LearnTree::absorbPgnFile (const char *pgnFileName)
             }
             else
             {
-                if (state != PGN_FILE_STATE_GAMEOVER)
+                if (state != PGN_FILE_STATE_FINISHED)
                 {
                     break;      // nothing left in this PGN file, or we encountered a syntax error
                 }
