@@ -32,6 +32,7 @@ private:
     HANDLE  hComPort;
     bool    echo;
     bool    allUpperOutput;
+    int     carriageReturnDelayMillis;
 
     bool IsComPortOpen() const
     {
@@ -43,6 +44,7 @@ public:
         : hComPort(INVALID_HANDLE_VALUE)
         , echo(false)
         , allUpperOutput(true)
+        , carriageReturnDelayMillis(0)
     {
     }
 
@@ -54,6 +56,11 @@ public:
     void setUpperCase(bool upcase)
     {
         allUpperOutput = upcase;
+    }
+
+    void setCarriageReturnDelayMillis(int millis)
+    {
+        carriageReturnDelayMillis = millis;
     }
 
     void close()
@@ -76,6 +83,17 @@ public:
         {
             DWORD numBytesWritten = 0;
             WriteFile(hComPort, &c, 1, &numBytesWritten, NULL);
+        }
+
+        // Reported issue with a real teletype machine:
+        // The carriage return can take a long time, and the print head has enough mass
+        // that it takes a while to settle down.  Without a delay, a long line
+        // can cause the printer to crunch some characters together on the paper.
+        // We provide a configuration option to wait a specified number of milliseconds
+        // after every carriage return.
+        if ((c == '\r') && (carriageReturnDelayMillis > 0))
+        {
+            ::Sleep(carriageReturnDelayMillis);
         }
     }
 
@@ -829,6 +847,7 @@ void LoadIniFile(const char *iniFileName)
         int bytesize = 8;
         int parity = 0;
         int stopbits = 2;
+        int crDelayMillis = 0;      // delay in milliseconds after sending a carriage return
 
         const int max = 128;
         char line [max];
@@ -901,6 +920,10 @@ void LoadIniFile(const char *iniFileName)
                     {
                         stopbits = atoi(value);
                     }
+                    else if (0 == stricmp(key, "crdelay"))
+                    {
+                        crDelayMillis = atoi(value);
+                    }
                     else
                     {
                         printf("ttychess.ini: Ignoring unknown key '%s'\n", key);
@@ -914,6 +937,8 @@ void LoadIniFile(const char *iniFileName)
         }
         fclose(infile);
         infile = NULL;
+
+        TheTerminal.setCarriageReturnDelayMillis(crDelayMillis);
 
         if (enableSerialPort)
         {
@@ -950,7 +975,7 @@ int main(int argc, const char *argv[])
     catch (const char *message)
     {
         TheTerminal.print(message);
-        TheTerminal.print("\r\n");
+        TheTerminal.printline();
     }
     TheTerminal.close();
     return rc;
