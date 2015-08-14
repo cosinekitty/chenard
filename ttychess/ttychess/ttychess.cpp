@@ -959,7 +959,7 @@ int main(int argc, const char *argv[])
     {
         LoadIniFile("ttychess.ini");
         TheTerminal.printline();
-        TheTerminal.printline("Teletype chess program (2014.07.11) by Don Cross.");
+        TheTerminal.printline(std::string("Teletype chess program (") + ConvertDateToVersion(__DATE__) + ") by Don Cross.");
         TheTerminal.printline("http://cosinekitty.com/chenard");
         while (true)
         {
