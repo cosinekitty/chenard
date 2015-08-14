@@ -196,7 +196,7 @@ public:
         throw "END OF INPUT";
     }
 
-    void OpenComPort(const char *comport, int baud, bool enableEcho)
+    void OpenComPort(const char *comport, int baud, bool enableEcho, int byteSize, int parity, int stopBits)
     {
         echo = enableEcho;
 
@@ -218,9 +218,9 @@ public:
                 throw "GetCommState failed.";
             }
             dcb.BaudRate = baud;
-            dcb.ByteSize = 8;
-            dcb.fParity = 0;    // no parity
-            dcb.StopBits = 2;   // 2 stop bits
+            dcb.ByteSize = byteSize;
+            dcb.fParity = parity;
+            dcb.StopBits = stopBits;
             if (!SetCommState(hComPort, &dcb))
             {
                 close();    // must close before throwing, or we will try to print the error too!
@@ -826,6 +826,9 @@ void LoadIniFile(const char *iniFileName)
         bool enableEcho = false;
         std::string portName = "COM1";
         int baud = 110;
+        int bytesize = 8;
+        int parity = 0;
+        int stopbits = 2;
 
         const int max = 128;
         char line [max];
@@ -886,6 +889,18 @@ void LoadIniFile(const char *iniFileName)
                     {
                         TheTerminal.setUpperCase(!!atoi(value));
                     }
+                    else if (0 == stricmp(key, "bytesize"))
+                    {
+                        bytesize = atoi(value);
+                    }
+                    else if (0 == stricmp(key, "parity"))
+                    {
+                        parity = atoi(value);
+                    }
+                    else if (0 == stricmp(key, "stopbits"))
+                    {
+                        stopbits = atoi(value);
+                    }
                     else
                     {
                         printf("ttychess.ini: Ignoring unknown key '%s'\n", key);
@@ -903,7 +918,7 @@ void LoadIniFile(const char *iniFileName)
         if (enableSerialPort)
         {
             printf("Opening serial port %s for %d baud ...\n", portName.c_str(), baud);
-            TheTerminal.OpenComPort(portName.c_str(), baud, enableEcho);
+            TheTerminal.OpenComPort(portName.c_str(), baud, enableEcho, bytesize, parity, stopbits);
         }
     }
     else
