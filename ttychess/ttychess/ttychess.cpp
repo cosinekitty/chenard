@@ -518,8 +518,7 @@ public:
             }
             else
             {
-                Move move;  // ignored
-                if (ParseFancyMove(line.c_str(), board, source, dest, promPieceIndex, move))
+                if (ParseFancyMove(line.c_str(), board, source, dest, promPieceIndex))
                 {
                     return true;
                 }
