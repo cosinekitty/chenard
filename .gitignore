@@ -19,4 +19,6 @@ fen/ui.js
 src/tags
 chenclient/chenclient
 chenserver/chenserver
+linux/chenard
 linux/vgchenard
+linux/xchenard
