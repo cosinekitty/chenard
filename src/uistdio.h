@@ -76,7 +76,7 @@ public:
         return showScores;
     }
 
-    void EnableCombatMode();
+    void EnableCombatMode(ChessSide computerSide);
 
 private:
     void ClearScreen();
@@ -97,6 +97,8 @@ private:
     ChessPlayer *whitePlayer;
     ChessPlayer *blackPlayer;
     BoardDisplayType  boardDisplayType;
+    
+    ChessSide combatModeComputerSide;   // if not SIDE_NEITHER, determines automatic assignment of computer-vs-human
 };
 
 

@@ -243,7 +243,7 @@ int main ( int argc, const char *argv[] )
                     const char *option = argv[i];
                     if (0 == strcmp(option, "--combat"))
                     {
-                        theUserInterface.EnableCombatMode();
+                        theUserInterface.EnableCombatMode(theBoard.SideToMove());
                     }
                     else
                     {

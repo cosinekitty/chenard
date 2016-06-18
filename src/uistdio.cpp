@@ -36,17 +36,18 @@ const char *GetBlackPlayerString() // used by SavePortableGameNotation()
 
 ChessUI_stdio::ChessUI_stdio():
     ChessUI(),
-    whitePlayerType ( PT_UNKNOWN ),
-    blackPlayerType ( PT_UNKNOWN ),
-    showScores ( false ),
-    rotateBoard ( false ),
-    beepFlag ( false ),
-    numPlayersCreated ( 0 ),
-    whitePlayer ( 0 ),
-    blackPlayer ( 0 ),
-    boardDisplayType ( BDT_STANDARD )
+    whitePlayerType(PT_UNKNOWN),
+    blackPlayerType(PT_UNKNOWN),
+    showScores(false),
+    rotateBoard(false),
+    beepFlag(false),
+    numPlayersCreated(0),
+    whitePlayer(0),
+    blackPlayer(0),
+    boardDisplayType(BDT_STANDARD),
+    combatModeComputerSide(SIDE_NEITHER)
 {
-    remove ( LogFilename );
+    remove(LogFilename);
 }
 
 
@@ -75,6 +76,45 @@ ChessPlayer *ChessUI_stdio::CreatePlayer ( ChessSide side )
     default:
         ChessFatal ( "Invalid call to ChessUI_stdio::CreatePlayer()" );
         break;
+    }
+    
+    if (combatModeComputerSide != SIDE_NEITHER)
+    {
+        // Make it easier for the computer to analyze the next move in a PGN file.
+        // Instead of asking for input to create the players, create them automatically.
+        // The computer plays whichever side has the move in the PGN file.
+        ChessPlayer *player = 0;
+        PLAYER_TYPE ptype;
+        if (combatModeComputerSide == side)
+        {
+            ComputerChessPlayer *computer = new ComputerChessPlayer(*this);
+            computer->SetTimeLimit(INT32(60 * 100));
+            computer->SetSearchBias(1);
+            computer->setExtendedSearchFlag(true);
+            player = computer;
+            ptype = PT_COMPUTER;
+            *PlayerString = "Computer";
+            showScores = true;
+        }
+        else
+        {
+            player = new HumanChessPlayer(*this);
+            ptype = PT_HUMAN;
+            *PlayerString = "Human";
+        }
+        
+        if (side == SIDE_WHITE)
+        {
+            whitePlayer = player;
+            whitePlayerType = ptype;
+        }
+        else
+        {
+            blackPlayer = player;
+            blackPlayerType = ptype;
+        }
+        
+        return player;
     }
 
 #if SUPPORT_LINUX_INTERNET
@@ -207,18 +247,19 @@ static void TrimString ( char *s )
 }
 
 
-void ChessUI_stdio::EnableCombatMode()
+void ChessUI_stdio::EnableCombatMode(ChessSide computerSide)
 {
+    combatModeComputerSide = computerSide;
     rotateBoard = true;
     beepFlag = true;
     showScores = true;
     boardDisplayType = BDT_LARGE_COLOR;
 
     if ( whitePlayerType == PT_HUMAN )
-        ((HumanChessPlayer *)whitePlayer)->setAutoSingular (true);
+        ((HumanChessPlayer *)whitePlayer)->setAutoSingular(true);
 
     if ( blackPlayerType == PT_HUMAN )
-        ((HumanChessPlayer *)blackPlayer)->setAutoSingular (true);
+        ((HumanChessPlayer *)blackPlayer)->setAutoSingular(true);
 }
 
 
@@ -361,7 +402,7 @@ bool ChessUI_stdio::ReadMove (
         }
         else if ( strcmp ( s, "combat" ) == 0 )
         {
-            EnableCombatMode();
+            EnableCombatMode(board.SideToMove());
             DrawBoard (board);
             printf ( "READY FOR COMBAT!\n" );
         }

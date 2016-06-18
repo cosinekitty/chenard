@@ -1253,6 +1253,10 @@ public:
 
     bool  WhiteToMove()  const;
     bool  BlackToMove()  const;
+    ChessSide SideToMove() const
+    {
+        return WhiteToMove() ? SIDE_WHITE : SIDE_BLACK;
+    }
 
     bool  WhiteInCheck()  const;
     bool  BlackInCheck()  const;
