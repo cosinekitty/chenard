@@ -1,11 +1,11 @@
 #!/bin/bash
 
 # This is not quite right: should detect compiler type and version, not OS.
-if [[ $OSTYPE == 'linux-gnu' ]]; then
+if [[ $(uname -s) == 'Linux' ]]; then
     # Assume g++ build on Linux, where -stdlib=libc++ option is not allowed.
     CPPOPT=''
 else
     # Assume clang++ buid on Mac OS, where -stdlib=libc++ option is necessary.
     CPPOPT='-stdlib=libc++'
 fi
-g++ -o chenserver -std=c++11 $CPPOPT -Wall -Werror -Wextra -Wshadow -Wnon-virtual-dtor -Wunused -Woverloaded-virtual -O2 -I ../src @linux-source-files
+g++ -o chenserver -std=c++0x $CPPOPT -Wall -Werror -Wextra -Wshadow -Wnon-virtual-dtor -Wunused -Woverloaded-virtual -O2 -I ../src @linux-source-files
