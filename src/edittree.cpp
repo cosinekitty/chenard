@@ -970,7 +970,7 @@ LearnBranch *LoadEntireTree (int &tablesize)
                         }
                         else
                         {
-                            printf("Error: Could read only %d branches.\n", numread);
+                            printf("Error: Could read only %d branches.\n", static_cast<int>(numread));
                             delete[] table;
                             table = NULL;
                             tablesize = 0;
@@ -984,7 +984,7 @@ LearnBranch *LoadEntireTree (int &tablesize)
                 }
                 else
                 {
-                    printf("File %s is not a multiple of sizeof(LearnBranch) == %d\n", DEFAULT_CHENARD_TREE_FILENAME, sizeof(LearnBranch));
+                    printf("File %s is not a multiple of sizeof(LearnBranch) == %d\n", DEFAULT_CHENARD_TREE_FILENAME, static_cast<int>(sizeof(LearnBranch)));
                 }
             }
             else
