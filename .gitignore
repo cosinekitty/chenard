@@ -2,6 +2,7 @@ bin
 obj
 Debug
 Release
+*.db
 *.sdf
 *.opensdf
 *.suo
