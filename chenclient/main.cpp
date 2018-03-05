@@ -135,7 +135,7 @@ bool SendCommand(const std::string& server, int port, const std::string& command
             }
             else
             {
-                send(sock, command.c_str(), command.length(), 0);
+                send(sock, command.c_str(), static_cast<int>(command.length()), 0);
                 send(sock, "\n", 1, 0);
 
                 while (true)    // keep looping and reading blocks of memory until we find "\n" or hit an error.

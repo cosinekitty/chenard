@@ -139,8 +139,8 @@ bool ChessCommandInterface_tcp::ReadLine(std::string& line, bool& keepRunning)
                             if (StartsWith(line, HTTP_FIRST_LINE_PREFIX) && (http10 || http11))
                             {
                                 // Decode the URI from the line and keep it.
-                                int offset = HTTP_FIRST_LINE_PREFIX.length();
-                                int extract = line.length() - (HTTP_FIRST_LINE_PREFIX.length() + HTTP_FIRST_LINE_SUFFIX_0.length());
+                                size_t offset = HTTP_FIRST_LINE_PREFIX.length();
+                                size_t extract = line.length() - (HTTP_FIRST_LINE_PREFIX.length() + HTTP_FIRST_LINE_SUFFIX_0.length());
                                 line = UrlDecode(line.substr(offset, extract));
                                 mode = MODE_HTTP;       // remember to send an HTTP response back to the client in WriteLine()
                                 httpMinorVersion = http10 ? '0' : '1';      // remember which minor version to use in response
