@@ -8,10 +8,15 @@ if not exist chenard.sln (
 
 if not defined VCINSTALLDIR (
     call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" x86_amd64
+    echo Build environment set for Visual Studio 2015.
 )
 
 if not exist logs (
     mkdir logs
+    if not exist logs (
+        echo ERROR: cannot create 'logs' directory.
+        exit /b 1
+    )
     echo Created 'logs' directory.
 )
 
@@ -25,3 +30,6 @@ for %%p in (Win32 x64) do (
         )
     )
 )
+
+echo Successful rebuild of all Chenard executables.
+exit /b 0
