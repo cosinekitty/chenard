@@ -227,7 +227,7 @@ bool ChessBoard::IsDefiniteDraw ( int *numReps )
 
     // Look for draw based on 50-move rule...
 
-    if ( ply_number - lastCapOrPawn >= 100 )
+    if ( ply_number - lastCapOrPawn > 100 )
         return true;
 
     // Now look for draw based upon position repeated 3 times...
