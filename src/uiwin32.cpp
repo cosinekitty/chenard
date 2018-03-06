@@ -825,6 +825,8 @@ bool ProcessChessCommands ( ChessBoard &board, int &source, int &dest )
 
         if ( board.GameIsOver() )
         {
+            // Send a null move back to ChessGame::Play, which will notice 
+            // game is over also, and will display game result and return.
             dest = SPECIAL_MOVE_NULL;
             source = 0;
             itIsTimeToCruise = true;

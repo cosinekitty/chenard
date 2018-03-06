@@ -210,7 +210,7 @@ void ChessGame::Play()
                 tree.learnFromGame ( board, winner );
                 return;
             }
-            else if ( !move.ShouldIgnore() && board.IsDefiniteDraw() )
+            else if ( board.IsDefiniteDraw() )
             {
                 whitePlayer->InformGameOver (board);
                 ui.ReportEndOfGame ( SIDE_NEITHER );
@@ -249,7 +249,7 @@ void ChessGame::Play()
                 tree.learnFromGame ( board, winner );
                 return;
             }
-            else if ( !move.ShouldIgnore() && board.IsDefiniteDraw() )
+            else if ( board.IsDefiniteDraw() )
             {
                 blackPlayer->InformGameOver (board);
                 ui.ReportEndOfGame ( SIDE_NEITHER );
