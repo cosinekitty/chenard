@@ -2320,7 +2320,7 @@ static void DisplayGameReportText(
         else
         {
             message = CHESS_PROGRAM_NAME " - White wins";
-            brief = "White wins";
+            brief = "1-0";
         }
         break;
 
@@ -2348,13 +2348,13 @@ static void DisplayGameReportText(
         else
         {
             message = CHESS_PROGRAM_NAME " - Black wins";
-            brief = "Black wins";
+            brief = "0-1";
         }
         break;
 
     case SIDE_NEITHER:
         message = CHESS_PROGRAM_NAME " - This game is a draw";
-        brief = "Drawn game";
+        brief = "\xbd-\xbd";    // 1/2 - 1/2
         break;
 
     default:
