@@ -578,7 +578,15 @@ bool GetNextPgnMove (
                     switch (tagIndex)
                     {
                     case 0:     // FEN
-                        strncpy(info.fen, token, sizeof(info.fen));
+                        if (strlen(token) < sizeof(info.fen))
+                        {
+                            strcpy(info.fen, token);
+                        }
+                        else
+                        {
+                            state = PGN_FILE_STATE_SYNTAX_ERROR;
+                            goto bail_out;
+                        }
                         break;
 
                     case 1:     // WhiteELO

@@ -25,7 +25,11 @@
 
 // The Mac OS X build is basically the same as the Linux build,
 // so I define CHENARD_LINUX as a helper for conditional compilation.
-#define CHENARD_LINUX   (defined(__linux__) || defined(__APPLE__))
+#if defined(__linux__) || defined(__APPLE__)
+#  define CHENARD_LINUX   1
+#else
+#  define CHENARD_LINUX   0
+#endif
 
 #if CHENARD_LINUX
 #define stricmp strcasecmp
