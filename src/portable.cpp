@@ -240,13 +240,7 @@ int MakeGearboxUnitTest(const char *inPgnFileName, const char *outFileName)
         Move            move;
         UnmoveInfo      unmove;
         int             ply = 0;
-        bool            skipThisGame = false;
-
-        int totalGameCount = 0;
-        int keptGameCount = 0;
-
-        const int MIN_ELO = 2600;
-        const int GAME_LIMIT = 1000;
+        int             totalGameCount = 0;
 
         rc = 0;
 
@@ -257,19 +251,9 @@ int MakeGearboxUnitTest(const char *inPgnFileName, const char *outFileName)
                 if (state == PGN_FILE_STATE_NEWGAME)
                 {
                     ++totalGameCount;
-                    skipThisGame = (info.whiteElo < MIN_ELO || info.blackElo < MIN_ELO);
-                    if (!skipThisGame)
-                    {
-                        if (keptGameCount == GAME_LIMIT)
-                            break;
-                        ++keptGameCount;
-                        ply = 0;        // signals reader that we are starting a new game
-                        board.Init();
-                    }
+                    ply = 0;        // signals reader that we are starting a new game
+                    board.Init();
                 }
-
-                if (skipThisGame)
-                    continue;
 
                 MoveList legal;
                 board.GenMoves(legal);
@@ -288,8 +272,9 @@ int MakeGearboxUnitTest(const char *inPgnFileName, const char *outFileName)
                     rc = 1;
                     goto failure_exit;
                 }
-
                 fprintf(outfile, "%d %s\n", ply, notation);
+
+                // Print all legal moves in longmove format.
                 for (int i=0; i < legal.num; ++i)
                 {
                     if (!FormatLongMove(board.WhiteToMove(), legal.m[i], notation))
@@ -302,6 +287,17 @@ int MakeGearboxUnitTest(const char *inPgnFileName, const char *outFileName)
                     if (i > 0)
                         fprintf(outfile, " ");
                     fprintf(outfile, "%s", notation);
+                }
+                fprintf(outfile, "\n");
+
+                // Print all legal moves in SAN/PGN format.
+                char san[MAX_MOVE_STRLEN + 1];
+                for (int i=0; i < legal.num; ++i)
+                {
+                    FormatChessMove(board, legal, legal.m[i], san);
+                    if (i > 0)
+                        fprintf(outfile, " ");
+                    fprintf(outfile, "%s", san);
                 }
                 fprintf(outfile, "\n");
 
@@ -330,7 +326,7 @@ int MakeGearboxUnitTest(const char *inPgnFileName, const char *outFileName)
 failure_exit:
         fclose(outfile);
         if (rc == 0)
-            printf("Kept %d of %d games.\n", keptGameCount, totalGameCount);
+            printf("Processed %d games.\n", totalGameCount);
         else
             remove(outFileName);
     }
