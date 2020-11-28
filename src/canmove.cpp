@@ -158,8 +158,7 @@ bool ChessBoard::WP_CanMove ( int ofs, int ybase )
             CHECK_WHITE_MOVE ( move, unmove );
         }
         else if ( prev_move.dest == ofs + EAST &&
-                  ((prev_move.source & BOARD_OFFSET_MASK) ==
-                   ofs + OFFSET(1,2)) &&
+                  ((prev_move.source & BOARD_OFFSET_MASK) == ofs + OFFSET(1,2)) &&
                   (board [prev_move.dest] & BP_MASK) )
         {
             move.dest = SPECIAL_MOVE_EP_EAST;
@@ -171,9 +170,8 @@ bool ChessBoard::WP_CanMove ( int ofs, int ybase )
             CHECK_WHITE_MOVE ( move, unmove );
         }
         else if ( prev_move.dest == ofs + WEST &&
-                  ((prev_move.source & BOARD_OFFSET_MASK) ==
-                   ofs + OFFSET(-1,2)) &&
-                  (board [prev_move.dest] == BP_MASK) )
+                  ((prev_move.source & BOARD_OFFSET_MASK) == ofs + OFFSET(-1,2)) &&
+                  (board [prev_move.dest] & BP_MASK) )
         {
             move.dest = SPECIAL_MOVE_EP_WEST;
             CHECK_WHITE_MOVE ( move, unmove );
@@ -640,8 +638,7 @@ bool ChessBoard::BP_CanMove ( int ofs, int ybase )
             CHECK_BLACK_MOVE ( move, unmove );
         }
         else if ( prev_move.dest == ofs + EAST &&
-                  ((prev_move.source & BOARD_OFFSET_MASK) ==
-                   ofs + OFFSET(1,-2)) &&
+                  ((prev_move.source & BOARD_OFFSET_MASK) == ofs + OFFSET(1,-2)) &&
                   (board [prev_move.dest] & WP_MASK) )
         {
             move.dest = SPECIAL_MOVE_EP_EAST;
@@ -653,8 +650,7 @@ bool ChessBoard::BP_CanMove ( int ofs, int ybase )
             CHECK_BLACK_MOVE ( move, unmove );
         }
         else if ( prev_move.dest == ofs + WEST &&
-                  ((prev_move.source & BOARD_OFFSET_MASK) ==
-                   ofs + OFFSET(-1,-2)) &&
+                  ((prev_move.source & BOARD_OFFSET_MASK) == ofs + OFFSET(-1,-2)) &&
                   (board [prev_move.dest] & WP_MASK) )
         {
             move.dest = SPECIAL_MOVE_EP_WEST;
