@@ -96,7 +96,7 @@ int MakeFlywheelUnitTest(const char *inPgnFileName, const char *outFileName, con
         fprintf(stderr, "ERROR: Cannot open input PGN file '%s'\n", inPgnFileName);
         return 1;
     }
-    
+
     FILE *outfile = fopen(outFileName, "wt");
     if (outfile)
     {
@@ -106,12 +106,12 @@ int MakeFlywheelUnitTest(const char *inPgnFileName, const char *outFileName, con
         ChessBoard      board;
         Move            move;
         UnmoveInfo      unmove;
-        
+
         rc = 0;
         fprintf(outfile, "var %s = [\n", varname);
-    
+
         bool first = true;
-        
+
         for(;;)
         {
             while (GetNextPgnMove (infile, movestr, state, info))
@@ -124,9 +124,9 @@ int MakeFlywheelUnitTest(const char *inPgnFileName, const char *outFileName, con
                 else
                 {
                     fprintf(outfile, ", { ");
-                }                
-            
-                if (state == PGN_FILE_STATE_NEWGAME)                
+                }
+
+                if (state == PGN_FILE_STATE_NEWGAME)
                 {
                     fprintf(outfile, "\"reset\": true\n");
                     board.Init();
@@ -135,17 +135,17 @@ int MakeFlywheelUnitTest(const char *inPgnFileName, const char *outFileName, con
                 {
                     fprintf(outfile, "\"reset\": false\n");
                 }
-                
+
                 MoveList legal;
                 board.GenMoves(legal);
-                
+
                 if (!ParseFancyMove (movestr, board, move))
                 {
                     fprintf(stderr, "ERROR: illegal move '%s'\n", movestr);
                     rc = 1;
                     goto failure_exit;
                 }
-                
+
                 char notation[LONGMOVE_MAX_CHARS];
                 if (!FormatLongMove(board.WhiteToMove(), move, notation))
                 {
@@ -153,9 +153,9 @@ int MakeFlywheelUnitTest(const char *inPgnFileName, const char *outFileName, con
                     rc = 1;
                     goto failure_exit;
                 }
-                
+
                 fprintf(outfile, ",   \"move\": \"%s\"\n", notation);
-                
+
                 fprintf(outfile, ",   \"legal\": [");
                 for (int i=0; i < legal.num; ++i)
                 {
@@ -165,16 +165,16 @@ int MakeFlywheelUnitTest(const char *inPgnFileName, const char *outFileName, con
                         rc = 1;
                         goto failure_exit;
                     }
-                    if (i > 0) 
+                    if (i > 0)
                     {
                         fprintf(outfile, ", ");
                     }
                     fprintf(outfile, "\"%s\"", notation);
                 }
                 fprintf(outfile, "]\n");
-                
+
                 board.MakeMove(move, unmove);
-                
+
                 char fen[200];
                 if (!board.GetForsythEdwardsNotation(fen, sizeof(fen)))
                 {
@@ -182,25 +182,25 @@ int MakeFlywheelUnitTest(const char *inPgnFileName, const char *outFileName, con
                     rc = 1;
                     goto failure_exit;
                 }
-                
+
                 bool check    = board.CurrentPlayerInCheck();
                 bool mobile   = board.CurrentPlayerCanMove();
                 int  reps = 0;
                 int  draw     = (!mobile && !check) || board.IsDefiniteDraw(&reps);
-                
+
                 fprintf(outfile, ",   \"fen\": \"%s\"\n",  fen);
                 fprintf(outfile, ",   \"check\": %s\n",    check  ? "true" : "false");
                 fprintf(outfile, ",   \"mobile\": %s\n",   mobile ? "true" : "false");
                 fprintf(outfile, ",   \"draw\": %s }\n\n", draw   ? "true" : "false");
             }
-            
+
             if (state != PGN_FILE_STATE_FINISHED)
             {
                 break;      // nothing left in this PGN file, or we encountered a syntax error
             }
-        }        
-        
-failure_exit:            
+        }
+
+failure_exit:
         fprintf(outfile, "];\n");
         fclose(outfile);
         if (rc != 0)
@@ -214,9 +214,135 @@ failure_exit:
     }
 
     fclose(infile);
-    
+
     return rc;
 }
+
+
+int MakeGearboxUnitTest(const char *inPgnFileName, const char *outFileName)
+{
+    int rc = 1;
+    remove(outFileName);    // delete file if already exists
+    FILE *infile = fopen(inPgnFileName, "rt");
+    if (infile == NULL)
+    {
+        fprintf(stderr, "ERROR: Cannot open input PGN file '%s'\n", inPgnFileName);
+        return 1;
+    }
+
+    FILE *outfile = fopen(outFileName, "wt");
+    if (outfile)
+    {
+        PgnExtraInfo    info;
+        PGN_FILE_STATE  state;
+        char            movestr [1 + MAX_MOVE_STRLEN];
+        ChessBoard      board;
+        Move            move;
+        UnmoveInfo      unmove;
+        int             ply = 0;
+        bool            skipThisGame = false;
+
+        int totalGameCount = 0;
+        int keptGameCount = 0;
+
+        const int MIN_ELO = 2600;
+        const int GAME_LIMIT = 1000;
+
+        rc = 0;
+
+        for(;;)
+        {
+            while (GetNextPgnMove (infile, movestr, state, info))
+            {
+                if (state == PGN_FILE_STATE_NEWGAME)
+                {
+                    ++totalGameCount;
+                    skipThisGame = (info.whiteElo < MIN_ELO || info.blackElo < MIN_ELO);
+                    if (!skipThisGame)
+                    {
+                        if (keptGameCount == GAME_LIMIT)
+                            break;
+                        ++keptGameCount;
+                        ply = 0;        // signals reader that we are starting a new game
+                        board.Init();
+                    }
+                }
+
+                if (skipThisGame)
+                    continue;
+
+                MoveList legal;
+                board.GenMoves(legal);
+
+                if (!ParseFancyMove (movestr, board, move))
+                {
+                    fprintf(stderr, "ERROR: illegal move '%s'\n", movestr);
+                    rc = 1;
+                    goto failure_exit;
+                }
+
+                char notation[LONGMOVE_MAX_CHARS];
+                if (!FormatLongMove(board.WhiteToMove(), move, notation))
+                {
+                    fprintf(stderr, "ERROR: cannot format move\n");
+                    rc = 1;
+                    goto failure_exit;
+                }
+
+                fprintf(outfile, "%d %s\n", ply, notation);
+                for (int i=0; i < legal.num; ++i)
+                {
+                    if (!FormatLongMove(board.WhiteToMove(), legal.m[i], notation))
+                    {
+                        fprintf(stderr, "ERROR: cannot format legal move %d\n", i);
+                        rc = 1;
+                        goto failure_exit;
+                    }
+
+                    if (i > 0)
+                        fprintf(outfile, " ");
+                    fprintf(outfile, "%s", notation);
+                }
+                fprintf(outfile, "\n");
+
+                board.MakeMove(move, unmove);
+                ++ply;
+
+                char fen[200];
+                if (!board.GetForsythEdwardsNotation(fen, sizeof(fen)))
+                {
+                    fprintf(stderr, "ERROR: cannot calculate FEN\n");
+                    rc = 1;
+                    goto failure_exit;
+                }
+                fprintf(outfile, "%s\n", fen);
+
+                bool check    = board.CurrentPlayerInCheck();
+                bool mobile   = board.CurrentPlayerCanMove();
+                fprintf(outfile, "check=%d mobile=%d\n", (int)check, (int)mobile);
+                fprintf(outfile, "\n");
+            }
+
+            if (state != PGN_FILE_STATE_FINISHED)
+                break;      // nothing left in this PGN file, or we encountered a syntax error
+        }
+
+failure_exit:
+        fclose(outfile);
+        if (rc == 0)
+            printf("Kept %d of %d games.\n", keptGameCount, totalGameCount);
+        else
+            remove(outFileName);
+    }
+    else
+    {
+        fprintf(stderr, "ERROR: cannot open file '%s' for write\n", outFileName);
+    }
+
+    fclose(infile);
+    return rc;
+}
+
 
 
 int main ( int argc, const char *argv[] )
@@ -520,6 +646,17 @@ int main ( int argc, const char *argv[] )
             const char *outFileName = argv[3];
             const char *varname = argv[4];
             return MakeFlywheelUnitTest(inPgnFileName, outFileName, varname);
+        }
+        else if (strcmp(argv[1], "--gearbox") == 0)
+        {
+            if (argc != 4)
+            {
+                fprintf(stderr, "Use: %s --gearbox infile.pgn outfile.txt\n", argv[0]);
+                return 1;
+            }
+            const char *inPgnFileName = argv[2];
+            const char *outFileName = argv[3];
+            return MakeGearboxUnitTest(inPgnFileName, outFileName);
         }
         else
         {
