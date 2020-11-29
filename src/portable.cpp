@@ -274,22 +274,6 @@ int MakeGearboxUnitTest(const char *inPgnFileName, const char *outFileName)
                 }
                 fprintf(outfile, "%d %s\n", ply, notation);
 
-                // Print all legal moves in longmove format.
-                for (int i=0; i < legal.num; ++i)
-                {
-                    if (!FormatLongMove(board.WhiteToMove(), legal.m[i], notation))
-                    {
-                        fprintf(stderr, "ERROR: cannot format legal move %d\n", i);
-                        rc = 1;
-                        goto failure_exit;
-                    }
-
-                    if (i > 0)
-                        fprintf(outfile, " ");
-                    fprintf(outfile, "%s", notation);
-                }
-                fprintf(outfile, "\n");
-
                 // Print all legal moves in SAN/PGN format.
                 char san[MAX_MOVE_STRLEN + 1];
                 for (int i=0; i < legal.num; ++i)
