@@ -51,9 +51,6 @@ bool HumanChessPlayer::GetMove (
             return false;
         }
 
-        // Regenerate legal moves in case they edited the board.
-        board.GenMoves ( legalMoves );
-
         // The following check allows certain UI tricks to work...
         if ( dest == SPECIAL_MOVE_NULL ||
              (dest & SPECIAL_MOVE_MASK) == SPECIAL_MOVE_EDIT )
@@ -67,6 +64,9 @@ bool HumanChessPlayer::GetMove (
 
         // This checks for pawn promotion and stuff like that.
         move.Fix ( board, source, dest, promIndex, userInterface );
+
+        // Regenerate legal moves in case they edited the board.
+        board.GenMoves(legalMoves);
 
         // See if the move we just read is legal!
         for ( i=0; i < legalMoves.num; i++ )
