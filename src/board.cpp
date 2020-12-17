@@ -1437,7 +1437,7 @@ void GetGameListing (
     int numPlies = board.GetCurrentPlyNumber();
     for ( int i=0; i<numPlies && len<bufSize; i++ )
     {
-        char moveString [64];
+        char moveString[MAX_MOVE_STRLEN + 1];
         char s [64];
         int thisLen = 0;
         Move move = board.GetPastMove(i);

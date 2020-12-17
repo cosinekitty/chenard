@@ -63,7 +63,7 @@ bool tChessMoveFile_PGN::GetNextMove(Move& move, PGN_FILE_STATE& state)
             {
                 // This API does not support edited positions!
                 state = PGN_FILE_STATE_EDITED_POSITION;
-                return false;       
+                return false;
             }
             else
             {
@@ -578,7 +578,15 @@ bool GetNextPgnMove (
                     switch (tagIndex)
                     {
                     case 0:     // FEN
-                        strncpy(info.fen, token, sizeof(info.fen));
+                        if (strlen(token) < sizeof(info.fen))
+                        {
+                            strcpy(info.fen, token);
+                        }
+                        else
+                        {
+                            state = PGN_FILE_STATE_SYNTAX_ERROR;
+                            goto bail_out;
+                        }
                         break;
 
                     case 1:     // WhiteELO

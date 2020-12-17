@@ -4,7 +4,11 @@
     https://github.com/cosinekitty/chenard/wiki/ChenServer
 */
 
-#define CHENARD_LINUX   (defined(__linux__) || defined(__APPLE__))    
+#if defined(__linux__) || defined(__APPLE__)
+#  define CHENARD_LINUX 1
+#else
+#  define CHENARD_LINUX 0
+#endif
 
 #include <stdlib.h>
 #include <string>
