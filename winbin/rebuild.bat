@@ -7,8 +7,7 @@ if not exist chenard.sln (
 )
 
 if not defined VCINSTALLDIR (
-    call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" x86_amd64
-    echo Build environment set for Visual Studio 2015.
+    call "c:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\VC\Auxiliary\Build\vcvarsamd64_x86.bat"
 )
 
 if not exist logs (

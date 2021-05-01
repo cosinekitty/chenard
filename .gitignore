@@ -1,3 +1,4 @@
+.vs/
 logs/
 bin
 obj
@@ -17,6 +18,7 @@ Release
 *.vsp
 .idea
 *.map
+*.aps
 fen/fen.js
 fen/ui.js
 src/tags
