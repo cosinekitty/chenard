@@ -184,9 +184,9 @@ void DrawBitmap (
 }
 
 
-void DrawOffboard ( HDC hdc, int x, int y, bool whiteViewFlag )
+static void FillSquare(HDC hdc, int x, int y, bool whiteViewFlag, COLORREF color)
 {
-    if ( !whiteViewFlag )
+    if (!whiteViewFlag)
     {
         x = 7 - x;
         y = 7 - y;
@@ -198,11 +198,11 @@ void DrawOffboard ( HDC hdc, int x, int y, bool whiteViewFlag )
     rect.top    = SQUARE_SCREENY1(y);
     rect.bottom = SQUARE_SCREENY2(y)+1;
 
-    HBRUSH hbrush = CreateSolidBrush (CHESS_BACKGROUND_COLOR);
+    HBRUSH hbrush = CreateSolidBrush(color);
     HBRUSH oldBrush = (HBRUSH)SelectObject ( hdc, hbrush );
-    FillRect ( hdc, &rect, hbrush );
-    SelectObject ( hdc, oldBrush );
-    DeleteObject ( hbrush );
+    FillRect(hdc, &rect, hbrush);
+    SelectObject(hdc, oldBrush);
+    DeleteObject(hbrush);
 }
 
 
@@ -215,7 +215,6 @@ void BoardDisplayBuffer::drawSquare (
     HBRUSH  oldbrush;
     HPEN    hpen;
     HPEN    oldpen;
-    int whiteSquare = (x + y) & 1;
 
     // FIXFIXFIX_GRAPHICS - render light and dark squares beneath transparent bitmaps
 
@@ -235,28 +234,27 @@ void BoardDisplayBuffer::drawSquare (
     case BQUEEN:      hbm = bq;  break;
     case BKING:       hbm = bk;  break;
 
-    case OFFBOARD:    DrawOffboard(hdc,x,y,whiteViewFlag);  return;
-
-    //case EMPTY:       hbm = whiteSquare ? ew  : eb;   break;
+    case OFFBOARD:    FillSquare(hdc,x,y,whiteViewFlag, CHESS_BACKGROUND_COLOR);  return;
     default:          hbm = NULL;
     }
 
-    DrawOffboard(hdc, x, y, whiteViewFlag);     // FIXFIXFIX_GRAPHICS !!! HACK TO TEST TRANSPARENT BITMAPS
+    COLORREF squareColor = ((x + y) & 1) ? CHESS_LIGHT_SQUARE : CHESS_DARK_SQUARE;
+    FillSquare(hdc, x, y, whiteViewFlag, squareColor);
 
     short xStart, yStart;
 
-    if ( whiteViewFlag )
+    if (whiteViewFlag)
     {
-        xStart = SQUARE_SCREENX1 ( x );
-        yStart = SQUARE_SCREENY1 ( y );
+        xStart = SQUARE_SCREENX1(x);
+        yStart = SQUARE_SCREENY1(y);
     }
     else
     {
-        xStart = SQUARE_SCREENX1 ( 7 - x );
-        yStart = SQUARE_SCREENY1 ( 7 - y );
+        xStart = SQUARE_SCREENX1(7 - x);
+        yStart = SQUARE_SCREENY1(7 - y);
     }
 
-    if (hdc != NULL)
+    if (hbm != NULL)
         DrawBitmap(hdc, hbm, xStart, yStart);
 
     if ( selX == x && selY == y )

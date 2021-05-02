@@ -129,6 +129,8 @@ void NewBoardSize ( int );
 #define CHESS_TEXT_COLOR           RGB(255,255,255)
 #define CHESS_TEXT_COLOR2          RGB(255,255,0)
 #define CHESS_BACKGROUND_COLOR     RGB(0,0,127)
+#define CHESS_LIGHT_SQUARE         RGB(213, 219, 200)
+#define CHESS_DARK_SQUARE          RGB(155, 174, 199)
 
 bool ProcessChessCommands ( ChessBoard &board, int &source, int &dest );
 
