@@ -218,7 +218,7 @@ FONT 8, "MS Sans Serif"
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,66,74,50,14,BS_NOTIFY
     LTEXT           "Chenard for Windows",IDC_STATIC,25,16,127,8
-    LTEXT           "cosinekitty@hotmail.com",IDC_STATIC,17,52,78,8
+    LTEXT           "cosinekitty@gmail.com",IDC_STATIC,17,52,78,8
     LTEXT           "http://www.cosinekitty.com/chenard",IDC_STATIC,17,61,156,8
     LTEXT           "*** Unofficial build ***",IDC_STATIC,26,35,120,8
     GROUPBOX        "",IDC_STATIC,14,8,152,40
