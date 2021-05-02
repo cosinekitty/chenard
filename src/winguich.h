@@ -320,11 +320,8 @@ private:
     int  hiliteDestX,    hiliteDestY;
     int  hiliteKeyX,     hiliteKeyY;     // coords for allowing user to make moves using the keyboard
 
-    HBITMAP  wpw, wnw, wbw, wrw, wqw, wkw;
-    HBITMAP  wpb, wnb, wbb, wrb, wqb, wkb;
-    HBITMAP  bpw, bnw, bbw, brw, bqw, bkw;
-    HBITMAP  bpb, bnb, bbb, brb, bqb, bkb;
-    HBITMAP  eb, ew, qmb, qmw;
+    HBITMAP wp, wn, wb, wr, wq, wk;
+    HBITMAP bp, bn, bb, br, bq, bk;
 
     int  bitmapsLoadedFlag;
     bool whiteViewFlag;

@@ -83,34 +83,18 @@ void BoardDisplayBuffer::unloadBitmaps()
     if ( bitmapsLoadedFlag )
     {
         bitmapsLoadedFlag = 0;
-        if ( wpw != NULL )  {  DeleteObject ( wpw );  wpw = NULL;  }
-        if ( wnw != NULL )  {  DeleteObject ( wnw );  wnw = NULL;  }
-        if ( wbw != NULL )  {  DeleteObject ( wbw );  wbw = NULL;  }
-        if ( wrw != NULL )  {  DeleteObject ( wrw );  wrw = NULL;  }
-        if ( wqw != NULL )  {  DeleteObject ( wqw );  wqw = NULL;  }
-        if ( wkw != NULL )  {  DeleteObject ( wkw );  wkw = NULL;  }
-        if ( wpb != NULL )  {  DeleteObject ( wpb );  wpb = NULL;  }
-        if ( wnb != NULL )  {  DeleteObject ( wnb );  wnb = NULL;  }
-        if ( wbb != NULL )  {  DeleteObject ( wbb );  wbb = NULL;  }
-        if ( wrb != NULL )  {  DeleteObject ( wrb );  wrb = NULL;  }
-        if ( wqb != NULL )  {  DeleteObject ( wqb );  wqb = NULL;  }
-        if ( wkb != NULL )  {  DeleteObject ( wkb );  wkb = NULL;  }
-        if ( bpw != NULL )  {  DeleteObject ( bpw );  bpw = NULL;  }
-        if ( bnw != NULL )  {  DeleteObject ( bnw );  bnw = NULL;  }
-        if ( bbw != NULL )  {  DeleteObject ( bbw );  bbw = NULL;  }
-        if ( brw != NULL )  {  DeleteObject ( brw );  brw = NULL;  }
-        if ( bqw != NULL )  {  DeleteObject ( bqw );  bqw = NULL;  }
-        if ( bkw != NULL )  {  DeleteObject ( bkw );  bkw = NULL;  }
-        if ( bpb != NULL )  {  DeleteObject ( bpb );  bpb = NULL;  }
-        if ( bnb != NULL )  {  DeleteObject ( bnb );  bnb = NULL;  }
-        if ( bbb != NULL )  {  DeleteObject ( bbb );  bbb = NULL;  }
-        if ( brb != NULL )  {  DeleteObject ( brb );  brb = NULL;  }
-        if ( bqb != NULL )  {  DeleteObject ( bqb );  bqb = NULL;  }
-        if ( bkb != NULL )  {  DeleteObject ( bkb );  bkb = NULL;  }
-        if ( qmw != NULL )  {  DeleteObject ( qmw );  qmw = NULL;  }
-        if ( qmb != NULL )  {  DeleteObject ( qmb );  qmb = NULL;  }
-        if ( ew != NULL )   {  DeleteObject ( ew  );  ew = NULL;   }
-        if ( eb != NULL )   {  DeleteObject ( eb  );  eb = NULL;   }
+        if ( wp != NULL )  {  DeleteObject ( wp );  wp = NULL;  }
+        if ( wn != NULL )  {  DeleteObject ( wn );  wn = NULL;  }
+        if ( wb != NULL )  {  DeleteObject ( wb );  wb = NULL;  }
+        if ( wr != NULL )  {  DeleteObject ( wr );  wr = NULL;  }
+        if ( wq != NULL )  {  DeleteObject ( wq );  wq = NULL;  }
+        if ( wk != NULL )  {  DeleteObject ( wk );  wk = NULL;  }
+        if ( bp != NULL )  {  DeleteObject ( bp );  bp = NULL;  }
+        if ( bn != NULL )  {  DeleteObject ( bn );  bn = NULL;  }
+        if ( bb != NULL )  {  DeleteObject ( bb );  bb = NULL;  }
+        if ( br != NULL )  {  DeleteObject ( br );  br = NULL;  }
+        if ( bq != NULL )  {  DeleteObject ( bq );  bq = NULL;  }
+        if ( bk != NULL )  {  DeleteObject ( bk );  bk = NULL;  }
     }
 }
 
