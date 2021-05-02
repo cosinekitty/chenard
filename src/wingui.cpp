@@ -3248,9 +3248,9 @@ LRESULT CALLBACK ChessWndProc (
             LPARAM(&localProm) );
 
         if ( localProm != R_INDEX &&
-                localProm != B_INDEX &&
-                localProm != N_INDEX &&
-                localProm != Q_INDEX )
+             localProm != B_INDEX &&
+             localProm != N_INDEX &&
+             localProm != Q_INDEX )
         {
             localProm = Q_INDEX;
         }

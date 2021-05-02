@@ -189,8 +189,6 @@ void BoardDisplayBuffer::drawSquare (
     HPEN    hpen;
     HPEN    oldpen;
 
-    // FIXFIXFIX_GRAPHICS - render light and dark squares beneath transparent bitmaps
-
     switch ( square )
     {
     case WPAWN:       hbm = wp;  break;
