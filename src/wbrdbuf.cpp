@@ -17,23 +17,6 @@ int BitmapScaleFactor = 1;
 int BitmapScaleDenom = 1;
 int ChessBoardSize = 0;    // 0=small, 1=medium, 2=large
 
-void NewBoardSize ( int newSize )
-{
-    if ( newSize < 0 || newSize > 2 )
-    {
-        newSize = 0;
-    }
-
-    ChessBoardSize = newSize;
-    switch (ChessBoardSize)
-    {
-    case 1:   BitmapScaleFactor = 3;  BitmapScaleDenom = 2;  break;
-    case 2:   BitmapScaleFactor = 2;  BitmapScaleDenom = 1;  break;
-    default:  BitmapScaleFactor = 1;  BitmapScaleDenom = 1;  break;
-    }
-}
-
-
 BoardDisplayBuffer::BoardDisplayBuffer():
     wp(nullptr),
     wn(nullptr),
@@ -62,7 +45,6 @@ BoardDisplayBuffer::BoardDisplayBuffer():
     hiliteDestY ( -1 ),
     hiliteKeyX ( 3 ),
     hiliteKeyY ( 3 ),
-    pieceFont ( PIECE_FONT_TILBURG ),
     algebraicRank('\0'),
     tempHDC ( 0 )
 {
@@ -130,19 +112,10 @@ void BoardDisplayBuffer::loadBitmaps ( HINSTANCE progInstance )
 }
 
 
-void BoardDisplayBuffer::changePieceFont ( int newPieceFont )
-{
-    if ( newPieceFont != pieceFont )
-    {
-        unloadBitmaps();
-        pieceFont = newPieceFont;
-        loadBitmaps (global_hInstance);
-    }
-}
-
-
 // The following function comes from Chapter 13 of Charles Petzold's
 // book "Programming Windows 3.1".
+// [2021-05-02] It has been updated to use AlphaBlend() to render
+// bitmaps that have transparent areas; i.e. ARGB format.
 
 void DrawBitmap (
     HDC hdc,

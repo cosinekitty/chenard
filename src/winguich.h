@@ -216,14 +216,6 @@ void UpdateGameStateText(bool whiteToMove);     // updates title bar and clears 
 
 void ChessBeep ( int freq, int milliseconds );
 
-#define  PIECE_FONT_ORIGINAL     0
-#define  PIECE_FONT_TILBURG      1
-#define  PIECE_FONT_SKAK         2
-#define  NUM_PIECE_FONTS         3
-
-extern int PieceFont_DX [NUM_PIECE_FONTS];
-extern int PieceFont_DY [NUM_PIECE_FONTS];
-
 inline bool DisplayCoordsValid (int x, int y)
 {
     return (x >= 0) && (x <= 7) && (y >= 0) && (y <= 7);
@@ -242,8 +234,6 @@ public:
 
     void loadBitmaps ( HINSTANCE );
     void unloadBitmaps();
-    void changePieceFont ( int newPieceFont );
-    int  queryPieceFont() const { return pieceFont; }
 
     void draw ( HDC,
                 int minx = 0, int maxx = 7,
@@ -335,10 +325,7 @@ private:
     int   moveSource;
     int   moveDest;
 
-    int   pieceFont;   // piece font index, 0 .. NUM_PIECE_FONTS-1
-
     char algebraicRank;          // 'a'..'h' if keyboard rank character pressed, '\0' otherwise
-
     HDC *tempHDC;
 };
 

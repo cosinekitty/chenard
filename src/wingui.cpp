@@ -1208,8 +1208,6 @@ static BOOL SetChessWindowSize ( HWND hwnd, bool showDebugInfo )
 
 
 const char Profile_ViewDebugInfo[]      = "ViewDebugInfo";
-const char Profile_PieceStyle[]         = "PieceStyle";
-const char Profile_ChessBoardSize[]     = "ChessBoardSize";
 const char Profile_WhiteTimeLimit[]     = "WhiteTimeLimit";
 const char Profile_BlackTimeLimit[]     = "BlackTimeLimit";
 const char Profile_SpeakMovesFlag[]     = "SpeakMovesFlag";
@@ -1330,14 +1328,6 @@ static void LoadChessOptions()
     ReadChenardSetting ( Profile_ViewDebugInfo, "0", opt, sizeof(opt) );
     Global_AnalysisType = atoi(opt);
 
-    ReadChenardSetting ( Profile_PieceStyle, "2", opt, sizeof(opt) );
-    int temp = atoi(opt);
-    TheBoardDisplayBuffer.changePieceFont (temp);
-
-    ReadChenardSetting ( Profile_ChessBoardSize, "0", opt, sizeof(opt) );
-    temp = atoi(opt);
-    NewBoardSize (temp);
-
     ReadChenardSetting ( Profile_WhiteTimeLimit, "2", WhiteTimeLimit, sizeof(WhiteTimeLimit) );
     ReadChenardSetting ( Profile_BlackTimeLimit, "2", BlackTimeLimit, sizeof(BlackTimeLimit) );
 
@@ -1409,27 +1399,6 @@ static void ApplyChessOptions()
     uCheck = Global_SpeakMovesFlag ? MF_CHECKED : MF_UNCHECKED;
     CheckMenuItem ( HmenuMain, ID_VIEW_SPEAKMOVESTHROUGHSOUNDCARD, uCheck );
 
-    // Set the checkmarks for the piece styles
-    int pfont = TheBoardDisplayBuffer.queryPieceFont();
-    uCheck = (pfont == PIECE_FONT_ORIGINAL) ? MF_CHECKED : MF_UNCHECKED;
-    CheckMenuItem ( HmenuMain, ID_VIEW_PIECESTYLE_ORIGINAL, uCheck );
-
-    uCheck = (pfont == PIECE_FONT_TILBURG) ? MF_CHECKED : MF_UNCHECKED;
-    CheckMenuItem ( HmenuMain, ID_VIEW_PIECESTYLE_TILBURG, uCheck );
-
-    uCheck = (pfont == PIECE_FONT_SKAK) ? MF_CHECKED : MF_UNCHECKED;
-    CheckMenuItem ( HmenuMain, ID_VIEW_PIECESTYLE_SKAK, uCheck );
-
-    // Set the checkmarks for board size
-    uCheck = (ChessBoardSize==0) ? MF_CHECKED : MF_UNCHECKED;
-    CheckMenuItem ( HmenuMain, ID_VIEW_SMALLBOARD, uCheck );
-
-    uCheck = (ChessBoardSize==1) ? MF_CHECKED : MF_UNCHECKED;
-    CheckMenuItem ( HmenuMain, ID_VIEW_MEDIUMBOARD, uCheck );
-
-    uCheck = (ChessBoardSize==2) ? MF_CHECKED : MF_UNCHECKED;
-    CheckMenuItem ( HmenuMain, ID_VIEW_LARGEBOARD, uCheck );
-
     // set checkmark for resign flag
     uCheck = Global_AllowResignFlag ? MF_CHECKED : MF_UNCHECKED;
     CheckMenuItem ( HmenuMain, ID_GAME_ALLOWCOMPUTERTORESIGN, uCheck );
@@ -1460,12 +1429,6 @@ static void SaveChessOptions()
 
     sprintf ( opt, "%d", Global_AnalysisType );
     WriteChenardSetting (Profile_ViewDebugInfo, opt);
-
-    sprintf ( opt, "%d", TheBoardDisplayBuffer.queryPieceFont() );
-    WriteChenardSetting (Profile_PieceStyle, opt);
-
-    sprintf ( opt, "%d", ChessBoardSize );
-    WriteChenardSetting (Profile_ChessBoardSize, opt);
 
     WriteChenardSetting (Profile_WhiteTimeLimit, WhiteTimeLimit);
     WriteChenardSetting (Profile_BlackTimeLimit, BlackTimeLimit);
@@ -2703,21 +2666,6 @@ LRESULT CALLBACK ChessWndProc (
             TheBoardDisplayBuffer.freshenBoard();
             break;
 
-        case ID_VIEW_PIECESTYLE_ORIGINAL:
-        {
-            CheckMenuItem ( HmenuMain, ID_VIEW_PIECESTYLE_ORIGINAL, MF_CHECKED );
-            CheckMenuItem ( HmenuMain, ID_VIEW_PIECESTYLE_TILBURG,  MF_UNCHECKED );
-            CheckMenuItem ( HmenuMain, ID_VIEW_PIECESTYLE_SKAK,     MF_UNCHECKED );
-            if ( TheBoardDisplayBuffer.queryPieceFont() != PIECE_FONT_ORIGINAL )
-            {
-                TheBoardDisplayBuffer.changePieceFont (PIECE_FONT_ORIGINAL);
-                ChessDisplayTextBuffer::RepositionAll();
-                SetChessWindowSize ( hwnd, (Global_AnalysisType != 0) );
-                TheBoardDisplayBuffer.freshenBoard();
-            }
-        }
-        break;
-
         case ID_DUMP_XPOS_TABLE:
         {
             if (ComputerChessPlayer::XposTable)
@@ -2734,69 +2682,6 @@ LRESULT CALLBACK ChessWndProc (
             }
 
             MessageBox ( hwnd, buffer, CHESS_PROGRAM_NAME, MB_ICONINFORMATION | MB_OK );
-        }
-        break;
-
-        case ID_VIEW_PIECESTYLE_TILBURG:
-        {
-            CheckMenuItem ( HmenuMain, ID_VIEW_PIECESTYLE_ORIGINAL, MF_UNCHECKED );
-            CheckMenuItem ( HmenuMain, ID_VIEW_PIECESTYLE_TILBURG,  MF_CHECKED );
-            CheckMenuItem ( HmenuMain, ID_VIEW_PIECESTYLE_SKAK,     MF_UNCHECKED );
-            if ( TheBoardDisplayBuffer.queryPieceFont() != PIECE_FONT_TILBURG )
-            {
-                TheBoardDisplayBuffer.changePieceFont (PIECE_FONT_TILBURG);
-                ChessDisplayTextBuffer::RepositionAll();
-                SetChessWindowSize ( hwnd, (Global_AnalysisType != 0) );
-                TheBoardDisplayBuffer.freshenBoard();
-            }
-        }
-        break;
-
-        case ID_VIEW_PIECESTYLE_SKAK:
-        {
-            CheckMenuItem ( HmenuMain, ID_VIEW_PIECESTYLE_ORIGINAL, MF_UNCHECKED );
-            CheckMenuItem ( HmenuMain, ID_VIEW_PIECESTYLE_TILBURG,  MF_UNCHECKED );
-            CheckMenuItem ( HmenuMain, ID_VIEW_PIECESTYLE_SKAK,     MF_CHECKED );
-            if ( TheBoardDisplayBuffer.queryPieceFont() != PIECE_FONT_SKAK )
-            {
-                TheBoardDisplayBuffer.changePieceFont (PIECE_FONT_SKAK);
-                ChessDisplayTextBuffer::RepositionAll();
-                SetChessWindowSize ( hwnd, (Global_AnalysisType != 0) );
-                TheBoardDisplayBuffer.freshenBoard();
-            }
-        }
-        break;
-
-        case ID_VIEW_SMALLBOARD:
-        {
-            CheckMenuItem ( HmenuMain, ID_VIEW_SMALLBOARD,  MF_CHECKED );
-            CheckMenuItem ( HmenuMain, ID_VIEW_MEDIUMBOARD, MF_UNCHECKED );
-            CheckMenuItem ( HmenuMain, ID_VIEW_LARGEBOARD,  MF_UNCHECKED );
-            NewBoardSize ( 0 );
-            ChessDisplayTextBuffer::RepositionAll();
-            SetChessWindowSize ( hwnd, (Global_AnalysisType != 0) );
-        }
-        break;
-
-        case ID_VIEW_MEDIUMBOARD:
-        {
-            CheckMenuItem ( HmenuMain, ID_VIEW_SMALLBOARD,  MF_UNCHECKED );
-            CheckMenuItem ( HmenuMain, ID_VIEW_MEDIUMBOARD, MF_CHECKED );
-            CheckMenuItem ( HmenuMain, ID_VIEW_LARGEBOARD,  MF_UNCHECKED );
-            NewBoardSize ( 1 );
-            ChessDisplayTextBuffer::RepositionAll();
-            SetChessWindowSize ( hwnd, (Global_AnalysisType != 0) );
-        }
-        break;
-
-        case ID_VIEW_LARGEBOARD:
-        {
-            CheckMenuItem ( HmenuMain, ID_VIEW_SMALLBOARD,  MF_UNCHECKED );
-            CheckMenuItem ( HmenuMain, ID_VIEW_MEDIUMBOARD, MF_UNCHECKED );
-            CheckMenuItem ( HmenuMain, ID_VIEW_LARGEBOARD,  MF_CHECKED );
-            NewBoardSize ( 2 );
-            ChessDisplayTextBuffer::RepositionAll();
-            SetChessWindowSize ( hwnd, (Global_AnalysisType != 0) );
         }
         break;
 

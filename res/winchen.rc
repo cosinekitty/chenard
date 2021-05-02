@@ -338,7 +338,6 @@ BEGIN
     END
     POPUP "&View"
     BEGIN
-        MENUITEM "&Freshen\tCtrl+F",            ID_VIEW_FRESHEN
         MENUITEM "&Rotate board\tCtrl+R",       ID_VIEW_ROTATEBOARD
         POPUP "&Analysis"
         BEGIN
@@ -351,19 +350,6 @@ BEGIN
         MENUITEM "Animate &opponent moves",     ID_ANIMATE, CHECKED
         MENUITEM "Spea&k moves through sound card", ID_VIEW_SPEAKMOVESTHROUGHSOUNDCARD
         MENUITEM "Announce &Mate",              ID_VIEW_ANNOUNCEMATE
-        MENUITEM SEPARATOR
-        POPUP "Board &Size"
-        BEGIN
-            MENUITEM "&Small",                      ID_VIEW_SMALLBOARD, CHECKED
-            MENUITEM "&Medium",                     ID_VIEW_MEDIUMBOARD
-            MENUITEM "&Large",                      ID_VIEW_LARGEBOARD
-        END
-        POPUP "&Piece Style"
-        BEGIN
-            MENUITEM "&Original Style\tby Don Cross", ID_VIEW_PIECESTYLE_ORIGINAL
-            MENUITEM "&Tilburg\tby Eric Schiller and William Cone", ID_VIEW_PIECESTYLE_TILBURG
-            MENUITEM "&Skak\tby Egon Madsen",       ID_VIEW_PIECESTYLE_SKAK
-        END
     END
     POPUP "&Game"
     BEGIN
