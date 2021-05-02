@@ -124,6 +124,7 @@ BOOL CALLBACK About_DlgProc (
         switch ( wparam )
         {
         case IDOK:
+        case IDCANCEL:
             EndDialog ( hwnd, IDOK );
             result = TRUE;
             break;
@@ -2659,10 +2660,6 @@ LRESULT CALLBACK ChessWndProc (
         case ID_VIEW_ROTATEBOARD:
             TheBoardDisplayBuffer.toggleView();
             TheBoardDisplayBuffer.updateAlgebraicCoords();
-            TheBoardDisplayBuffer.freshenBoard();
-            break;
-
-        case ID_VIEW_FRESHEN:
             TheBoardDisplayBuffer.freshenBoard();
             break;
 
