@@ -30,6 +30,20 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 // Bitmap
 //
 
+IDB_BB            BITMAP              "..\images\bb.bmp"
+IDB_BK            BITMAP              "..\images\bk.bmp"
+IDB_BN            BITMAP              "..\images\bn.bmp"
+IDB_BP            BITMAP              "..\images\bp.bmp"
+IDB_BQ            BITMAP              "..\images\bq.bmp"
+IDB_BR            BITMAP              "..\images\br.bmp"
+IDB_WB            BITMAP              "..\images\wb.bmp"
+IDB_WK            BITMAP              "..\images\bk.bmp"
+IDB_WN            BITMAP              "..\images\wn.bmp"
+IDB_WP            BITMAP              "..\images\wp.bmp"
+IDB_WQ            BITMAP              "..\images\wq.bmp"
+IDB_WR            BITMAP              "..\images\wr.bmp"
+
+
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
 //

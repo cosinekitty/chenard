@@ -19,6 +19,7 @@ Release
 .idea
 *.map
 *.aps
+*.trx
 fen/fen.js
 fen/ui.js
 src/tags

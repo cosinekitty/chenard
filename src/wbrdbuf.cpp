@@ -11,15 +11,11 @@
 #include "winguich.h"
 #include "resource.h"
 
-int RawBitmapDX = 40;
-int RawBitmapDY = 40;
+int RawBitmapDX = 72;
+int RawBitmapDY = 72;
 int BitmapScaleFactor = 1;
 int BitmapScaleDenom = 1;
 int ChessBoardSize = 0;    // 0=small, 1=medium, 2=large
-
-int PieceFont_DX [NUM_PIECE_FONTS] = {40, 48, 48};
-int PieceFont_DY [NUM_PIECE_FONTS] = {40, 48, 48};
-
 
 void NewBoardSize ( int newSize )
 {
@@ -39,6 +35,18 @@ void NewBoardSize ( int newSize )
 
 
 BoardDisplayBuffer::BoardDisplayBuffer():
+    wp(nullptr),
+    wn(nullptr),
+    wb(nullptr),
+    wr(nullptr),
+    wq(nullptr),
+    wk(nullptr),
+    bp(nullptr),
+    bn(nullptr),
+    bb(nullptr),
+    br(nullptr),
+    bq(nullptr),
+    bk(nullptr),
     bitmapsLoadedFlag ( 0 ),
     whiteViewFlag ( true ),
     algebraicCoordWhiteViewFlag ( true ),
@@ -66,9 +74,6 @@ BoardDisplayBuffer::BoardDisplayBuffer():
             changed[x][y] = false;
         }
     }
-
-    RawBitmapDX = PieceFont_DX [pieceFont];
-    RawBitmapDY = PieceFont_DY [pieceFont];
 }
 
 
@@ -105,130 +110,22 @@ void BoardDisplayBuffer::loadBitmaps ( HINSTANCE progInstance )
     if ( bitmapsLoadedFlag )
         return;
 
-    if ( pieceFont == PIECE_FONT_TILBURG )
-    {
-        // White pieces on white background...
-        wpw = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_T_WP_W) );
-        wnw = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_T_WN_W) );
-        wbw = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_T_WB_W) );
-        wrw = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_T_WR_W) );
-        wqw = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_T_WQ_W) );
-        wkw = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_T_WK_W) );
+    // White pieces.
+    wp = LoadBitmap(progInstance, MAKEINTRESOURCE(IDB_WP));
+    wn = LoadBitmap(progInstance, MAKEINTRESOURCE(IDB_WN));
+    wb = LoadBitmap(progInstance, MAKEINTRESOURCE(IDB_WB));
+    wr = LoadBitmap(progInstance, MAKEINTRESOURCE(IDB_WR));
+    wq = LoadBitmap(progInstance, MAKEINTRESOURCE(IDB_WQ));
+    wk = LoadBitmap(progInstance, MAKEINTRESOURCE(IDB_WK));
 
-        // White pieces on black background...
-        wpb = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_T_WP_B) );
-        wnb = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_T_WN_B) );
-        wbb = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_T_WB_B) );
-        wrb = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_T_WR_B) );
-        wqb = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_T_WQ_B) );
-        wkb = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_T_WK_B) );
+    // Black pieces.
+    bp = LoadBitmap(progInstance, MAKEINTRESOURCE(IDB_BP));
+    bn = LoadBitmap(progInstance, MAKEINTRESOURCE(IDB_BN));
+    bb = LoadBitmap(progInstance, MAKEINTRESOURCE(IDB_BB));
+    br = LoadBitmap(progInstance, MAKEINTRESOURCE(IDB_BR));
+    bq = LoadBitmap(progInstance, MAKEINTRESOURCE(IDB_BQ));
+    bk = LoadBitmap(progInstance, MAKEINTRESOURCE(IDB_BK));
 
-        // Black pieces on white background...
-        bpw = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_T_BP_W) );
-        bnw = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_T_BN_W) );
-        bbw = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_T_BB_W) );
-        brw = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_T_BR_W) );
-        bqw = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_T_BQ_W) );
-        bkw = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_T_BK_W) );
-
-        // Black pieces on black background...
-        bpb = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_T_BP_B) );
-        bnb = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_T_BN_B) );
-        bbb = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_T_BB_B) );
-        brb = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_T_BR_B) );
-        bqb = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_T_BQ_B) );
-        bkb = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_T_BK_B) );
-
-        // Special bitmaps...
-        qmw = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_T_X_W) );
-        qmb = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_T_X_B) );
-        ew  = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_LARGE_EMPTY_W) );
-        eb  = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_LARGE_EMPTY_B) );
-    }
-    else if ( pieceFont == PIECE_FONT_SKAK )
-    {
-        // White pieces on white background...
-        wpw = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_S_WP_W) );
-        wnw = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_S_WN_W) );
-        wbw = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_S_WB_W) );
-        wrw = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_S_WR_W) );
-        wqw = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_S_WQ_W) );
-        wkw = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_S_WK_W) );
-
-        // White pieces on black background...
-        wpb = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_S_WP_B) );
-        wnb = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_S_WN_B) );
-        wbb = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_S_WB_B) );
-        wrb = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_S_WR_B) );
-        wqb = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_S_WQ_B) );
-        wkb = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_S_WK_B) );
-
-        // Black pieces on white background...
-        bpw = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_S_BP_W) );
-        bnw = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_S_BN_W) );
-        bbw = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_S_BB_W) );
-        brw = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_S_BR_W) );
-        bqw = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_S_BQ_W) );
-        bkw = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_S_BK_W) );
-
-        // Black pieces on black background...
-        bpb = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_S_BP_B) );
-        bnb = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_S_BN_B) );
-        bbb = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_S_BB_B) );
-        brb = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_S_BR_B) );
-        bqb = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_S_BQ_B) );
-        bkb = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_S_BK_B) );
-
-        // Special bitmaps...
-        qmw = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_T_X_W) );
-        qmb = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_T_X_B) );
-        ew  = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_LARGE_EMPTY_W) );
-        eb  = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_LARGE_EMPTY_B) );
-    }
-    else
-    {
-        pieceFont = PIECE_FONT_ORIGINAL;
-        // White pieces on white background...
-        wpw = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_O_WP_W) );
-        wnw = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_O_WN_W) );
-        wbw = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_O_WB_W) );
-        wrw = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_O_WR_W) );
-        wqw = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_O_WQ_W) );
-        wkw = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_O_WK_W) );
-
-        // White pieces on black background...
-        wpb = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_O_WP_B) );
-        wnb = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_O_WN_B) );
-        wbb = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_O_WB_B) );
-        wrb = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_O_WR_B) );
-        wqb = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_O_WQ_B) );
-        wkb = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_O_WK_B) );
-
-        // Black pieces on white background...
-        bpw = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_O_BP_W) );
-        bnw = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_O_BN_W) );
-        bbw = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_O_BB_W) );
-        brw = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_O_BR_W) );
-        bqw = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_O_BQ_W) );
-        bkw = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_O_BK_W) );
-
-        // Black pieces on black background...
-        bpb = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_O_BP_B) );
-        bnb = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_O_BN_B) );
-        bbb = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_O_BB_B) );
-        brb = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_O_BR_B) );
-        bqb = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_O_BQ_B) );
-        bkb = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_O_BK_B) );
-
-        // Special bitmaps...
-        qmw = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_O_X_W) );
-        qmb = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_O_X_B) );
-        ew  = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_SMALL_EMPTY_W) );
-        eb  = LoadBitmap ( progInstance, MAKEINTRESOURCE(IDB_SMALL_EMPTY_B) );
-    }
-
-    RawBitmapDX = PieceFont_DX [pieceFont];
-    RawBitmapDY = PieceFont_DY [pieceFont];
     bitmapsLoadedFlag = 1;
 }
 
@@ -314,28 +211,31 @@ void BoardDisplayBuffer::drawSquare (
     HPEN    oldpen;
     int whiteSquare = (x + y) & 1;
 
+    // FIXFIXFIX_GRAPHICS - render light and dark squares beneath transparent bitmaps
+
     switch ( square )
     {
-    case EMPTY:       hbm = whiteSquare ? ew  : eb;   break;
+    case WPAWN:       hbm = wp;  break;
+    case WKNIGHT:     hbm = wn;  break;
+    case WBISHOP:     hbm = wb;  break;
+    case WROOK:       hbm = wr;  break;
+    case WQUEEN:      hbm = wq;  break;
+    case WKING:       hbm = wk;  break;
 
-    case WPAWN:       hbm = whiteSquare ? wpw : wpb;  break;
-    case WKNIGHT:     hbm = whiteSquare ? wnw : wnb;  break;
-    case WBISHOP:     hbm = whiteSquare ? wbw : wbb;  break;
-    case WROOK:       hbm = whiteSquare ? wrw : wrb;  break;
-    case WQUEEN:      hbm = whiteSquare ? wqw : wqb;  break;
-    case WKING:       hbm = whiteSquare ? wkw : wkb;  break;
-
-    case BPAWN:       hbm = whiteSquare ? bpw : bpb;  break;
-    case BKNIGHT:     hbm = whiteSquare ? bnw : bnb;  break;
-    case BBISHOP:     hbm = whiteSquare ? bbw : bbb;  break;
-    case BROOK:       hbm = whiteSquare ? brw : brb;  break;
-    case BQUEEN:      hbm = whiteSquare ? bqw : bqb;  break;
-    case BKING:       hbm = whiteSquare ? bkw : bkb;  break;
+    case BPAWN:       hbm = bp;  break;
+    case BKNIGHT:     hbm = bn;  break;
+    case BBISHOP:     hbm = bb;  break;
+    case BROOK:       hbm = br;  break;
+    case BQUEEN:      hbm = bq;  break;
+    case BKING:       hbm = bk;  break;
 
     case OFFBOARD:    DrawOffboard(hdc,x,y,whiteViewFlag);  return;
 
-    default:          hbm = whiteSquare ? qmw : qmb;
+    //case EMPTY:       hbm = whiteSquare ? ew  : eb;   break;
+    default:          hbm = NULL;
     }
+
+    DrawOffboard(hdc, x, y, whiteViewFlag);     // FIXFIXFIX_GRAPHICS !!! HACK TO TEST TRANSPARENT BITMAPS
 
     short xStart, yStart;
 
@@ -350,7 +250,8 @@ void BoardDisplayBuffer::drawSquare (
         yStart = SQUARE_SCREENY1 ( 7 - y );
     }
 
-    DrawBitmap ( hdc, hbm, xStart, yStart );
+    if (hdc != NULL)
+        DrawBitmap ( hdc, hbm, xStart, yStart );
 
     if ( selX == x && selY == y )
     {
