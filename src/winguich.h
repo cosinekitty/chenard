@@ -64,6 +64,10 @@ extern int RawBitmapDX, RawBitmapDY;
 extern int ChessBoardSize;   // facilitates saving/loading option (0=small, 1=medium, 2=large)
 void NewBoardSize ( int );
 
+#define CHENARD_MONOSPACE_FONT      1001
+#define CHENARD_PROPORTIONAL_FONT   1002
+#define CHENARD_GAMERESULT_FONT     1003
+
 // Added following 3 Jan 1999 for displaying rank numbers and file letters...
 #define  CHESS_LEFT_MARGIN       8
 #define  CHESS_BOTTOM_MARGIN    16
@@ -93,7 +97,7 @@ void NewBoardSize ( int );
 #define  SQUARE_CHESSY(y)    (7-(((y)-CHESS_BOARD_BORDER_DY)/CHESS_BITMAP_DY))
 
 // Width of the text debug display area in the client window...
-#define  DEBUG_WINDOW_DX    200
+#define  DEBUG_WINDOW_DX    240
 
 // Extra window height when either player has blunder alert enabled...
 #define  BLUNDER_WINDOW_DY   50
@@ -125,7 +129,6 @@ void NewBoardSize ( int );
 #define  LAST_RIGHT_TEXTID     STATIC_ID_BESTPATH(MAX_BESTPATH_DISPLAY)
 
 #define MAX_CHESS_TEXT             128
-#define CHESS_TEXT_FONT            ANSI_FIXED_FONT
 #define CHESS_TEXT_COLOR           RGB(255,255,255)
 #define CHESS_TEXT_COLOR2          RGB(255,255,0)
 #define CHESS_BACKGROUND_COLOR     RGB(0,0,127)
@@ -150,7 +153,7 @@ public:
     };
 
     ChessDisplayTextBuffer ( HWND, int _id, int _x, int _y, 
-        marginType _margin=margin_right, int _textFont=ANSI_FIXED_FONT,
+        marginType _margin=margin_right, int _textFont=CHENARD_MONOSPACE_FONT,
         int _highlight = 0,
         bool _isBackgroundOpaque = true);
 

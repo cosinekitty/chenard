@@ -2464,55 +2464,54 @@ LRESULT CALLBACK ChessWndProc (
         else
         {
             const int textSep = 2;
-            const int textHeight = 12;
+            const int textHeight = 16;
             const int textWidth = 8;
 
             ChessDisplayTextBuffer *tb = new ChessDisplayTextBuffer (
                 hwnd, STATIC_ID_WHITES_MOVE, CHESS_BOARD_BORDER_DX, 0,
-                ChessDisplayTextBuffer::margin_bottom, ANSI_VAR_FONT );
+                ChessDisplayTextBuffer::margin_bottom, CHENARD_PROPORTIONAL_FONT );
 
             tb = new ChessDisplayTextBuffer (
                 hwnd, STATIC_ID_BLACKS_MOVE, 170, 0,
-                ChessDisplayTextBuffer::margin_bottom, ANSI_VAR_FONT );
+                ChessDisplayTextBuffer::margin_bottom, CHENARD_PROPORTIONAL_FONT);
 
             tb = new ChessDisplayTextBuffer (
                 hwnd, STATIC_ID_THINKING, SQUARE_SCREENX1(8) - 8*textWidth, 0,
-                ChessDisplayTextBuffer::margin_bottom, ANSI_VAR_FONT );
+                ChessDisplayTextBuffer::margin_bottom, CHENARD_PROPORTIONAL_FONT);
 
             int textY = 8;
             int textID;
             int depth = 0;
-            for ( textID = FIRST_RIGHT_TEXTID;
-                    textID <= LAST_RIGHT_TEXTID;
-                    textID++, depth++ )
+            for (textID = FIRST_RIGHT_TEXTID; textID <= LAST_RIGHT_TEXTID; textID++, depth++)
             {
                 // Creating the object puts it in the class's list of instances
                 tb = new ChessDisplayTextBuffer (
                     hwnd, textID, 0, textY,
-                    ChessDisplayTextBuffer::margin_right, ANSI_FIXED_FONT,
+                    ChessDisplayTextBuffer::margin_right, CHENARD_MONOSPACE_FONT,
                     (textID>=STATIC_ID_BESTPATH(0)) ? (depth & 1) : 0 );
 
                 textY += (textHeight + textSep);
             }
 
-            for ( textID = STATIC_ID_ADHOC1; textID <= STATIC_ID_ADHOC2; ++textID )
+            for (textID = STATIC_ID_ADHOC1; textID <= STATIC_ID_ADHOC2; ++textID)
             {
                 tb = new ChessDisplayTextBuffer (
                     hwnd, textID, 0, textY,
-                    ChessDisplayTextBuffer::margin_right, ANSI_FIXED_FONT, 0 );
+                    ChessDisplayTextBuffer::margin_right, CHENARD_MONOSPACE_FONT, 0 );
 
                 textY += (textHeight + textSep);
             }
 
             char coordString [2] = {0, 0};
-            for ( int coord = 0; coord < 8; ++coord )
+            for (int coord = 0; coord < 8; ++coord)
             {
                 tb = new ChessDisplayTextBuffer (
                     hwnd, STATIC_ID_COORD_RANK_BASE + coord,
                     0,  // x-coord will be calculated later by RepositionAll()
                     0,  // same for y-coord
                     ChessDisplayTextBuffer::margin_rank,
-                    ANSI_VAR_FONT, 1 );
+                    CHENARD_PROPORTIONAL_FONT, 
+                    1 );
 
                 coordString[0] = '1' + coord;
                 tb->setText ( coordString );
@@ -2522,7 +2521,8 @@ LRESULT CALLBACK ChessWndProc (
                     0,  // x-coord will be calculated later by RepositionAll()
                     0,  // same for y-coord
                     ChessDisplayTextBuffer::margin_file,
-                    ANSI_VAR_FONT, 1 );
+                    CHENARD_PROPORTIONAL_FONT,
+                    1 );
 
                 coordString[0] = 'a' + coord;
                 tb->setText ( coordString );
@@ -2537,7 +2537,7 @@ LRESULT CALLBACK ChessWndProc (
                 0,  // x-coord will be calculated later by RepositionAll()
                 0,  // same for y-coord
                 ChessDisplayTextBuffer::margin_center,
-                0,    // HACK:  use large font
+                CHENARD_GAMERESULT_FONT,
                 1,
                 false   // transparent background
             );
@@ -2552,7 +2552,7 @@ LRESULT CALLBACK ChessWndProc (
                 0,  // x-coord calculated by RepositionAll()
                 0,  // y-coord calculated by RepositionAll()
                 ChessDisplayTextBuffer::margin_blunderAnalysis,
-                ANSI_VAR_FONT
+                CHENARD_PROPORTIONAL_FONT
             );
 
             // Make blunder line somewhat reddish color...
@@ -2565,7 +2565,7 @@ LRESULT CALLBACK ChessWndProc (
                 0,  // x-coord calculated by RepositionAll()
                 0,  // y-coord calculated by RepositionAll()
                 ChessDisplayTextBuffer::margin_betterAnalysis,
-                ANSI_VAR_FONT,
+                CHENARD_PROPORTIONAL_FONT,
                 1   // highlight yellow
             );
 
@@ -3327,7 +3327,7 @@ void ChessBeep ( int freq, int duration )
 //------------------------------------------------------------------
 
 
-ChessDisplayTextBuffer *ChessDisplayTextBuffer::All = 0;
+ChessDisplayTextBuffer *ChessDisplayTextBuffer::All = nullptr;
 
 
 ChessDisplayTextBuffer::ChessDisplayTextBuffer (
@@ -3445,47 +3445,59 @@ void ChessDisplayTextBuffer::calcRegion ( RECT &rect ) const
     rect.left = x;
     rect.top = y;
 
-    HDC hdc = GetDC(hwnd);
-    TEXTMETRIC tm;
-    HFONT font = createFont();
-    HFONT oldFont = (HFONT) SelectObject(hdc, font);
-    GetTextMetrics ( hdc, &tm );
-    SelectObject ( hdc, oldFont );
-    deleteFont(font);
-    ReleaseDC ( hwnd, hdc );
+    SIZE size;
+    size.cx = 0;
+    size.cy = 0;
 
-    size_t numChars = text ? strlen(text) : 0;
-    rect.right  = (LONG) (x + numChars * tm.tmAveCharWidth + 3);
-    rect.bottom = (LONG) (y + tm.tmHeight + tm.tmExternalLeading + 3);
+    if (text != nullptr)
+    {
+        HDC hdc = GetDC(hwnd);
+        HFONT font = createFont();
+        HFONT oldFont = (HFONT)SelectObject(hdc, font);
+        GetTextExtentPoint32(hdc, text, (int)strlen(text), &size);
+        SelectObject(hdc, oldFont);
+        deleteFont(font);
+        ReleaseDC(hwnd, hdc);
+    }
+
+    rect.right = (LONG)(x + size.cx);
+    rect.bottom = (LONG)(y + size.cy);
 }
 
 
 HFONT ChessDisplayTextBuffer::createFont() const
 {
     HFONT font;
-    if (textFont == 0)
+
+    switch (textFont)
     {
-        // Hack: create our own special large font.
-        // This is used for the game result text.
-        // http://msdn.microsoft.com/en-us/library/windows/desktop/dd183499(v=vs.85).aspx
+    case CHENARD_GAMERESULT_FONT:
         font = CreateFont(
-                   48, 0, 0, 0, FW_DONTCARE, FALSE, FALSE, FALSE, DEFAULT_CHARSET, 0,
-                   CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, VARIABLE_PITCH, "Arial");
+            80, 0, 0, 0, FW_DONTCARE, FALSE, FALSE, FALSE, DEFAULT_CHARSET, 0,
+            CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, VARIABLE_PITCH, "Arial");
+        break;
+
+    case CHENARD_PROPORTIONAL_FONT:
+        font = CreateFont(
+            16, 0, 0, 0, FW_DONTCARE, FALSE, FALSE, FALSE, DEFAULT_CHARSET, 0,
+            CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, VARIABLE_PITCH, "Arial");
+        break;
+
+    case CHENARD_MONOSPACE_FONT:
+    default:
+        font = CreateFont(
+            18, 0, 0, 0, FW_DONTCARE, FALSE, FALSE, FALSE, DEFAULT_CHARSET, 0,
+            CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, VARIABLE_PITCH, "Courier New");
+        break;
     }
-    else
-    {
-        font = (HFONT)GetStockObject(textFont);
-    }
+
     return font;
 }
 
 void ChessDisplayTextBuffer::deleteFont(HFONT font) const
 {
-    if (textFont == 0)
-    {
-        // Clean up our custom font.
+    if (font != NULL)
         DeleteObject(font);
-    }
 }
 
 
