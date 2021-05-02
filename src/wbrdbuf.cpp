@@ -166,13 +166,19 @@ void DrawBitmap (
     ptOrg.y = 0;
     DPtoLP ( hdcMem, &ptOrg, 1 );
 
-    StretchBlt (
+    BLENDFUNCTION blend;
+    blend.BlendOp = AC_SRC_OVER;
+    blend.BlendFlags = 0x00;
+    blend.SourceConstantAlpha = 0xff;
+    blend.AlphaFormat = AC_SRC_ALPHA;
+
+    AlphaBlend (
         hdc, xStart, yStart,
         (BitmapScaleFactor * ptSize.x) / BitmapScaleDenom,
         (BitmapScaleFactor * ptSize.y) / BitmapScaleDenom,
         hdcMem, ptOrg.x, ptOrg.y,
         ptSize.x, ptSize.y,
-        SRCCOPY );
+        blend);
 
     DeleteDC (hdcMem);
 }
@@ -251,7 +257,7 @@ void BoardDisplayBuffer::drawSquare (
     }
 
     if (hdc != NULL)
-        DrawBitmap ( hdc, hbm, xStart, yStart );
+        DrawBitmap(hdc, hbm, xStart, yStart);
 
     if ( selX == x && selY == y )
     {
