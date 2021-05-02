@@ -1,0 +1,15 @@
+#!/bin/bash
+Fail()
+{
+    echo "FATAL($0): $1"
+    exit 1
+}
+
+type inkscape > /dev/null || Fail "inkscape is not installed"
+
+SIZE=72
+rm -f *.png
+for PIECE in wk wq wr wb wn wp bk bq br bb bn bp; do
+    inkscape -z -w ${SIZE} -h ${SIZE} ${PIECE}.svg -e ${PIECE}.png || Fail "inkscape command failed for ${PIECE}.svg"
+done
+exit 0
