@@ -1,5 +1,7 @@
 # Chenard - an open source chess program
 
+<img src="https://github.com/cosinekitty/chenard/blob/master/chenard_screen_shot.png" width="753" height="600" />
+
 Chenard is a free and open source chess program written in C++.
 The code is very mature and well-tested (started in 1993).
 It is not the strongest AI out there, but it will provide a serious challenge for most people.
