@@ -63,7 +63,7 @@ bool HumanChessPlayer::GetMove (
         }
 
         // This checks for pawn promotion and stuff like that.
-        move.Fix ( board, source, dest, promIndex, userInterface );
+        move.Fix(board, legalMoves, source, dest, promIndex, userInterface);
 
         // Regenerate legal moves in case they edited the board.
         board.GenMoves(legalMoves);

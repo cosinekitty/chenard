@@ -325,6 +325,7 @@ int    ConvertSquareToNybble ( SQUARE );
 
 #define   SPECIAL_MOVE_MASK       0xF0
 
+struct MoveList;
 
 struct Move   // A nice 32-bit structure!
 {
@@ -344,7 +345,7 @@ struct Move   // A nice 32-bit structure!
     }
 
     void Fix ( unsigned long openBookData, ChessBoard & );
-    bool Fix ( const ChessBoard &, int Source, int Dest, SQUARE OptionalProm, ChessUI & );
+    void Fix ( const ChessBoard &, const MoveList& LegalMoves, int Source, int Dest, SQUARE OptionalProm, ChessUI & );
 
     bool ShouldIgnore() const
     {

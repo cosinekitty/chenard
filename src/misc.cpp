@@ -310,8 +310,9 @@ SQUARE Move::actualOffsets (
 }
 
 
-bool Move::Fix (
+void Move::Fix (
     const ChessBoard    &Board,
+    const MoveList      &LegalMoves,
     int                  Source,
     int                  Dest,
     SQUARE               OptionalProm,
@@ -323,22 +324,25 @@ bool Move::Fix (
     {
         source = Source;
         dest = Dest;
-        return true;
+        return;
     }
 
     // --- end of Suggest Move code.
 
+    source = 0;
+    dest = 0;
+    score = 0;
+
     if ( Source<OFFSET(2,2) || Source>OFFSET(9,9) ||
-            Dest<OFFSET(2,2) || Dest>OFFSET(9,9) ||
-            Board.GetSquareContents(Source) == OFFBOARD ||
-            Board.GetSquareContents(Dest) == OFFBOARD )
+         Dest<OFFSET(2,2) || Dest>OFFSET(9,9) ||
+         Board.GetSquareContents(Source) == OFFBOARD ||
+         Board.GetSquareContents(Dest) == OFFBOARD )
     {
-        return false;
+        return;
     }
 
-    source = BYTE ( Source );
-    dest   = BYTE ( Dest );
-    score  = 0;
+    source = BYTE(Source);
+    dest   = BYTE(Dest);
 
     // Check for special moves...
 
@@ -347,27 +351,23 @@ bool Move::Fix (
 
     ChessSide side = Board.WhiteToMove() ? SIDE_WHITE : SIDE_BLACK;
 
-    SQUARE move_piece = Board.GetSquareContents ( Source );
+    SQUARE move_piece = Board.GetSquareContents(Source);
     SQUARE prom;
     int    moveVector = Dest - Source;
 
-    if ( Source == OFFSET(6,2) && Dest == OFFSET(8,2) &&
-        (move_piece & WK_MASK) )
+    if ( Source == OFFSET(6,2) && Dest == OFFSET(8,2) && (move_piece & WK_MASK) )
     {
         dest = SPECIAL_MOVE_KCASTLE;
     }
-    else if ( Source == OFFSET(6,2) && Dest == OFFSET(4,2) &&
-              (move_piece & WK_MASK) )
+    else if ( Source == OFFSET(6,2) && Dest == OFFSET(4,2) && (move_piece & WK_MASK) )
     {
         dest = SPECIAL_MOVE_QCASTLE;
     }
-    else if ( Source == OFFSET(6,9) && Dest == OFFSET(8,9) &&
-              (move_piece & BK_MASK) )
+    else if ( Source == OFFSET(6,9) && Dest == OFFSET(8,9) && (move_piece & BK_MASK) )
     {
         dest = SPECIAL_MOVE_KCASTLE;
     }
-    else if ( Source == OFFSET(6,9) && Dest == OFFSET(4,9) &&
-              (move_piece & BK_MASK) )
+    else if ( Source == OFFSET(6,9) && Dest == OFFSET(4,9) && (move_piece & BK_MASK) )
     {
         dest = SPECIAL_MOVE_QCASTLE;
     }
@@ -389,23 +389,25 @@ bool Move::Fix (
             {
                 if (OptionalProm == 0)
                 {
-                    if ( (Board.GetSquareContents(Dest) & enemyMask) == 0 )
-                    {
-                        // We do this because we already know it's not legal.
-                        // This avoids a spurious call to the UI.
-                        prom = Q_INDEX;
-                    }
+                    // Avoid asking for promotion piece if promotion isn't even legal.
+                    // Try promotion to queen to see if that is legal.
+                    // If promoting to a queen is legal, then underpromoting is legal too.
+                    if (moveVector == pawn_dir + EAST)
+                        dest = SPECIAL_MOVE_PROMOTE_CAP_EAST | Q_INDEX;
                     else
-                    {
-                        prom = Ui.PromotePawn ( Dest, side );
-                    }
+                        dest = SPECIAL_MOVE_PROMOTE_CAP_WEST | Q_INDEX;
+
+                    if (LegalMoves.IsLegal(*this))
+                        prom = Ui.PromotePawn(Dest, side);
+                    else
+                        prom = Q_INDEX;     // caller will also notice promotion is illegal
                 }
                 else
                 {
                     prom = OptionalProm;
                 }
 
-                if ( moveVector == pawn_dir + EAST )
+                if (moveVector == pawn_dir + EAST)
                     dest = SPECIAL_MOVE_PROMOTE_CAP_EAST | prom;
                 else
                     dest = SPECIAL_MOVE_PROMOTE_CAP_WEST | prom;
@@ -420,29 +422,22 @@ bool Move::Fix (
             {
                 if (OptionalProm == 0)
                 {
-                    if ( Board.GetSquareContents(Dest) != EMPTY )
-                    {
-                        // We know this isn't a legal move already, because
-                        // there's something blocking the pawn promotion.
-                        // Go ahead and make the move an illegal queen promotion.
-                        // This avoids a spurious call to the UI to ask the
-                        // user what piece to promote it to.
-                        prom = Q_INDEX;
-                    }
+                    // Avoid asking for promotion piece if promotion isn't even legal.
+                    // If promoting to a queen is legal, then underpromoting is legal too.
+                    dest = SPECIAL_MOVE_PROMOTE_NORM | Q_INDEX;
+                    if (LegalMoves.IsLegal(*this))
+                        prom = Ui.PromotePawn(Dest, side);
                     else
-                        prom = Ui.PromotePawn ( Dest, side );
+                        prom = Q_INDEX;     // caller will also notice promotion is illegal
                 }
                 else
                 {
                     prom = OptionalProm;
                 }
-
                 dest = SPECIAL_MOVE_PROMOTE_NORM | prom;
             }
         }
     }
-
-    return true;
 }
 
 
