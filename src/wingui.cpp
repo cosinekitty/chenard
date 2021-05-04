@@ -1233,6 +1233,9 @@ void ReadChenardSetting (const char *key, const char *defaultValue, char *opt, s
 {
     bool readValue = false;     // if remains false, it means we failed to read data and will use defaultValue
 
+    if (opt == nullptr)
+        return;
+
     HKEY softwareKeyHandle;
     LSTATUS status = RegOpenKeyEx (
         HKEY_CURRENT_USER,
@@ -1274,11 +1277,8 @@ void ReadChenardSetting (const char *key, const char *defaultValue, char *opt, s
         RegCloseKey (softwareKeyHandle);
     }
 
-
     if (!readValue)
-    {
-        strcpy_s (opt, optSize, defaultValue);
-    }
+        strcpy_s(opt, optSize, defaultValue);
 }
 
 
@@ -1632,11 +1632,11 @@ void SetDirectoryFromFilePath (const char *filepath)
     if (backslash)
     {
         int length = (int) (backslash - filepath);
-        char *path = new char [length + 1];
+        char *path = new char [(size_t)length + 1];
         memcpy (path, filepath, length);
         path[length] = '\0';
 
-        _chdir (path);
+        (void)_chdir(path);
 
         delete[] path;
     }

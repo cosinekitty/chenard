@@ -49,7 +49,12 @@ BoardDisplayBuffer::BoardDisplayBuffer():
     tempHDC(nullptr),
     inPromotionPrompt(false),
     prom_x(-1),
-    prom_y(-1)
+    prom_y(-1),
+    moverIsWhite(false),
+    vx1(0),
+    vx2(0),
+    vy1(0),
+    vy2(0)
 {
     for ( int x=0; x < 8; x++ )
     {
@@ -428,13 +433,9 @@ void BoardDisplayBuffer::draw (
     loadBitmaps (global_hInstance);
 
     for ( int y=miny; y <= maxy; y++ )
-    {
         for ( int x=minx; x <= maxx; x++ )
-        {
-            // Put the bitmap in the presentation space given.
-            drawSquare ( hdc, board[x][y], x, y );
-        }
-    }
+            if (x >= 0 && x < 8 && y >= 0 && y < 8)
+                drawSquare ( hdc, board[x][y], x, y );
 
     HBRUSH oldbrush = (HBRUSH) SelectObject ( hdc, GetStockObject(NULL_BRUSH) );
     HPEN oldpen = (HPEN) SelectObject ( hdc, GetStockObject(BLACK_PEN) );

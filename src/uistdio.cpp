@@ -433,8 +433,7 @@ bool ChessUI_stdio::ReadMove (
                 printf ( "!!! Ignoring invalid time limit\n" );
             }
         }
-        else if ( sscanf ( s, "edit %[a-zA-Z1-8.]", temp ) == 1
-                  && strlen(temp)==3 )
+        else if (sscanf(s, "edit %[a-zA-Z1-8.]", temp)==1 && strlen(temp)==3 )
         {
             int x = temp[1] - 'a';
             int y = temp[2] - '1';

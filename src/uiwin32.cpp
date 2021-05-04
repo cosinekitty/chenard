@@ -1211,7 +1211,7 @@ void ChessUI_win32_gui::blunderAlert_FormatContinuation(
     int maxTextLength)
 {
     int d = 0;      // must init before first usage of SafeAppendToken macro
-    memset(text, '\0', 1 + maxTextLength);
+    memset(text, '\0', 1 + (size_t)maxTextLength);
     int length = 0;
 
     if (!parms || moveIndex < 0 || moveIndex >= parms->numLegalMoves)
