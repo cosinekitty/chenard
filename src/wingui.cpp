@@ -3526,9 +3526,9 @@ void ChessDisplayTextBuffer::draw ( HDC hdc ) const
 
     COLORREF oldTextColor = SetTextColor ( hdc, color );
     COLORREF oldBkColor   = SetBkColor ( hdc, CHESS_BACKGROUND_COLOR );
-    SetBkMode(hdc, isBackgroundOpaque ? OPAQUE : TRANSPARENT);
+    int prevMode = SetBkMode(hdc, isBackgroundOpaque ? OPAQUE : TRANSPARENT);
     TextOut ( hdc, x, y, p, (int)strlen(p) );
-    SetBkMode(hdc, OPAQUE);
+    SetBkMode(hdc, prevMode);
     if ( oldBkColor != CLR_INVALID )
         SetBkColor ( hdc, oldBkColor );
     if ( oldTextColor != CLR_INVALID )

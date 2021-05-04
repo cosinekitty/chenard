@@ -503,7 +503,7 @@ public:
     //  Must return one of the following values:
     //      Q_INDEX, R_INDEX, B_INDEX, N_INDEX
     //--------------------------------------------------------------
-    virtual SQUARE PromotePawn ( int PawnDest, ChessSide ) = 0;
+    virtual SQUARE PromotePawn(int PawnSource, int PawnDest, ChessSide) = 0;
 
     //--------------------------------------------------------------
     //  The following member function is called bracketing

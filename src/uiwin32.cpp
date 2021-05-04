@@ -1481,14 +1481,23 @@ try_another_move:
 }
 
 
-SQUARE ChessUI_win32_gui::PromotePawn ( int, ChessSide side )
+SQUARE ChessUI_win32_gui::PromotePawn(int source, int dest, ChessSide side)
 {
+    const int sx = XPART(source) - 2;
+    const int sy = YPART(source) - 2;
+    const int dx = XPART(dest) - 2;
+    const int dy = YPART(dest) - 2;
+
+    TheBoardDisplayBuffer.enterPawnPromotionPrompt(side, sx, sy, dx, dy);
+
     static volatile SQUARE prom;
     prom = EMPTY;
     PostMessage ( hwnd, WM_DDC_PROMOTE_PAWN, WPARAM(side), LPARAM(&prom) );
 
-    while ( prom == EMPTY )
-        Sleep ( 100 );
+    while (prom == EMPTY)
+        Sleep(100);
+
+    TheBoardDisplayBuffer.exitPawnPromotionPrompt();
 
     return prom;
 }

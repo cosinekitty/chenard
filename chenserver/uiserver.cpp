@@ -39,7 +39,7 @@ bool ChessUI_Server::ReadMove(
     return false;
 }
 
-SQUARE ChessUI_Server::PromotePawn(int /*PawnDest*/, ChessSide)
+SQUARE ChessUI_Server::PromotePawn(int /*PawnSource*/, int /*PawnDest*/, ChessSide)
 {
     ChessFatal("ChessUI_Server::PromotePawn() should not have been called!");
     return 0;

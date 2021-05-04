@@ -299,6 +299,9 @@ public:
 
     void sendAlgebraicChar(char letterOrNumber);
 
+    void enterPawnPromotionPrompt(ChessSide side, int sx, int sy, int dx, int dy);
+    void exitPawnPromotionPrompt();
+
 private:
     void keySelectSquare ( int x, int y );
     void touchSquare (int x, int y);
@@ -330,6 +333,9 @@ private:
 
     char algebraicRank;          // 'a'..'h' if keyboard rank character pressed, '\0' otherwise
     HDC *tempHDC;
+
+    bool inPromotionPrompt;
+    int prom_x, prom_y;
 };
 
 
@@ -467,7 +473,7 @@ public:
     void ResetPlayers();     // call to forget any previous player definitions.
     ChessPlayer *CreatePlayer ( ChessSide );
     bool ReadMove ( ChessBoard &, int &source, int &dest, SQUARE &promIndex );
-    SQUARE PromotePawn ( int PawnDest, ChessSide );
+    virtual SQUARE PromotePawn(int PawnSource, int PawnDest, ChessSide);
     void DisplayMove ( ChessBoard &, Move );
     void RecordMove ( ChessBoard &, Move, INT32 thinkTime );
     void DrawBoard ( const ChessBoard & );

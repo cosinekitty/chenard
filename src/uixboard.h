@@ -47,7 +47,7 @@ public:
 
     ChessPlayer *CreatePlayer ( ChessSide );
     bool ReadMove ( ChessBoard &, int &source, int &dest, SQUARE &promIndex );
-    SQUARE PromotePawn ( int PawnDest, ChessSide );
+    SQUARE PromotePawn ( int PawnSource, int PawnDest, ChessSide );
     void DisplayMove ( ChessBoard &, Move );
     void RecordMove ( ChessBoard &, Move, INT32 thinkTime );
     void DrawBoard ( const ChessBoard & );

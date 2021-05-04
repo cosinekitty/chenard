@@ -39,7 +39,7 @@ public:
     //  Must return one of the following values:
     //      Q_INDEX, R_INDEX, B_INDEX, N_INDEX
     //--------------------------------------------------------------
-    virtual SQUARE PromotePawn(int PawnDest, ChessSide);
+    virtual SQUARE PromotePawn(int PawnSource, int PawnDest, ChessSide);
 
     //--------------------------------------------------------------
     //  The following function should display the given Move

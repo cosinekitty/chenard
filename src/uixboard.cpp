@@ -246,7 +246,7 @@ bool ChessUI_xboard::ReadMove ( ChessBoard &, int & /*source*/, int & /*dest*/, 
 }
 
 
-SQUARE ChessUI_xboard::PromotePawn ( int /*PawnDest*/, ChessSide )
+SQUARE ChessUI_xboard::PromotePawn ( int /*PawnSource*/, int /*PawnDest*/, ChessSide )
 {
     ChessFatal ("Should not have been called: ChessUI_xboard::PromotePawn()");
     return EMPTY;

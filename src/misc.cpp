@@ -398,7 +398,7 @@ void Move::Fix (
                         dest = SPECIAL_MOVE_PROMOTE_CAP_WEST | Q_INDEX;
 
                     if (LegalMoves.IsLegal(*this))
-                        prom = Ui.PromotePawn(Dest, side);
+                        prom = Ui.PromotePawn(Source, Dest, side);
                     else
                         prom = Q_INDEX;     // caller will also notice promotion is illegal
                 }
@@ -426,7 +426,7 @@ void Move::Fix (
                     // If promoting to a queen is legal, then underpromoting is legal too.
                     dest = SPECIAL_MOVE_PROMOTE_NORM | Q_INDEX;
                     if (LegalMoves.IsLegal(*this))
-                        prom = Ui.PromotePawn(Dest, side);
+                        prom = Ui.PromotePawn(Source, Dest, side);
                     else
                         prom = Q_INDEX;     // caller will also notice promotion is illegal
                 }

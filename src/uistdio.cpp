@@ -704,7 +704,7 @@ static int AskPawnPromote()
 
 
 
-SQUARE ChessUI_stdio::PromotePawn ( int, ChessSide )
+SQUARE ChessUI_stdio::PromotePawn ( int, int, ChessSide )
 {
     return AskPawnPromote();
 }

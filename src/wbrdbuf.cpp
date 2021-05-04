@@ -46,7 +46,10 @@ BoardDisplayBuffer::BoardDisplayBuffer():
     hiliteKeyX ( 3 ),
     hiliteKeyY ( 3 ),
     algebraicRank('\0'),
-    tempHDC ( 0 )
+    tempHDC(nullptr),
+    inPromotionPrompt(false),
+    prom_x(-1),
+    prom_y(-1)
 {
     for ( int x=0; x < 8; x++ )
     {
@@ -288,6 +291,32 @@ void BoardDisplayBuffer::drawSquare (
         SelectObject ( hdc, oldpen );
         SelectObject ( hdc, oldbrush );
         DeleteObject ( hpen );
+    }
+
+    if (inPromotionPrompt && (x == prom_x) && (y == prom_y))
+    {
+        // Draw a "?" on top of the pawn being promoted.
+        const char* text = "?";
+
+        HFONT font = CreateFont(
+            32, 0, 0, 0, FW_DONTCARE, FALSE, FALSE, FALSE, DEFAULT_CHARSET, 0,
+            CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, VARIABLE_PITCH, "Arial");
+
+        HFONT oldfont = (HFONT)SelectObject(hdc, font);
+
+        SIZE size;
+        GetTextExtentPoint32(hdc, text, (int)strlen(text), &size);
+        int text_x = xStart + (5*(CHESS_BITMAP_DX - size.cx) / 6);
+        int text_y = yStart + (1*(CHESS_BITMAP_DY - size.cy) / 6);
+
+        int prevMode = SetBkMode(hdc, TRANSPARENT);
+        COLORREF oldTextColor = SetTextColor(hdc, RGB(99, 14, 98));
+        TextOut(hdc, text_x, text_y, text, (int)strlen(text));
+        SetTextColor(hdc, oldTextColor);
+        SetBkMode(hdc, prevMode);
+
+        SelectObject(hdc, oldfont);
+        DeleteObject(font);
     }
 
     changed[x][y] = false;
@@ -591,6 +620,34 @@ void BoardDisplayBuffer::sendAlgebraicChar(char c)
         }
     }
 }
+
+
+void BoardDisplayBuffer::enterPawnPromotionPrompt(ChessSide side, int sx, int sy, int dx, int dy)
+{
+    if (DisplayCoordsValid(sx, sy) && DisplayCoordsValid(dx, dy))
+    {
+        prom_x = dx;
+        prom_y = dy;
+        inPromotionPrompt = true;
+        setSquareContents(sx, sy, EMPTY);
+        setSquareContents(dx, dy, (side == SIDE_WHITE) ? WPAWN : BPAWN);
+        freshenSquare(sx, sy);
+        freshenSquare(dx, dy);
+    }
+    else
+    {
+        ChessFatal("Entered pawn promotion prompt with invalid coordinates.");
+    }
+}
+
+
+void BoardDisplayBuffer::exitPawnPromotionPrompt()
+{
+    inPromotionPrompt = false;
+    prom_x = -1;
+    prom_y = -1;
+}
+
 
 
 BoardDisplayBuffer TheBoardDisplayBuffer;
