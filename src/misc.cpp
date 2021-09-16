@@ -347,8 +347,6 @@ void Move::Fix (
     // Check for special moves...
 
     int pawn_dir = Board.WhiteToMove() ? NORTH : SOUTH;
-    SQUARE enemyMask = (pawn_dir==NORTH) ? BLACK_MASK : WHITE_MASK;
-
     ChessSide side = Board.WhiteToMove() ? SIDE_WHITE : SIDE_BLACK;
 
     SQUARE move_piece = Board.GetSquareContents(Source);
