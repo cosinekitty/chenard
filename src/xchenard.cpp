@@ -53,6 +53,11 @@ bool PonderingAllowed = false;
 int  MyRemainingTime = 0;               // when in time management mode, this stores the most recently reported number of centiseconds remaining in the time period
 int  MemoryAllotmentInMegabytes = 0;    // remains 0 unless overridden by "memory" command.  reset to 0 after used.
 
+// The SuppressPrintMove... stuff is a hack to provide better analysis output for "SCID vs PC" as a host program.
+int  SuppressPrintMoveDepth = -1;
+int  SuppressPrintMoveTime = -1;
+bool SuppressPrintMove = false;
+
 void dprintf (const char *format, ...)
 {
     if (DebugPrintAllowed)
@@ -643,7 +648,12 @@ think_again:
         {
             // This is a little weird: we may have received and processed a 'force' command.
             // If this happens, it means it is no longer our turn!
-            if (IsComputersTurn())
+            // [2021-11-06] Also weird: SuppressPrintMove==true when the user has configured "sdponder"
+            // to work around our lack of supporting the "analyze" command.
+            // Hosts like "SCID vs PC" work around xchenard not supporting "analyze" by
+            // setting a very high search depth: "sd 50". But then it gets confused in its
+            // analysis window when we actually print a move!
+            if (IsComputersTurn() && !SuppressPrintMove)
             {
 ponder_again:
                 char moveString [6];
@@ -768,6 +778,7 @@ void SetDepthCommand (const char *rest)
         TheComputerPlayer.SetSearchDepth (depth);
     }
     TimeManagement = false;
+    SuppressPrintMove = (SuppressPrintMoveDepth >= 0) && (depth > SuppressPrintMoveDepth);
 }
 
 
@@ -779,6 +790,7 @@ void SetTimeCommand (const char *rest)
         TheComputerPlayer.SetTimeLimit (100 * numberOfSeconds);
     }
     TimeManagement = false;
+    SuppressPrintMove = (SuppressPrintMoveTime >= 0) && (numberOfSeconds > SuppressPrintMoveTime);
 }
 
 
@@ -819,6 +831,7 @@ void SetLevelCommand (const char *rest)
         TotalMovesPerPeriod     = moves;
         IncrementSecondsPerMove = increment;
         TimeManagement = true;
+        SuppressPrintMove = false;
     }
 }
 
@@ -1025,6 +1038,14 @@ void ParseOption (const char *text)
             // I am just providing a back door for someone to send a memory command via xchenard.ini if needed.
             MemoryAllotmentInMegabytes = valueInt;
         }
+        else if (0 == strcmp(name, "sdponder"))
+        {
+            SuppressPrintMoveDepth = valueInt;
+        }
+        else if (0 == strcmp(name, "stponder"))
+        {
+            SuppressPrintMoveTime = valueInt;
+        }
         else
         {
             goto unknown_option;
@@ -1073,6 +1094,7 @@ bool ExecuteCommand (const char *verb, const char *rest)        // returns true 
         printf ("feature myname=\"Chenard %s\"\n", CHENARD_VERSION);
 
         // Send feature requests...
+        // See: https://www.gnu.org/software/xboard/engine-intf.html#9
         printf ("feature sigint=0\n");
         printf ("feature sigterm=0\n");
         printf ("feature ping=1\n");
@@ -1170,11 +1192,17 @@ bool ExecuteCommand (const char *verb, const char *rest)        // returns true 
     }
     else if (0 == strcmp(verb,"post"))
     {
-        TheUserInterface.EnableThinkingDisplay (true);
+        TheUserInterface.EnableThinkingDisplay(true);
+
+        // Always force some analysis to take place, so xboard/WinBoard can display the analysis.
+        TheComputerPlayer.setEnabledImmediateSingularMove(false);
     }
     else if (0 == strcmp(verb,"nopost"))
     {
-        TheUserInterface.EnableThinkingDisplay (true);
+        TheUserInterface.EnableThinkingDisplay(false);
+
+        // Allow the computer to move immediately when there is only one legal move.
+        TheComputerPlayer.setEnabledImmediateSingularMove(true);
     }
     else if (0 == strcmp(verb,"hard"))
     {

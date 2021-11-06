@@ -284,7 +284,6 @@ void ChessUI_xboard::DisplayCurrentMove ( const ChessBoard &, Move, int /*level*
 
 void ChessUI_xboard::DisplayBestPath (const ChessBoard &_board, const BestPath &path)
 {
-
     if (thinkingDisplayEnabled)
     {
         static const int MAX_PATH = 20;
@@ -325,9 +324,12 @@ void ChessUI_xboard::DisplayBestPath (const ChessBoard &_board, const BestPath &
 
         // We change the board here, but we put it back the way we find it!
         ChessBoard &board = (ChessBoard &) _board;
-        for (i=0; i < path.depth; ++i)
+        for (i=0; i <= path.depth; ++i)
         {
             Move move = path.m[i];
+            if (!board.isLegal(move))
+                break;
+
             FormatChessMove (board, move, string);
             if (col >= 70)
             {

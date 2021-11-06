@@ -930,6 +930,9 @@ public:
     void blunderAlert_SetInstanceFlag() { blunderAlertInstance = true; }
     bool blunderAlert_QueryInstanceFlag() const { return blunderAlertInstance; }
 
+    bool isEnabledImmediateSingularMove() const { return immediateSingularMove; }
+    void setEnabledImmediateSingularMove(bool enable) { immediateSingularMove = enable; }
+
     bool isBackgroundThinker() const { return oppTimeInstance || blunderAlertInstance; }
 
     Move getPredictedOpponentMove() const { return predictedOppMove; }
@@ -1129,6 +1132,7 @@ private:
     Move predictedOppMove;
 
     bool blunderAlertInstance;  // is this a blunder alert thinker?
+    bool immediateSingularMove; // when there is a single legal move, make it without analysis
 
 public:
     // Since it uses so much memory, all ComputerChessPlayer

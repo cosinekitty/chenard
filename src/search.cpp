@@ -67,7 +67,8 @@ ComputerChessPlayer::ComputerChessPlayer ( ChessUI &ui ):
     KingPosTable ( KingPosTableQR ),
     oppTimeInstance ( false ),
     oppTimeEnable ( false ),
-    blunderAlertInstance(false)
+    blunderAlertInstance(false),
+    immediateSingularMove(true)
 {
     rootml.num = 0;
     ResetHistoryBuffers();
@@ -308,7 +309,7 @@ bool ComputerChessPlayer::GetMove (
 
     if ( oppTimeEnable && !oppTimeInstance && searchType == CCPST_TIMED_SEARCH )
     {
-        bool oppTime = userInterface.oppTime_finishThinking ( 
+        bool oppTime = userInterface.oppTime_finishThinking (
             board,
             timeLimit,
             timeSpent,
@@ -451,7 +452,7 @@ void ComputerChessPlayer::GetWhiteMove (
         blackHist[i] /= 2;
     }
 
-    if ( rootml.num == 1 )
+    if ( rootml.num == 1 && isEnabledImmediateSingularMove() )
     {
         // If we are doing a blunder alert analysis,
         // we really need to know the score for the position
@@ -501,7 +502,7 @@ void ComputerChessPlayer::GetWhiteMove (
     }
 
     LearnTree tree;
-    if ( (searchType == CCPST_TIMED_SEARCH) && trainingEnabled && 
+    if ( (searchType == CCPST_TIMED_SEARCH) && trainingEnabled &&
          tree.familiarPosition ( board, bestmove, timeLimit, rootml ) )
     {
         sprintf ( buffer, "experience (%6d)", int(bestmove.score) );
@@ -517,7 +518,7 @@ void ComputerChessPlayer::GetWhiteMove (
     // See if we can recycle best path info from the previous move's search.
     UINT32 hash = board.Hash();
     int startLevel = minlevel;
-    if ( hash==expectedNextBoardHash && 
+    if ( hash==expectedNextBoardHash &&
          currentBestPath.depth>=2 && prevCompletedLevel>1 )
     {
         // Strip the top two plies because they are in the past!
@@ -606,7 +607,7 @@ void ComputerChessPlayer::GetBlackMove (
         blackHist[i] /= 2;
     }
 
-    if ( rootml.num == 1 )
+    if ( rootml.num == 1 && isEnabledImmediateSingularMove() )
     {
         // If we are doing a blunder alert analysis,
         // we really need to know the score for the position
@@ -655,7 +656,7 @@ void ComputerChessPlayer::GetBlackMove (
     }
 
     LearnTree tree;
-    if ( searchType==CCPST_TIMED_SEARCH && trainingEnabled && 
+    if ( searchType==CCPST_TIMED_SEARCH && trainingEnabled &&
          tree.familiarPosition ( board, bestmove, timeLimit, rootml ) )
     {
         sprintf ( buffer, "experience (%6d)", int(bestmove.score) );
@@ -671,7 +672,7 @@ void ComputerChessPlayer::GetBlackMove (
     // See if we can recycle best path info from the previous move's search.
     UINT32 hash = board.Hash();
     int startLevel = minlevel;
-    if ( hash==expectedNextBoardHash && 
+    if ( hash==expectedNextBoardHash &&
          currentBestPath.depth>=2 && prevCompletedLevel>1 )
     {
         // Strip the top two plies because they are in the past!
@@ -761,29 +762,28 @@ BestPath *ComputerChessPlayer::SaveTLMBestPath ( Move move )
 {
     // Try to find move in existing TLM BestPaths...
 
+    bool found = false;
     int i;
-    for ( i=0; i < eachBestPathCount; i++ )
-    {
+    for ( i=0; !found && i < eachBestPathCount; i++ )
         if ( eachBestPath[i].m[0] == move )
-        {
-            eachBestPath[i] = nextBestPath[1];
-            eachBestPath[i].m[0] = move;
-            return & ( eachBestPath[i] );
-        }
-    }
+            found = true;
 
-    // Need to add a new one!
-
-    if ( eachBestPathCount >= MAX_MOVES )
+    if (!found)
     {
-        ChessFatal ( "BestPath top-level-move overflow!" );
-        return 0;
+        // Need to add a new one!
+
+        if ( eachBestPathCount >= MAX_MOVES )
+        {
+            ChessFatal ( "BestPath top-level-move overflow!" );
+            return 0;
+        }
+
+        i = eachBestPathCount++;
     }
 
-    i = eachBestPathCount++;
     eachBestPath[i] = nextBestPath[1];
     eachBestPath[i].m[0] = move;
-    return & ( eachBestPath[i] );
+    return &eachBestPath[i];
 }
 
 
@@ -903,16 +903,13 @@ SCORE ComputerChessPlayer::WhiteSearchRoot (
             {
                 bestmove = *move;
                 expectedScoreNow = bestscore = score;
-                if ( level > 1 )
+                userInterface.DisplayBestMoveSoFar ( board, bestmove, level );
+                if ( path )
                 {
-                    userInterface.DisplayBestMoveSoFar ( board, bestmove, level );
-                    if ( path )
-                    {
-                        if ( oppTimeInstance )
-                            InsertPrediction ( board, *path, userInterface );
-                        else
-                            userInterface.DisplayBestPath ( board, *path );
-                    }
+                    if ( oppTimeInstance )
+                        InsertPrediction ( board, *path, userInterface );
+                    else
+                        userInterface.DisplayBestPath ( board, *path );
                 }
             }
         }
@@ -1012,16 +1009,13 @@ SCORE ComputerChessPlayer::BlackSearchRoot (
             {
                 bestmove = *move;
                 expectedScoreNow = bestscore = score;
-                if ( level > 1 )
+                userInterface.DisplayBestMoveSoFar ( board, bestmove, level );
+                if ( path )
                 {
-                    userInterface.DisplayBestMoveSoFar ( board, bestmove, level );
-                    if ( path )
-                    {
-                        if ( oppTimeInstance )
-                            InsertPrediction ( board, *path, userInterface );
-                        else
-                            userInterface.DisplayBestPath ( board, *path );
-                    }
+                    if ( oppTimeInstance )
+                        InsertPrediction ( board, *path, userInterface );
+                    else
+                        userInterface.DisplayBestPath ( board, *path );
                 }
             }
         }
@@ -1125,8 +1119,8 @@ SCORE ComputerChessPlayer::WhiteSearch (
     if ( ml.num == 0 )
     {
         // This is the end of the game!
-        bestscore = (board.flags & SF_WCHECK) 
-            ? (BLACK_WINS + WIN_POSTPONEMENT(depth)) 
+        bestscore = (board.flags & SF_WCHECK)
+            ? (BLACK_WINS + WIN_POSTPONEMENT(depth))
             : DRAW;
 
         userInterface.DebugExit ( depth, board, bestscore );
@@ -1143,8 +1137,8 @@ SCORE ComputerChessPlayer::WhiteSearch (
     // But we make sure to use transposition *only* after checking for
     // draw by repetition.
 
-    if ( xpos 
-        && xpos->searchedDepth >= level-depth 
+    if ( xpos
+        && xpos->searchedDepth >= level-depth
         && numReps < 2
         && ml.IsLegal(xpos->bestReply) )
     {
@@ -1280,8 +1274,8 @@ SCORE ComputerChessPlayer::BlackSearch (
     if ( ml.num == 0 )
     {
         // This is the end of the game!
-        bestscore = (board.flags & SF_BCHECK) 
-            ? (WHITE_WINS - WIN_POSTPONEMENT(depth)) 
+        bestscore = (board.flags & SF_BCHECK)
+            ? (WHITE_WINS - WIN_POSTPONEMENT(depth))
             : DRAW;
 
         userInterface.DebugExit ( depth, board, bestscore );
@@ -1298,8 +1292,8 @@ SCORE ComputerChessPlayer::BlackSearch (
     // But we make sure to use transposition *only* after checking for
     // draw by repetition.
 
-    if ( xpos 
-        && xpos->searchedDepth >= level-depth 
+    if ( xpos
+        && xpos->searchedDepth >= level-depth
         && numReps < 2
         && ml.IsLegal(xpos->bestReply) )
     {
