@@ -1487,15 +1487,21 @@ void ChessBoard::SaveSpecialMove ( Move special )
 
     initialPlyNumber = ++ply_number;        // Remember the spot right after the last pseudo-move was saved
 
-    char fen [200];
-    if (GetForsythEdwardsNotation (fen, sizeof(fen)))
-    {
-        ReplaceString (initialFen, fen);
-    }
+    MarkInitialPosition();
+}
+
+
+void ChessBoard::MarkInitialPosition()
+{
+    // Record the current position as the initial position for this game.
+    // This has the side-effect of indicating that the board has been edited.
+    // This is needed to prevent crashes in functions like NumberOfRepetitions().
+
+    char fen[200];
+    if (GetForsythEdwardsNotation(fen, sizeof(fen)))
+        ReplaceString(initialFen, fen);
     else
-    {
-        ChessFatal ("ChessBoard::SaveSpecialMove: Unable to save initial FEN");
-    }
+        ChessFatal("ChessBoard::MarkInitialPosition: Unable to save initial FEN");
 }
 
 

@@ -1278,7 +1278,8 @@ public:
     bool  IsDefiniteDraw ( int *numReps = 0 );      // Does NOT find stalemate!
     int NumberOfRepetitions();
 
-    void   SaveSpecialMove ( Move );
+    void SaveSpecialMove ( Move );
+    void MarkInitialPosition();
 
     void   MakeWhiteMove (
         Move       &move,     // can have side-effects!

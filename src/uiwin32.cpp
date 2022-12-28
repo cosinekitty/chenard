@@ -2158,6 +2158,7 @@ double ChessUI_win32_gui::runTacticalBenchmark()
     tboard.SetSquareContents ( BROOK, 0, 7 );
     tboard.SetSquareContents ( BQUEEN, 3, 7 );
     tboard.SetSquareContents ( BROOK, 4, 7 );
+    tboard.MarkInitialPosition();
     benchmarkExpectedMove.source = 0;
     benchmarkExpectedMove.dest = 0;
     TheBoardDisplayBuffer.update (tboard);
@@ -2180,6 +2181,7 @@ double ChessUI_win32_gui::runTacticalBenchmark()
     tboard.SetSquareContents ( BPAWN, 0, 6 );
     tboard.SetSquareContents ( BPAWN, 1, 6 );
     tboard.SetSquareContents ( BBISHOP, 3, 6 );
+    tboard.MarkInitialPosition();
     TheBoardDisplayBuffer.update (tboard);
     TheBoardDisplayBuffer.freshenBoard();
     benchmarkExpectedMove.source = 0;
@@ -2210,6 +2212,7 @@ double ChessUI_win32_gui::runTacticalBenchmark()
     tboard.SetSquareContents ( BPAWN, 7, 5 );
     tboard.SetSquareContents ( BKNIGHT, 4, 6 );
     tboard.SetSquareContents ( BROOK, 5, 7 );
+    tboard.MarkInitialPosition();
     move.source = OFFSET(9,3);
     move.dest = OFFSET(8,3);
     tboard.MakeMove ( move, unmove );
@@ -2248,6 +2251,7 @@ double ChessUI_win32_gui::runTacticalBenchmark()
     tboard.SetSquareContents ( BKING, 0, 7 );
     tboard.SetSquareContents ( BROOK, 2, 7 );
     tboard.SetSquareContents ( BROOK, 4, 7 );
+    tboard.MarkInitialPosition();
     benchmarkExpectedMove.source = 0;
     benchmarkExpectedMove.dest = 0;
     benchmarkPlayer->SetSearchDepth (4);
@@ -2292,6 +2296,7 @@ double ChessUI_win32_gui::runTacticalBenchmark()
     tboard.SetSquareContents ( BROOK, 4, 7 );
     tboard.SetSquareContents ( BQUEEN, 3, 7 );
     tboard.SetSquareContents ( BROOK, 0, 7 );
+    tboard.MarkInitialPosition();
     benchmarkExpectedMove.source = 0;
     benchmarkExpectedMove.dest = 0;
     benchmarkPlayer->SetSearchDepth (4);
