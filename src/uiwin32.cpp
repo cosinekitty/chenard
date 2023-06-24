@@ -31,6 +31,7 @@ bool Global_SpeakMovesFlag = true;
 bool Global_EnableMateAnnounce = true;
 extern bool Global_EnableOppTime;
 extern int Global_AnalysisType;
+extern bool Global_LeftEditMode;
 
 const uintptr_t INVALID_THREAD = static_cast<uintptr_t>(-1L);
 
@@ -952,6 +953,17 @@ bool ProcessChessCommands ( ChessBoard &board, int &source, int &dest )
             sprintf ( msg, "Cannot open file '%s'", Global_GameFilename );
             MessageBox ( HwndMain, msg, "File Open Error", MB_OK | MB_ICONERROR );
         }
+    }
+    else if (Global_LeftEditMode)
+    {
+        // The user just exited edit mode.
+        Global_LeftEditMode = false;
+        // We need to make a NULL move so that legal move list gets regenerated,
+        // *and* the correct player will move,
+        // *and* we will detect end-of-game properly.
+        source = 0;
+        dest = SPECIAL_MOVE_NULL;
+        itIsTimeToCruise = true;
     }
 
     return itIsTimeToCruise;

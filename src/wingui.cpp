@@ -32,6 +32,7 @@ bool Global_GameSaveFlag     = false;
 bool Global_HaveFilename     = false;
 bool Global_GameModifiedFlag = false;
 bool Global_TacticalBenchmarkFlag = false;
+bool Global_LeftEditMode     = false;
 bool Global_GameOverFlag     = true;   // It's over before it begins!
 bool Global_UndoMoveFlag     = false;
 bool Global_RedoMoveFlag     = false;
@@ -2619,6 +2620,12 @@ LRESULT CALLBACK ChessWndProc (
             int editMode = GetMenuState ( HmenuMain, ID_EDIT_EDITMODE, MF_BYCOMMAND );
             editMode = (editMode ^ MF_CHECKED) & MF_CHECKED;
             CheckMenuItem ( HmenuMain, ID_EDIT_EDITMODE, editMode | MF_BYCOMMAND );
+
+            // If leaving edit mode, we need to tell the human player to trigger a null move
+            // to force recalculating the game state: we need to know if the game ended
+            // and reflect the result on the board.
+            if (!editMode)
+                Global_LeftEditMode = true;
         }
         break;
 
