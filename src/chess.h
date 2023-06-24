@@ -349,8 +349,12 @@ struct Move   // A nice 32-bit structure!
 
     bool ShouldIgnore() const
     {
-        return dest == SPECIAL_MOVE_NULL ||
-               (dest & SPECIAL_MOVE_MASK) == SPECIAL_MOVE_EDIT;
+        return (dest == SPECIAL_MOVE_NULL) || isEditMove();
+    }
+
+    bool isEditMove() const
+    {
+        return (dest & SPECIAL_MOVE_MASK) == SPECIAL_MOVE_EDIT;
     }
 
     bool isPawnPromotion() const

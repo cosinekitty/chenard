@@ -178,7 +178,8 @@ void ChessGame::Play()
         return;
     }
 
-    move.dest = SPECIAL_MOVE_NULL;   // to assist in checking for board edit
+    move.dest = SPECIAL_MOVE_NULL;
+    bool is_edit = false;
 
     for(;;)
     {
@@ -191,32 +192,33 @@ void ChessGame::Play()
         else
         {
             if (autoSave_Filename)
-            {
                 SaveGamePGN ( board, autoSave_Filename );
-            }
         }
 
         if ( board.WhiteToMove() )
         {
-            board.GenWhiteMoves ( ml );
-            if ( ml.num == 0 )
+            if (!is_edit)
             {
-                // The game is over...
+                board.GenWhiteMoves(ml);
+                if (ml.num == 0)
+                {
+                    // The game is over...
 
-                whitePlayer->InformGameOver (board);
-                ChessSide winner = board.WhiteInCheck() ? SIDE_BLACK : SIDE_NEITHER;
-                ui.ReportEndOfGame ( winner );
-                LearnTree tree;
-                tree.learnFromGame ( board, winner );
-                return;
-            }
-            else if ( board.IsDefiniteDraw() )
-            {
-                whitePlayer->InformGameOver (board);
-                ui.ReportEndOfGame ( SIDE_NEITHER );
-                LearnTree tree;
-                tree.learnFromGame ( board, SIDE_NEITHER );
-                return;
+                    whitePlayer->InformGameOver(board);
+                    ChessSide winner = board.WhiteInCheck() ? SIDE_BLACK : SIDE_NEITHER;
+                    ui.ReportEndOfGame(winner);
+                    LearnTree tree;
+                    tree.learnFromGame(board, winner);
+                    return;
+                }
+                else if (board.IsDefiniteDraw())
+                {
+                    whitePlayer->InformGameOver(board);
+                    ui.ReportEndOfGame(SIDE_NEITHER);
+                    LearnTree tree;
+                    tree.learnFromGame(board, SIDE_NEITHER);
+                    return;
+                }
             }
 
             INT32 timeSpent = 0;
@@ -237,25 +239,28 @@ void ChessGame::Play()
         }
         else   // Black's turn to move...
         {
-            board.GenBlackMoves ( ml );
-            if ( ml.num == 0 )
+            if (!is_edit)
             {
-                // The game is over...
+                board.GenBlackMoves(ml);
+                if (ml.num == 0)
+                {
+                    // The game is over...
 
-                blackPlayer->InformGameOver (board);
-                ChessSide winner = board.BlackInCheck() ? SIDE_WHITE : SIDE_NEITHER;
-                ui.ReportEndOfGame ( winner );
-                LearnTree tree;
-                tree.learnFromGame ( board, winner );
-                return;
-            }
-            else if ( board.IsDefiniteDraw() )
-            {
-                blackPlayer->InformGameOver (board);
-                ui.ReportEndOfGame ( SIDE_NEITHER );
-                LearnTree tree;
-                tree.learnFromGame ( board, SIDE_NEITHER );
-                return;
+                    blackPlayer->InformGameOver(board);
+                    ChessSide winner = board.BlackInCheck() ? SIDE_WHITE : SIDE_NEITHER;
+                    ui.ReportEndOfGame(winner);
+                    LearnTree tree;
+                    tree.learnFromGame(board, winner);
+                    return;
+                }
+                else if (board.IsDefiniteDraw())
+                {
+                    blackPlayer->InformGameOver(board);
+                    ui.ReportEndOfGame(SIDE_NEITHER);
+                    LearnTree tree;
+                    tree.learnFromGame(board, SIDE_NEITHER);
+                    return;
+                }
             }
 
             INT32 timeSpent = 0;
@@ -274,6 +279,7 @@ void ChessGame::Play()
                 board.MakeBlackMove ( move, unmove, true, true );
             }
         }
+        is_edit = move.isEditMove();
     }
 }
 
